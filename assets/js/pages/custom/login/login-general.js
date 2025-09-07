@@ -43,7 +43,7 @@ var KTLogin = function() {
 				plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
                     submitButton: new FormValidation.plugins.SubmitButton(),
-                    //defaultSubmit: new FormValidation.plugins.DefaultSubmit(), // Uncomment this line to enable normal button submit after form validation
+                    defaultSubmit: new FormValidation.plugins.DefaultSubmit(), // Uncomment this line to enable normal button submit after form validation
 					bootstrap: new FormValidation.plugins.Bootstrap()
 				}
 			}
@@ -54,17 +54,17 @@ var KTLogin = function() {
 
             validation.validate().then(function(status) {
 		        if (status == 'Valid') {
-                    swal.fire({
-		                text: "All is cool! Now you submit this form",
-		                icon: "success",
-		                buttonsStyling: false,
-		                confirmButtonText: "Ok, got it!",
-                        customClass: {
-    						confirmButton: "btn font-weight-bold btn-light-primary"
-    					}
-		            }).then(function() {
-						KTUtil.scrollTop();
-					});
+                    // swal.fire({
+		            //     text: "All is cool! Now you submit this form",
+		            //     icon: "success",
+		            //     buttonsStyling: false,
+		            //     confirmButtonText: "Ok, got it!",
+                    //     customClass: {
+    				// 		confirmButton: "btn font-weight-bold btn-light-primary"
+    				// 	}
+		            // }).then(function() {
+					// 	KTUtil.scrollTop();
+					// });
 				} else {
 					swal.fire({
 		                text: "Sorry, looks like there are some errors detected, please try again.",
@@ -160,14 +160,14 @@ var KTLogin = function() {
 
             validation.validate().then(function(status) {
 		        if (status == 'Valid') {
-                    swal.fire({
-		                text: "All is cool! Now you submit this form",
-		                icon: "success",
-		                buttonsStyling: false,
-		                confirmButtonText: "Ok, got it!",
-                        customClass: {
-    						confirmButton: "btn font-weight-bold btn-light-primary"
-    					}
+                    // swal.fire({
+		            //     text: "All is cool! Now you submit this form",
+		            //     icon: "success",
+		            //     buttonsStyling: false,
+		            //     confirmButtonText: "Ok, got it!",
+                    //     customClass: {
+    				// 		confirmButton: "btn font-weight-bold btn-light-primary"
+    				// 	}
 		            }).then(function() {
 						KTUtil.scrollTop();
 					});
@@ -260,7 +260,7 @@ var KTLogin = function() {
             _login = $('#kt_login');
 
             _handleSignInForm();
-            _handleSignUpForm();
+            // _handleSignUpForm();
             _handleForgotForm();
         }
     };
