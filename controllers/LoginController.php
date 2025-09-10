@@ -2,10 +2,10 @@
 
 require_once __DIR__ . '/../includes/config.php';
 
-// if (isset($_SESSION['username'])) {
-//     header("Location: " . BASE_URL . "pages/dashboard.php");
-//     exit;
-// }
+if (isset($_SESSION['username'])) {
+    header("Location: " . BASE_URL . "pages/dashboard.php");
+    exit;
+}
 $error = "";
 if (isset($_POST['login'])) {
     $username = trim($_POST['username']);

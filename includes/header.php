@@ -10,7 +10,7 @@ require __DIR__ . '/auth.php';
 <head>
     <base href="">
     <meta charset="utf-8" />
-    <title>Metronic </title>
+    <title>CMS JABBAR23 </title>
     <meta name="description" content="Updates and statistics" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 

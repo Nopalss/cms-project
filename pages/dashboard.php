@@ -4,11 +4,29 @@ $_SESSION['menu'] = 'dashboard';
 require __DIR__ . '/../includes/header.php';
 require __DIR__ . '/../includes/aside.php';
 require __DIR__ . '/../includes/navbar.php';
+
+$schedules = [
+    [
+        "jam" => "09:00",
+        "task" => "	New Installation",
+        "technician" => "Budi",
+    ],
+    [
+        "jam" => "10:00",
+        "task" => "Maintenance Fiber",
+        "technician" => "Asep",
+    ],
+    [
+        "jam" => "10:00",
+        "task" => "	Upgrade Speed",
+        "technician" => "Agus",
+    ]
+];
 ?>
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Subheader-->
     <div class="subheader py-2 py-lg-6  subheader-solid " id="kt_subheader">
-        <div class=" container-fluid  d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
+        <div class=" container-fluid  d-flex align-items-center justify-conten bt-between flex-wrap flex-sm-nowrap">
             <!--begin::Info-->
             <div class="d-flex align-items-center flex-wrap mr-1">
 
@@ -44,32 +62,133 @@ require __DIR__ . '/../includes/navbar.php';
     <div class="d-flex flex-column-fluid">
         <!--begin::Container-->
         <div class=" container ">
-            <p>Page content goes here...</p>
+            <div class="row d-flex align-items-stretch">
+                <!-- card -->
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <div class="bg-white m-2 p-2 d-flex rounded shadow-sm h-100 align-items-center">
+                        <div class="w-25 p-3 text-center rounded font-weight-bold d-flex justify-content-center align-items-center mr-5">
+                            <span class="svg-icon svg-icon-success svg-icon-2x"><!--begin::Svg Icon | path:C:\wamp64\www\keenthemes\themes\metronic\theme\html\demo1\dist/../src/media/svg/icons\Devices\Router1.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <rect x="0" y="0" width="24" height="24" />
+                                        <path d="M15,15 L15,10 C15,9.44771525 15.4477153,9 16,9 C16.5522847,9 17,9.44771525 17,10 L17,15 L20,15 C21.1045695,15 22,15.8954305 22,17 L22,19 C22,20.1045695 21.1045695,21 20,21 L4,21 C2.8954305,21 2,20.1045695 2,19 L2,17 C2,15.8954305 2.8954305,15 4,15 L15,15 Z M5,17 C4.44771525,17 4,17.4477153 4,18 C4,18.5522847 4.44771525,19 5,19 L10,19 C10.5522847,19 11,18.5522847 11,18 C11,17.4477153 10.5522847,17 10,17 L5,17 Z" fill="#000000" />
+                                        <path d="M20.5,7.7155722 L19.2133304,8.85714286 C18.425346,7.82897283 17.2569914,7.22292937 15.9947545,7.22292937 C14.7366498,7.22292937 13.571742,7.82497398 12.7836854,8.84737587 L11.5,7.70192243 C12.6016042,6.27273291 14.2349886,5.42857143 15.9947545,5.42857143 C17.7603123,5.42857143 19.3985009,6.27832502 20.5,7.7155722 Z M23.5,5.46053062 L22.1362873,6.57142857 C20.629466,4.78945909 18.4012066,3.73944576 15.9963045,3.73944576 C13.5947271,3.73944576 11.3692392,4.78653417 9.8623752,6.56427829 L8.5,5.45180053 C10.340077,3.28094376 13.0626024,2 15.9963045,2 C18.934073,2 21.6599771,3.28451636 23.5,5.46053062 Z" fill="#000000" fill-rule="nonzero" opacity="0.3" />
+                                    </g>
+                                </svg><!--end::Svg Icon--></span>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <p class="text-muted mb-2">Installations Completed</p>
+                            <h3>32</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- end card -->
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <div class="bg-white  m-2 p-2 d-flex rounded shadow-sm h-100 align-items-center">
+                        <div class=" w-25 p-3 text-center rounded font-weight-bold d-flex justify-content-center align-items-center mr-5">
+                            <i class="flaticon2-calendar text-primary icon-2x"></i>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <p class="text-muted mb-2">Active Schedules</p>
+                            <h3>32</h3>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <div class="bg-white m-2 p-2 d-flex rounded shadow-sm h-100 align-items-center">
+                        <div class=" w-25 p-3 text-center rounded font-weight-bold d-flex justify-content-center align-items-center mr-5">
+                            <i class="fas fa-exclamation-triangle icon-2x text-danger"></i>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <p class="text-muted mb-2">Reports </p>
+                            <h3>32</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <div class="bg-white  m-2 p-2 d-flex rounded shadow-sm h-100 align-items-center">
+                        <div class=" w-25 p-3 text-center rounded font-weight-bold d-flex justify-content-center align-items-center mr-5">
+                            <i class="fas fa-wrench icon-2x text-warning"></i>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <p class="text-muted mb-2">Technician </p>
+                            <h3>32</h3>
+                        </div>
+                    </div>
+                </div>
+                <!-- end card -->
+
+                <!-- begin:: card schedule -->
+                <div class="col-sm-6 mt-5">
+                    <div class="card shadow">
+                        <div class="card-header pb-1 ">
+                            <h3 class="card-title mb-2">
+                                <a href="<?= BASE_URL ?>/pages/schedule" class="card-label text-dark">Today’s Schedule</a>
+                            </h3>
+                        </div>
+                        <div class="card-body pt-2">
+                            <table class="table ">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Time</th>
+                                        <th scope="col">Task</th>
+                                        <th scope="col">Technician</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($schedules as $s): ?>
+                                        <tr>
+                                            <td><?= $s['jam'] ?></td>
+                                            <td><?= $s['task'] ?></td>
+                                            <td><?= $s['technician'] ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- end: card schedule -->
+                <!-- begin:: card report -->
+                <div class="col-sm-6 mt-5">
+                    <div class="card shadow">
+                        <div class="card-header pb-1 ">
+                            <h3 class="card-title mb-2">
+                                <a href="<?= BASE_URL ?>/pages/schedule" class="card-label text-dark">Today’s Schedule</a>
+                            </h3>
+                        </div>
+                        <div class="card-body pt-2">
+                            <table class="table ">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Time</th>
+                                        <th scope="col">Task</th>
+                                        <th scope="col">Technician</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($schedules as $s): ?>
+                                        <tr>
+                                            <td><?= $s['jam'] ?></td>
+                                            <td><?= $s['task'] ?></td>
+                                            <td><?= $s['technician'] ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
         </div>
         <!--end::Container-->
     </div>
     <!--end::Entry-->
 </div>
 
-<!-- sweetalert -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<?php if (!empty($_SESSION['success'])): ?>
-    <script>
-        Swal.fire({
-            icon: "success",
-            title: "Login Berhasi",
-            text: '<?= $_SESSION['success'] ?>',
-            confirmButtonText: 'Go!',
-            customClass: {
-                title: 'text-success',
-                confirmButton: "btn font-weight-bold btn-outline-success",
-                icon: 'm-auto'
-            }
 
-        });
-    </script>
-<?php unset($_SESSION['success']);
-endif; ?>
 <?php
 require __DIR__ . '/../includes/footer.php';
 ?>

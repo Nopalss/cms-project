@@ -2,7 +2,32 @@
 
 require_once __DIR__ . '/config.php';
 ?>
+
+
+<!--begin::Footer-->
+<div class="footer bg-white py-4 d-flex flex-lg-column " id="kt_footer">
+    <!--begin::Container-->
+    <div class=" container-fluid  d-flex flex-column flex-md-row align-items-center justify-content-end">
+        <!--begin::Copyright-->
+        <div class="text-dark order-2 order-md-1">
+            <span class="text-muted font-weight-bold mr-2"><?= date('Y') ?>&copy;</span>
+            <a href="" target="_blank" class="text-dark-75 text-hover-primary">Jabbar23</a>
+        </div>
+        <!--end::Copyright-->
+
+        <!--begin::Nav-->
+
+        <!--end::Nav-->
+    </div>
+    <!--end::Container-->
 </div>
+<!--end::Footer-->
+</div>
+<!--end::Wrapper-->
+</div>
+<!--end::Page-->
+</div>
+<!--end::Main-->
 <!-- end::Content -->
 <!-- begin::User Panel-->
 <div id="kt_quick_user" class="offcanvas offcanvas-right p-10">
@@ -104,7 +129,25 @@ require_once __DIR__ . '/config.php';
     <!--end::Content-->
 </div>
 <!-- end::User Panel-->
+<!-- sweetalert -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<?php if (!empty($_SESSION['success'])): ?>
+    <script>
+        Swal.fire({
+            icon: "success",
+            title: "Login Berhasi",
+            text: '<?= $_SESSION['success'] ?>',
+            confirmButtonText: 'Go!',
+            customClass: {
+                title: 'text-success',
+                confirmButton: "btn font-weight-bold btn-outline-success",
+                icon: 'm-auto'
+            }
 
+        });
+    </script>
+<?php unset($_SESSION['success']);
+endif; ?>
 <!--begin::Global Config(global config for global JS scripts)-->
 <script>
     var KTAppSettings = {
@@ -173,13 +216,13 @@ require_once __DIR__ . '/config.php';
 <script src="<?= BASE_URL ?>assets/plugins/custom/prismjs/prismjs.bundle.js"></script>
 <script src="<?= BASE_URL ?>assets/js/scripts.bundle.js"></script>
 <!--end::Global Theme Bundle-->
-
-<!--begin::Page Vendors(used by this page)-->
-<script src="<?= BASE_URL ?>assets/plugins/custom/fullcalendar/fullcalendar.bundle.js"></script>
-<!--end::Page Vendors-->
+<script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/schedules.js"></script>
 
 <!--begin::Page Scripts(used by this page)-->
-<script src="<?= BASE_URL ?>assets/js/pages/widgets.js"></script>
+<script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-timepicker.js"></script>
+<!--end::Page Scripts-->
+<!--begin::Page Scripts(used by this page)-->
+<script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-datepicker.js"></script>
 <!--end::Page Scripts-->
 </body>
 <!--end::Body-->

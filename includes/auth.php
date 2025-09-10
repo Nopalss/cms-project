@@ -1,5 +1,6 @@
 <?php
 if (!isset($_SESSION['username'])) {
-    header("Location: login.php");
+    $url = BASE_URL;
+    header("Location: $url");
     exit;
 }
