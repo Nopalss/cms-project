@@ -45,12 +45,11 @@ if (isset($_POST['submit'])) {
         header("Location: " . BASE_URL . "pages/schedule/");
         exit;
     } catch (PDOException $e) {
-        echo json_encode([
-            "error" => true,
-            "message" => $e->getMessage()
-        ]);
+        $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi";
+        header("Location: " . BASE_URL . "pages/schedule/");
+        exit;
     }
 }
-$_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi.";
+$_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi";
 header("Location: " . BASE_URL . "pages/schedule/");
 exit;

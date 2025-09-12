@@ -52,7 +52,7 @@ require_once __DIR__ . '/config.php';
             </div>
             <div class="d-flex flex-column">
                 <a href="#" class="font-weight-bold font-size-h5 text-dark-75 text-hover-primary">
-                    <?= $_SESSION['username'] ?>
+                    <?= $_SESSION['name'] ?>
                 </a>
                 <div class="text-muted mt-1">
                     <?= $_SESSION['role'] ?>
@@ -135,7 +135,7 @@ require_once __DIR__ . '/config.php';
     <script>
         Swal.fire({
             icon: "success",
-            title: "Login Berhasi",
+            title: "Login Berhasil",
             text: '<?= $_SESSION['success'] ?>',
             confirmButtonText: 'Go!',
             customClass: {
@@ -223,6 +223,69 @@ endif; ?>
 <!--end::Page Scripts-->
 <!--begin::Page Scripts(used by this page)-->
 <script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-datepicker.js"></script>
+<script>
+    function confirmDelete(scheduleId) {
+        Swal.fire({
+            title: 'Yakin mau hapus?',
+            text: "Data schedule akan dihapus permanen!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = HOST_URL + "controllers/schedules/delete.php?id=" + scheduleId;
+            }
+        });
+    }
+    $(document).on("click", ".btn-detail, .btn-detail2", function() {
+        $("#detail_id").text($(this).data("id"));
+        $("#detail_tech").text($(this).data("tech"));
+
+        const date = new Date($(this).data("date"));
+        const options = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        $("#detail_date").text(date.toLocaleDateString('id-ID', options));
+
+        $("#detail_job").text($(this).data("job"));
+        $("#detail_status")
+            .removeClass()
+            .addClass(`badge badge-pill badge-${$(this).data("state")}`)
+            .text($(this).data("status"));
+
+        $("#detail_location").text($(this).data("location"));
+
+        // hanya untuk btn-detail2 → kasih link report
+        if ($(this).hasClass("btn-detail2")) {
+            $("#detail_btn_report").attr(
+                "href",
+                `${HOST_URL}pages/schedule/issue_report.php?id=${$(this).data("id")}`
+            );
+            $("#detail_btn_done").attr(
+                "href",
+                `${HOST_URL}pages/ikr/create.php?id=${$(this).data("id")}`
+            );
+        }
+
+        $("#detailModal").modal("show");
+    });
+    $(document).on("click", ".btn-detail3", function() {
+        $("#detail_id").text($(this).data("id"));
+        console.log($(this).data("date"));
+        $("#detail_schedule").text($(this).data("schedule"));
+        $("#detail_reported").text($(this).data("reported"));
+        $("#detail_type").text($(this).data("type"));
+        $("#detail_date").text($(this).data("date"));
+        $("#detail_desc").text($(this).data("desc"));
+        $("#detailModalIssue").modal("show");
+    });
+</script>
 <!--end::Page Scripts-->
 </body>
 <!--end::Body-->

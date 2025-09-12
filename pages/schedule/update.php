@@ -16,6 +16,9 @@ try {
     $sql = "SELECT * FROM technician";
     $stmt = $pdo->query($sql);
     $technicians = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $job = ["Instalasi", "Maintenance", "Perbaikan"];
+    $status = ['Pending', 'On Progress', 'Rescheduled', 'Cancelled', 'Done'];
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -35,13 +38,14 @@ try {
                         </h3>
                     </div>
                 </div>
-                <form action="" class="form">
+                <form method="post" class="form" action="<?= BASE_URL ?>controllers/schedules/update.php">
                     <div class="card-body">
                         <div class="form-group">
                             <label class="text-right">Schedule ID</label>
                             <div>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" name="schedule_id" value="<?= $row['schedule_id'] ?>" disabled="disabled" />
+                                    <input type="text" class="form-control" value="<?= $row['schedule_id'] ?>" disabled="disabled" />
+                                    <input type="hidden" name="schedule_id" value="<?= $row['schedule_id'] ?>" />
                                 </div>
                             </div>
                         </div>
@@ -59,7 +63,11 @@ try {
                             <label class="text-right">Tanggal</label>
                             <div>
                                 <div class="input-group date">
-                                    <input type="text" class="form-control" required name="date" readonly value="<?= $row['date'] ?>" id="kt_datepicker_3" />
+                                    <?php
+                                    $dateObj = DateTime::createFromFormat('Y-m-d', $row['date']);
+                                    $date    = $dateObj ? $dateObj->format('m/d/Y') : null;
+                                    ?>
+                                    <input type="text" class="form-control" required name="date" readonly value="<?= $date ?>" id="kt_datepicker_3" />
                                     <div class="input-group-append">
                                         <span class="input-group-text">
                                             <i class="la la-calendar"></i>
@@ -85,9 +93,20 @@ try {
                             <label>Tipe Job</label>
                             <select class="form-control selectpicker" required name="job_type" data-size="7">
                                 <option value="">--Select--</option>
-                                <option value="Instalasi">Instalasi</option>
-                                <option value="Maintenance">Maintenance</option>
-                                <option value="Perbaikan">Perbaikan</option>
+                                <?php foreach ($job as $j): ?>
+                                    <?php $selected = ($j == $row['job_type']) ? 'selected' : ''; ?>
+                                    <option value="<?= $j ?>" <?= $selected ?>><?= $j ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select class="form-control selectpicker" required name="status" data-size="7">
+                                <option value="">--Select--</option>
+                                <?php foreach ($status as $s): ?>
+                                    <?php $selected = ($s == $row['status']) ? 'selected' : ''; ?>
+                                    <option value="<?= $s ?>" <?= $selected ?>><?= $s ?></option>
+                                <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="form-group mb-1">
