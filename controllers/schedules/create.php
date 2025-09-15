@@ -11,14 +11,13 @@ if (isset($_POST['submit'])) {
 
     // Ambil & sanitasi data POST
     $tech_id   = isset($_POST['tech_id']) ? sanitize($_POST['tech_id']) : null;
-    $dateInput = isset($_POST['date']) ? sanitize($_POST['date']) : null;
+    $date = isset($_POST['date']) ? sanitize($_POST['date']) : null;
     $time      = isset($_POST['time']) ? sanitize($_POST['time']) : null;
     $job_type  = isset($_POST['job_type']) ? sanitize($_POST['job_type']) : null;
     $location  = isset($_POST['location']) ? sanitize($_POST['location']) : null;
-
+    echo $time;
     // Konversi format tanggal (dari MM/DD/YYYY → YYYY-MM-DD)
-    $dateObj = DateTime::createFromFormat('m/d/Y', $dateInput);
-    $date    = $dateObj ? $dateObj->format('Y-m-d') : null;
+
     // Pastikan semua data terisi
     if (!$tech_id || !$date || !$time || !$job_type || !$location) {
         $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi.";
@@ -45,11 +44,13 @@ if (isset($_POST['submit'])) {
         header("Location: " . BASE_URL . "pages/schedule/");
         exit;
     } catch (PDOException $e) {
+        echo $e;
         $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi";
         header("Location: " . BASE_URL . "pages/schedule/");
         exit;
     }
+} else {
+    $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi";
+    header("Location: " . BASE_URL . "pages/schedule/");
+    exit;
 }
-$_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi";
-header("Location: " . BASE_URL . "pages/schedule/");
-exit;

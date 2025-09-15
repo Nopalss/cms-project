@@ -13,7 +13,7 @@ var KTDatatableLocalSortDemo = function () {
                 type: 'remote',
                 source: {
                     read: {
-                        url: HOST_URL + 'api/schedules.php',
+                        url: HOST_URL + 'api/ikr.php',
                     },
                 },
                 pageSize: 10,
@@ -43,11 +43,11 @@ var KTDatatableLocalSortDemo = function () {
             },
             // columns definition
             columns: [{
-                field: 'schedule_id',
-                title: 'Schedule Id',
+                field: 'ikr_id',
+                title: 'IKR Id',
             }, {
-                field: 'technician_name',
-                title: 'Teknisi',
+                field: 'netpay_id',
+                title: 'Netpay Id',
             }, {
                 field: 'date',
                 title: 'Date',

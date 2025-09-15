@@ -4,6 +4,11 @@ $_SESSION['menu'] = 'schedule';
 require __DIR__ . '/../../includes/header.php';
 require __DIR__ . '/../../includes/aside.php';
 require __DIR__ . '/../../includes/navbar.php';
+$statusIssueClasses = [
+    'Pending' => "info",
+    'Approved' => "success",
+    'Rejected' => "danger",
+];
 
 try {
     $sql = "SELECT * FROM technician";
@@ -68,10 +73,57 @@ try {
     </div>
 </div>
 <!-- end::entry -->
+<!-- modal detail issue report-->
+<div class=" modal fade" id="detailModalIssue" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content shadow-lg border-0 rounded-lg">
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="la la-info-circle text-info"></i> Detail issue report</h4>
+                <button type="button" class="close text-danger" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Issue ID</div>
+                    <div class="col-8" id="detail_idIssue"></div>
+                </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Schedule ID</div>
+                    <div class="col-8" id="detail_schedule"></div>
+                </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Reported</div>
+                    <div class="col-8" id="detail_reported"></div>
+                </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Issue Type</div>
+                    <div class="col-8" id="detail_issue"></div>
+                </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Created At</div>
+                    <div class="col-8">
+                        <div id="detail_dateIssue"></div>
+                    </div>
+                </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Status Report</div>
+                    <div class="col-8">
+                        <div id="detail_stat"></div>
+                    </div>
+                </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Description</div>
+                    <div class="col-8" id="detail_desc"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-dismiss="modal">
+                    <i class="la la-times"></i> Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-<script>
-    var HOST_URL = "<?= BASE_URL ?>";
-</script>
 <?php
 require __DIR__ . "/modal_create_schedule.php";
 require __DIR__ . '/../../includes/footer.php';

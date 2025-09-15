@@ -12,7 +12,7 @@
                  <div class="modal-body">
                      <div class="form-group">
                          <label>Teknisi</label>
-                         <select class="form-control selectpicker" required name="tech_id" data-size=" 7" data-live-search="true">
+                         <select class="form-control selectpicker" id="tech_id" required name="tech_id" data-size=" 7" data-live-search="true">
                              <option value="">Select</option>
                              <?php foreach ($technicians as $t): ?>
                                  <option value="<?= $t['tech_id'] ?>"><?= $t['name'] ?></option>
@@ -23,26 +23,15 @@
                          <label class="text-right">Tanggal</label>
                          <div>
                              <div class="input-group date">
-                                 <input type="text" class="form-control" required name="date" readonly placeholder="mm/dd/yyyy" id="kt_datepicker_3" />
-                                 <div class="input-group-append">
-                                     <span class="input-group-text">
-                                         <i class="la la-calendar"></i>
-                                     </span>
-                                 </div>
+                                 <input type="date" class="form-control" required name="date" id="date" min="<?= date('Y-m-d') ?>" />
                              </div>
                          </div>
                      </div>
                      <div class="form-group">
                          <label class="">Jam</label>
                          <div>
-                             <div class="input-group timepicker">
-                                 <input class="form-control" id="kt_timepicker_2" required name="time" placeholder="Select time" type="text" />
-                                 <div class="input-group-append">
-                                     <span class="input-group-text">
-                                         <i class="la la-clock-o"></i>
-                                     </span>
-                                 </div>
-                             </div>
+                             <select class="form-control selectpicker" required name="time" data-size="7" id="time">
+                             </select>
                          </div>
                      </div>
                      <div class="form-group">

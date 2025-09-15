@@ -10,17 +10,17 @@ if (isset($_POST['submit'])) {
     }
 
     // Ambil & sanitasi data
-    $schedule_id = $_POST['schedule_id'] ?? null;
-    $tech_id     = $_POST['tech_id'] ?? null;
-    $dateInput   = $_POST['date'] ?? null;
-    $time        = $_POST['time'] ?? null;
-    $job_type    = $_POST['job_type'] ?? null;
-    $location    = $_POST['location'] ?? null;
-    $status      = $_POST['status'] ?? null;
-
+    $schedule_id = isset($_POST['schedule_id']) ? sanitize($_POST['schedule_id']) : null;
+    $issue_id = isset($_POST['issue_id']) ? sanitize($_POST['issue_id']) : null;
+    $tech_id   = isset($_POST['tech_id']) ? sanitize($_POST['tech_id']) : null;
+    $date = isset($_POST['date']) ? sanitize($_POST['date']) : null;
+    $time      = isset($_POST['time']) ? sanitize($_POST['time']) : null;
+    $job_type  = isset($_POST['job_type']) ? sanitize($_POST['job_type']) : null;
+    $location  = isset($_POST['location']) ? sanitize($_POST['location']) : null;
+    $status    = isset($_POST['status']) ? sanitize($_POST['status']) : null;
+    echo $issue_id;
     // Konversi tanggal
-    $dateObj = DateTime::createFromFormat('m/d/Y', sanitize($dateInput));
-    $date    = $dateObj ? $dateObj->format('Y-m-d') : null;
+
 
     // Validasi
     if (!$schedule_id || !$tech_id || !$date || !$time || !$job_type || !$location || !$status) {
@@ -41,15 +41,24 @@ if (isset($_POST['submit'])) {
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            ':tech_id'     => sanitize($tech_id),
+            ':tech_id'     => $tech_id,
             ':date'        => $date,
-            ':time'        => sanitize($time),
-            ':job_type'    => sanitize($job_type),
-            ':status'      => sanitize($status),
-            ':location'    => sanitize($location),
-            ':schedule_id' => sanitize($schedule_id)
+            ':time'        => $time,
+            ':job_type'    => $job_type,
+            ':status'      => $status,
+            ':location'    => $location,
+            ':schedule_id' => $schedule_id
         ]);
+        if (!empty($issue_id)) {
+            $sql = "UPDATE issues_report 
+                SET status = 'Approved'
+                WHERE issue_id = :issue_id";
 
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':issue_id' => $issue_id,
+            ]);
+        }
         $_SESSION['success'] = "Data schedule berhasil di Update dan tersimpan dengan aman";
         header("Location: " . BASE_URL . "pages/schedule/");
         exit;

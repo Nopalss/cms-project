@@ -130,7 +130,10 @@ require_once __DIR__ . '/config.php';
 </div>
 <!-- end::User Panel-->
 <!-- sweetalert -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    var HOST_URL = "<?= BASE_URL ?>";
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 <?php if (!empty($_SESSION['success'])): ?>
     <script>
         Swal.fire({
@@ -216,14 +219,58 @@ endif; ?>
 <script src="<?= BASE_URL ?>assets/plugins/custom/prismjs/prismjs.bundle.js"></script>
 <script src="<?= BASE_URL ?>assets/js/scripts.bundle.js"></script>
 <!--end::Global Theme Bundle-->
-<script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/schedules.js"></script>
+<?php if ($_SESSION['menu'] == "schedule"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/schedules.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "issue report"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/issues-report.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "ikr"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/ikr.js"></script>
+<?php endif; ?>
 
-<!--begin::Page Scripts(used by this page)-->
 <script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-timepicker.js"></script>
 <!--end::Page Scripts-->
 <!--begin::Page Scripts(used by this page)-->
 <script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-datepicker.js"></script>
 <script>
+    // get tanggal 
+    $("#date, #tech_id").on("change", getJadwalTeknisi);
+    $(document).ready(function() {
+        getJadwalTeknisi(); // langsung isi jam berdasarkan nilai default
+    });
+
+    function getJadwalTeknisi() {
+        let date = $("#date").val();
+        let tech_id = $("#tech_id").val();
+
+        if (date && tech_id) {
+            $.ajax({
+                url: "<?= BASE_URL ?>api/get_jadwal_teknisi.php",
+                method: "POST",
+                data: {
+                    date: date,
+                    tech_id: tech_id
+                },
+                dataType: "json",
+                success: function(res) {
+                    $("#time").empty().append('<option value="">-- pilih Jam --</option>');
+
+                    if (res.length > 0) {
+                        res.forEach(function(time) {
+                            $("#time").append(`<option value="${time}">${time}</option>`);
+                        });
+                    } else {
+                        $("#time").append('<option value="">Tidak ada jam kosong</option>');
+                    }
+                    $('#time').selectpicker('refresh');
+                }
+            })
+        }
+
+    }
+
+
     function confirmDelete(scheduleId) {
         Swal.fire({
             title: 'Yakin mau hapus?',
@@ -237,6 +284,26 @@ endif; ?>
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.href = HOST_URL + "controllers/schedules/delete.php?id=" + scheduleId;
+            }
+        });
+    }
+
+    function confirmApproved(issueId, scheduleId) {
+        console.log(Swal.version)
+        Swal.fire({
+            title: 'Apa yang harus dilakukan?',
+            text: "Schedule ini bisa dibatalkan atau dijadwalkan ulang",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Confirm',
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#ffc800',
+            cancelButtonText: 'Reschedule',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = HOST_URL + "controllers/schedules/approve_report.php?id=" + issueId + "&scheduleId=" + scheduleId;
+            } else if (result.dismiss === Swal.DismissReason.cancel) {
+                window.location.href = HOST_URL + "pages/schedule/update.php?id=" + scheduleId + "&issueId=" + issueId;
             }
         });
     }
@@ -262,27 +329,83 @@ endif; ?>
         $("#detail_location").text($(this).data("location"));
 
         // hanya untuk btn-detail2 → kasih link report
+
         if ($(this).hasClass("btn-detail2")) {
             $("#detail_btn_report").attr(
                 "href",
                 `${HOST_URL}pages/schedule/issue_report.php?id=${$(this).data("id")}`
-            );
+            )
+            if ($(this).data("status") == "Cancelled" || $(this).data("status") == "Done") {
+                $("#detail_btn_report").addClass('d-none');
+                $("#detail_btn_done").addClass('d-none');
+            }
+            if ($(this).data("status") == "Pending" || $(this).data("status") == "Rescheduled") {
+                $("#detail_btn_report").removeClass('d-none');
+                $("#detail_btn_done").removeClass('d-none');
+            }
             $("#detail_btn_done").attr(
                 "href",
                 `${HOST_URL}pages/ikr/create.php?id=${$(this).data("id")}`
-            );
+            )
         }
-
         $("#detailModal").modal("show");
     });
-    $(document).on("click", ".btn-detail3", function() {
-        $("#detail_id").text($(this).data("id"));
-        console.log($(this).data("date"));
+    $(".btn-detail3").on("click", function() {
+        $("#detail_idIssue").text($(this).data("id"));
+        console.log($(this).data("id"))
         $("#detail_schedule").text($(this).data("schedule"));
         $("#detail_reported").text($(this).data("reported"));
-        $("#detail_type").text($(this).data("type"));
-        $("#detail_date").text($(this).data("date"));
+        $("#detail_issue").text($(this).data("type"));
+        const datetime = $(this).data("date");
+        const date = new Date(datetime.replace(" ", "T"));
+
+        // Bagian tanggal → pakai locale Indonesia
+        const tanggal = date.toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+
+        // Bagian jam → pakai locale Inggris (pemisah :)
+        const waktu = date.toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+        $("#detail_dateIssue").text(`Jam ${waktu}. ${tanggal} `);
+        $("#detail_stat").text($(this).data("status")).addClass(`text-${$(this).data("state")} font-weight-bold`);
         $("#detail_desc").text($(this).data("desc"));
+        $("#detailModalIssue").modal("show");
+    });
+    $(".btn-detail4").on("click", function() {
+        console.log("halo");
+        $("#detail_id_issue").text($(this).data("issue-id"));
+        $("#detail_schedule").text($(this).data("schedule-id"));
+        $("#detail_reported").text($(this).data("reported-by"));
+        $("#detail_issue").text($(this).data("issue-type"));
+        $("#detail_created_at").text($(this).data("created-at"));
+        $("#detail_issue_status").text($(this).data("issue-status"));
+        $("#detail_desc").text($(this).data("description"));
+        $("#detail_date").text($(this).data("date"));
+        $("#detail_job_type").text($(this).data("job-type"));
+        $("#detail_schedule_status").text($(this).data("schedule-status"));
+        $("#detail_location").text($(this).data("location"));
+        // const datetime = $(this).data("date");
+        // const date = new Date(datetime.replace(" ", "T"));
+
+        // // Bagian tanggal → pakai locale Indonesia
+        // const tanggal = date.toLocaleDateString("id-ID", {
+        //     weekday: "long",
+        //     day: "numeric",
+        //     month: "long",
+        //     year: "numeric"
+        // });
+
+        // // Bagian jam → pakai locale Inggris (pemisah :)
+        // const waktu = date.toLocaleTimeString("en-GB", {
+        //     hour: "2-digit",
+        //     minute: "2-digit",
+        // });
         $("#detailModalIssue").modal("show");
     });
 </script>

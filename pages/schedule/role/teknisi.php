@@ -10,8 +10,7 @@ $stmt->execute([':tech_id' => $tech_id]);
 $schedules = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // mengambil data issues report berdasarkan id teknisi
-$sql = "
-        SELECT *
+$sql = "SELECT *
         FROM issues_report
         WHERE reported_by = :reported_by
           AND created_at >= CURDATE()
@@ -35,6 +34,7 @@ $statusClasses = [
     'Cancelled' => "danger",
     'Done' => "success"
 ];
+
 ?>
 
 <div class="row pt-2">
@@ -46,8 +46,7 @@ $statusClasses = [
                 </h3>
             </div>
             <div class="card-body pt-4">
-                <div class="table-responsive">
-
+                <div class="table-responsive-sm">
                     <table class="table text-sm">
                         <thead>
                             <tr>
@@ -58,46 +57,54 @@ $statusClasses = [
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($schedules as $s): ?>
-                                <tr>
-                                    <th scope="row"><?= $s['schedule_id'] ?></th>
-                                    <td><?= $s['job_type'] ?></td>
-                                    <td><span class="badge badge-pill text-sm badge-<?= $statusClasses[$s['status']] ?>"><?= $s['status'] ?></span></td>
-                                    <td>
-                                        <div class="dropdown dropdown-inline">
-                                            <a href="javascript:;" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" data-toggle="dropdown">
-                                                <span class="svg-icon svg-icon-md">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-                                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                            <rect x="0" y="0" width="24" height="24" />
-                                                            <path d="M5,8.6862915 L5,5 L8.6862915,5 L11.5857864,2.10050506 L14.4852814,5 L19,5 L19,9.51471863 L21.4852814,12 L19,14.4852814 L19,19 L14.4852814,19 L11.5857864,21.8994949 L8.6862915,19 L5,19 L5,15.3137085 L1.6862915,12 L5,8.6862915 Z M12,15 C13.6568542,15 15,13.6568542 15,12 C15,10.3431458 13.6568542,9 12,9 C10.3431458,9 9,10.3431458 9,12 C9,13.6568542 10.3431458,15 12,15 Z" fill="#000000" />
-                                                        </g>
-                                                    </svg>
-                                                </span>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                                <ul class="navi flex-column navi-hover py-2">
-                                                    <li class="navi-header font-weight-bolder text-uppercase font-size-xs text-primary pb-2">
-                                                        Choose an action:
-                                                    </li>
-                                                    <li class="navi-item cursor-pointer">
-                                                        <a class="navi-link" href="<?= BASE_URL ?>pages/schedule/issue_report.php?id=<?= $s['schedule_id'] ?>">
-                                                            <span class="navi-icon "><i class="flaticon2-warning text-warning"></i></span>
-                                                            <span class="navi-text">Task Issue Report</span>
-                                                        </a>
-                                                    </li>
-                                                    <li class="navi-item cursor-pointer">
-                                                        <a class="navi-link btn-detail2" data-id="<?= $s['schedule_id'] ?>" data-tech="<?= $s['tech_id'] ?>" data-date="<?= $s['date'] ?>" data-job="<?= $s['job_type'] ?>" data-state="<?= $statusClasses[$s['status']] ?>" data-status="<?= $s['status'] ?>" data-location="<?= $s['location'] ?>">
-                                                            <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>
-                                                            <span class="navi-text">Detail</span>
-                                                        </a>
-                                                    </li>
-                                                </ul>
+                            <?php if (count($schedules) > 0): ?>
+                                <?php foreach ($schedules as $s): ?>
+                                    <tr>
+                                        <th scope="row"><?= $s['schedule_id'] ?></th>
+                                        <td><?= $s['job_type'] ?></td>
+                                        <td><span class="badge badge-pill text-sm badge-<?= $statusClasses[$s['status']] ?>"><?= $s['status'] ?></span></td>
+                                        <td>
+                                            <div class="dropdown dropdown-inline">
+                                                <a href="javascript:;" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" data-toggle="dropdown">
+                                                    <span class="svg-icon svg-icon-md">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                                <rect x="0" y="0" width="24" height="24" />
+                                                                <path d="M5,8.6862915 L5,5 L8.6862915,5 L11.5857864,2.10050506 L14.4852814,5 L19,5 L19,9.51471863 L21.4852814,12 L19,14.4852814 L19,19 L14.4852814,19 L11.5857864,21.8994949 L8.6862915,19 L5,19 L5,15.3137085 L1.6862915,12 L5,8.6862915 Z M12,15 C13.6568542,15 15,13.6568542 15,12 C15,10.3431458 13.6568542,9 12,9 C10.3431458,9 9,10.3431458 9,12 C9,13.6568542 10.3431458,15 12,15 Z" fill="#000000" />
+                                                            </g>
+                                                        </svg>
+                                                    </span>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+                                                    <ul class="navi flex-column navi-hover py-2">
+                                                        <li class="navi-header font-weight-bolder text-uppercase font-size-xs text-primary pb-2">
+                                                            Choose an action:
+                                                        </li>
+                                                        <?php if ($s['status'] == 'Pending' || $s['status'] == 'Rescheduled'): ?>
+                                                            <li class="navi-item cursor-pointer">
+                                                                <a class="navi-link" href="<?= BASE_URL ?>pages/schedule/issue_report.php?id=<?= $s['schedule_id'] ?>">
+                                                                    <span class="navi-icon "><i class="flaticon2-warning text-warning"></i></span>
+                                                                    <span class="navi-text">Task Issue Report</span>
+                                                                </a>
+                                                            </li>
+                                                        <?php endif; ?>
+                                                        <li class="navi-item cursor-pointer">
+                                                            <a class="navi-link btn-detail2" data-id="<?= $s['schedule_id'] ?>" data-tech="<?= $s['tech_id'] ?>" data-date="<?= $s['date'] ?>" data-job="<?= $s['job_type'] ?>" data-state="<?= $statusClasses[$s['status']] ?>" data-status="<?= $s['status'] ?>" data-location="<?= $s['location'] ?>">
+                                                                <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>
+                                                                <span class="navi-text">Detail</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td class="text-center text-muted text-weight-bold" colspan="4">Tidak ada schedule yang terdaftar untuk hari ini</td>
                                 </tr>
-                            <?php endforeach; ?>
+                            <?php endif; ?>
                         </tbody>
                     </table>
                 </div>
@@ -160,37 +167,39 @@ $statusClasses = [
                 <?php if (count($schedules) > 0): ?>
                     <div class="timeline timeline-6 mt-3">
                         <?php foreach ($schedules as $s): ?>
-                            <!--begin::Item-->
-                            <div class="timeline-item align-items-start">
-                                <!--begin::Label-->
-                                <div class="timeline-label font-weight-bolder text-dark-75 font-size-lg"><?= substr($s['time'], 0, 5) ?></div>
-                                <!--end::Label-->
+                            <?php if ($s['status'] != 'Cancelled'): ?>
+                                <!--begin::Item-->
+                                <div class="timeline-item align-items-start">
+                                    <!--begin::Label-->
+                                    <div class="timeline-label font-weight-bolder text-dark-75 font-size-lg"><?= substr($s['time'], 0, 5) ?></div>
+                                    <!--end::Label-->
 
-                                <!--begin::Badge-->
-                                <div class="timeline-badge">
-                                    <i class="fa fa-genderless text-<?= $badgeClasses[$s['job_type']]; ?> icon-xl"></i>
-                                </div>
-                                <!--end::Badge-->
+                                    <!--begin::Badge-->
+                                    <div class="timeline-badge">
+                                        <i class="fa fa-genderless text-<?= $badgeClasses[$s['job_type']]; ?> icon-xl"></i>
+                                    </div>
+                                    <!--end::Badge-->
 
-                                <!--begin::Text-->
-                                <div class="font-weight-mormal font-size-lg timeline-content pl-3 ">
-                                    <p class="mb-0 btn-detail cursor-pointer"
-                                        data-id="<?= $s['schedule_id'] ?>"
-                                        data-tech="<?= $s['tech_id'] ?>"
-                                        data-date="<?= $s['date'] ?>"
-                                        data-job="<?= $s['job_type'] ?>"
-                                        data-state="<?= $statusClasses[$s['status']] ?>"
-                                        data-status="<?= $s['status'] ?>"
-                                        data-location="<?= $s['location'] ?>">
-                                        <?= $s['job_type'] ?>
-                                        <a class="text-muted btn-detail font-size-sm cursor-pointer">
-                                            #<?= $s['schedule_id'] ?>
-                                        </a>
-                                    </p>
+                                    <!--begin::Text-->
+                                    <div class="font-weight-mormal font-size-lg timeline-content pl-3 ">
+                                        <p class="mb-0 btn-detail2 cursor-pointer"
+                                            data-id="<?= $s['schedule_id'] ?>"
+                                            data-tech="<?= $s['tech_id'] ?>"
+                                            data-date="<?= $s['date'] ?>"
+                                            data-job="<?= $s['job_type'] ?>"
+                                            data-state="<?= $statusClasses[$s['status']] ?>"
+                                            data-status="<?= $s['status'] ?>"
+                                            data-location="<?= $s['location'] ?>">
+                                            <?= $s['job_type'] ?>
+                                            <a class="text-muted btn-detail font-size-sm cursor-pointer">
+                                                #<?= $s['schedule_id'] ?>
+                                            </a>
+                                        </p>
+                                    </div>
+                                    <!--end::Text-->
                                 </div>
-                                <!--end::Text-->
-                            </div>
-                            <!--end::Item-->
+                                <!--end::Item-->
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </div>
                 <?php else: ?>
@@ -208,67 +217,69 @@ $statusClasses = [
             </div>
             <div class="card-body pt-0">
                 <div class="table-responsive">
-
                     <table class="table text-sm">
                         <thead>
                             <tr>
                                 <th scope="col">Issue Id</th>
                                 <th scope="col">Schedule Id</th>
                                 <th scope="col">Issue Type</th>
+                                <th scope="col">Status</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <?php if (count($issues_report) > 0): ?>
+                            <tbody>
+                                <?php foreach ($issues_report as $i): ?>
+                                    <tr>
+                                        <th scope="row"><?= $i['issue_id'] ?></th>
+                                        <td><?= $i['schedule_id'] ?></td>
+                                        <td><?= $i['issue_type'] ?></td>
+                                        <td class="text-sm"><span class="badge badge-pill badge-<?= $statusIssueClasses[$i['status']] ?>"><?= $i['status'] ?></span></td>
+                                        <td>
+                                            <div class="dropdown dropdown-inline">
+                                                <a href="javascript:;" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" data-toggle="dropdown">
+                                                    <span class="svg-icon svg-icon-md">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                                <rect x="0" y="0" width="24" height="24" />
+                                                                <path d="M5,8.6862915 L5,5 L8.6862915,5 L11.5857864,2.10050506 L14.4852814,5 L19,5 L19,9.51471863 L21.4852814,12 L19,14.4852814 L19,19 L14.4852814,19 L11.5857864,21.8994949 L8.6862915,19 L5,19 L5,15.3137085 L1.6862915,12 L5,8.6862915 Z M12,15 C13.6568542,15 15,13.6568542 15,12 C15,10.3431458 13.6568542,9 12,9 C10.3431458,9 9,10.3431458 9,12 C9,13.6568542 10.3431458,15 12,15 Z" fill="#000000" />
+                                                            </g>
+                                                        </svg>
+                                                    </span>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+                                                    <ul class="navi flex-column navi-hover py-2">
+                                                        <li class="navi-header font-weight-bolder text-uppercase font-size-xs text-primary pb-2">
+                                                            Choose an action:
+                                                        </li>
+                                                        <li class="navi-item cursor-pointer">
+                                                            <a
+                                                                class="navi-link btn-detail3"
+                                                                data-id="<?= $i['issue_id'] ?>"
+                                                                data-schedule="<?= $i['schedule_id'] ?>"
+                                                                data-reported="<?= $i['reported_by'] ?>"
+                                                                data-type="<?= $i['issue_type'] ?>"
+                                                                data-desc="<?= $i['description'] ?>"
+                                                                data-date="<?= $i['created_at'] ?>"
+                                                                data-status="<?= $i['status'] ?>"
+                                                                data-state="<?= $statusIssueClasses[$i['status']] ?>">
 
-                            <?php foreach ($issues_report as $i): ?>
-                                <tr>
-                                    <th scope="row"><?= $i['issue_id'] ?></th>
-                                    <td><?= $i['schedule_id'] ?></td>
-                                    <td><?= $i['issue_type'] ?></span></td>
-                                    <td>
-                                        <div class="dropdown dropdown-inline">
-                                            <a href="javascript:;" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" data-toggle="dropdown">
-                                                <span class="svg-icon svg-icon-md">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-                                                        <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                                            <rect x="0" y="0" width="24" height="24" />
-                                                            <path d="M5,8.6862915 L5,5 L8.6862915,5 L11.5857864,2.10050506 L14.4852814,5 L19,5 L19,9.51471863 L21.4852814,12 L19,14.4852814 L19,19 L14.4852814,19 L11.5857864,21.8994949 L8.6862915,19 L5,19 L5,15.3137085 L1.6862915,12 L5,8.6862915 Z M12,15 C13.6568542,15 15,13.6568542 15,12 C15,10.3431458 13.6568542,9 12,9 C10.3431458,9 9,10.3431458 9,12 C9,13.6568542 10.3431458,15 12,15 Z" fill="#000000" />
-                                                        </g>
-                                                    </svg>
-                                                </span>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                                <ul class="navi flex-column navi-hover py-2">
-                                                    <li class="navi-header font-weight-bolder text-uppercase font-size-xs text-primary pb-2">
-                                                        Choose an action:
-                                                    </li>
-                                                    <li class="navi-item cursor-pointer">
-                                                        <a class="navi-link" href="<?= BASE_URL ?>pages/schedule/issue_report.php?id=<?= $i['schedule_id'] ?>">
-                                                            <span class="navi-icon "><i class="flaticon2-warning text-warning"></i></span>
-                                                            <span class="navi-text">Task Issue Report</span>
-                                                        </a>
-                                                    </li>
-                                                    <li class="navi-item cursor-pointer">
-                                                        <a
-                                                            class="navi-link btn-detail3"
-                                                            data-id="<?= $i['issue_id'] ?>"
-                                                            data-schedule="<?= $i['schedule_id'] ?>"
-                                                            data-reported="<?= $i['reported_by'] ?>"
-                                                            data-type="<?= $i['issue_type'] ?>"
-                                                            data-desc="<?= $i['description'] ?>"
-                                                            data-date="<?= $i['created_at'] ?>">
-
-                                                            <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>
-                                                            <span class="navi-text">Detail</span>
-                                                        </a>
-                                                    </li>
-                                                </ul>
+                                                                <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>
+                                                                <span class="navi-text">Detail</span>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        <?php else: ?>
+                            <tr>
+                                <td class="text-center text-muted text-weight-bold" colspan="4">Tidak ada Issue Report</td>
+                            </tr>
+                        <?php endif; ?>
                     </table>
                 </div>
             </div>
@@ -326,52 +337,24 @@ $statusClasses = [
         </div>
     </div>
 </div>
-<!-- modal detail issue report-->
-<div class=" modal fade" id="detailModalIssue" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-        <div class="modal-content shadow-lg border-0 rounded-lg">
-            <div class="modal-header">
-                <h4 class="modal-title"><i class="la la-info-circle text-info"></i> Detail issue report</h4>
-                <button type="button" class="close text-danger" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Issue ID</div>
-                    <div class="col-8" id="detail_id"></div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Schedule ID</div>
-                    <div class="col-8" id="detail_schedule"></div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Reported</div>
-                    <div class="col-8" id="detail_reported"></div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Issue Type</div>
-                    <div class="col-8" id="detail_type"></div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Crated At</div>
-                    <div class="col-8">
-                        <div id="detail_date"></div>
-                    </div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Description</div>
-                    <div class="col-8" id="detail_desc"></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" data-dismiss="modal">
-                    <i class="la la-times"></i> Tutup
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<?php if (!empty($_SESSION['info'])): ?>
+    <script>
+        Swal.fire({
+            icon: "info",
+            title: "Oops! Schedule ini sudah dilaporkan.",
+            text: '<?= $_SESSION['info'] ?>',
+            confirmButtonText: 'Oke',
+            customClass: {
+                confirmButton: "btn font-weight-bold btn-outline-warning",
+                icon: 'm-auto'
+            }
+
+        });
+    </script>
+<?php unset($_SESSION['info']);
+endif; ?>
 <?php if (!empty($_SESSION['error'])): ?>
     <script>
         Swal.fire({

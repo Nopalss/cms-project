@@ -7,6 +7,7 @@ require __DIR__ . '/../../includes/aside.php';
 require __DIR__ . '/../../includes/navbar.php';
 try {
     $id = $_GET['id'];
+    $issue_id = isset($_GET['issueId']) ? $_GET['issueId'] : null;
     $sql = "SELECT * FROM schedules WHERE schedule_id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':id', $id, PDO::PARAM_STR);
@@ -18,7 +19,7 @@ try {
     $technicians = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $job = ["Instalasi", "Maintenance", "Perbaikan"];
-    $status = ['Pending', 'On Progress', 'Rescheduled', 'Cancelled', 'Done'];
+    $status = ['Pending', 'Rescheduled', 'Cancelled', 'Done'];
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -46,12 +47,13 @@ try {
                                 <div class="input-group">
                                     <input type="text" class="form-control" value="<?= $row['schedule_id'] ?>" disabled="disabled" />
                                     <input type="hidden" name="schedule_id" value="<?= $row['schedule_id'] ?>" />
+                                    <input type="hidden" name="issue_id" value="<?= $issue_id ?>" />
                                 </div>
                             </div>
                         </div>
                         <div class="form-group">
                             <label>Teknisi</label>
-                            <select class="form-control selectpicker" required name="tech_id" data-size=" 7" data-live-search="true">
+                            <select class="form-control selectpicker" required name="tech_id" id="tech_id" data-size=" 7" data-live-search="true">
                                 <option value="">Select</option>
                                 <?php foreach ($technicians as $t): ?>
                                     <?php $selected = ($t['tech_id'] == $row['tech_id']) ? 'selected' : ''; ?>
@@ -60,18 +62,11 @@ try {
                             </select>
                         </div>
                         <div class="form-group">
-                            <label class="text-right">Tanggal</label>
-                            <div>
-                                <div class="input-group date">
-                                    <?php
-                                    $dateObj = DateTime::createFromFormat('Y-m-d', $row['date']);
-                                    $date    = $dateObj ? $dateObj->format('m/d/Y') : null;
-                                    ?>
-                                    <input type="text" class="form-control" required name="date" readonly value="<?= $date ?>" id="kt_datepicker_3" />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">
-                                            <i class="la la-calendar"></i>
-                                        </span>
+                            <div class="form-group">
+                                <label class="text-right">Tanggal</label>
+                                <div>
+                                    <div class="input-group date">
+                                        <input type="date" class="form-control" required name="date" id="date" value=<?= $row['date'] ?> min="<?= date('Y-m-d') ?>" />
                                     </div>
                                 </div>
                             </div>
@@ -79,14 +74,9 @@ try {
                         <div class="form-group">
                             <label class="">Jam</label>
                             <div>
-                                <div class="input-group timepicker">
-                                    <input class="form-control" id="kt_timepicker_2" required name="time" value="<?= $row['time'] ?>" type="text" />
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">
-                                            <i class="la la-clock-o"></i>
-                                        </span>
-                                    </div>
-                                </div>
+
+                                <select class="form-control selectpicker" required name="time" data-size="7" id="time">
+                                </select>
                             </div>
                         </div>
                         <div class="form-group">

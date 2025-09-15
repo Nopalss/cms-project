@@ -17,7 +17,7 @@ if (isset($_POST['submit'])) {
     echo var_dump($karyawan_id);
     // Pastikan semua data terisi
     if (!$schedule_id || !$karyawan_id || !$issue_type || !$description) {
-        $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagu.";
+        $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi.";
         header("Location: " . BASE_URL . "pages/schedule/");
         exit;
     }
@@ -40,7 +40,6 @@ if (isset($_POST['submit'])) {
         header("Location: " . BASE_URL . "pages/schedule/");
         exit;
     } catch (PDOException $e) {
-        echo $e;
         $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi";
         header("Location: " . BASE_URL . "pages/schedule/");
         exit;
