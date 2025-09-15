@@ -228,6 +228,9 @@ endif; ?>
 <?php if ($_SESSION['menu'] == "ikr"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/ikr.js"></script>
 <?php endif; ?>
+<?php if ($_SESSION['menu'] == "registrasi"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/registrasi.js"></script>
+<?php endif; ?>
 
 <script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-timepicker.js"></script>
 <!--end::Page Scripts-->
@@ -284,6 +287,23 @@ endif; ?>
         }).then((result) => {
             if (result.isConfirmed) {
                 window.location.href = HOST_URL + "controllers/schedules/delete.php?id=" + scheduleId;
+            }
+        });
+    }
+
+    function confirmDeleteRegistrasi(registrasiId) {
+        Swal.fire({
+            title: 'Yakin mau hapus?',
+            text: "Data Registrasi akan dihapus permanen!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = HOST_URL + "controllers/registrasi/delete.php?id=" + registrasiId;
             }
         });
     }
@@ -377,6 +397,40 @@ endif; ?>
         $("#detail_desc").text($(this).data("desc"));
         $("#detailModalIssue").modal("show");
     });
+
+    $(document).on("click", ".btn-detail-registrasi", function() {
+        $("#detail_registrasiId").text($(this).data("id"));
+        $("#detail_name").text($(this).data("name"));
+        $("#detail_location").text($(this).data("location"));
+        $("#detail_phone").text($(this).data("phone"));
+        $("#detail_paketInternet").text($(this).data("paket") + ' mbps');
+        const color = {
+            "Verified": 'success',
+            "Unverified": 'danger'
+        }
+        $("#detail_isVerified").text($(this).data("verified")).addClass(`badge badge-pill text-weight-bold badge-${color[$(this).data("verified")]}`);
+        const datetime = $(this).data("schedule");
+        const date = new Date(datetime.replace(" ", "T"));
+
+        // Bagian tanggal → pakai locale Indonesia
+        const tanggal = date.toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+
+        // Bagian jam → pakai locale Inggris (pemisah :)
+        const waktu = date.toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+        $("#detail_requestSchedule").text(`${tanggal}`);
+        $("#detail_requestJam").text(`${waktu}`);
+
+        $("#detailModalRegistrasi").modal("show");
+    });
+
     $(".btn-detail4").on("click", function() {
         console.log("halo");
         $("#detail_id_issue").text($(this).data("issue-id"));

@@ -1,5 +1,6 @@
 <?php
-require __DIR__ . "/controllers/LoginController.php";
+require_once __DIR__ . '/includes/config.php';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,7 +52,7 @@ require __DIR__ . "/controllers/LoginController.php";
                         <h3>Halo, Selamat Datang di Jabbar23!</h3>
                         <p class="text-muted font-weight-bold">Registrasi User</p>
                     </div>
-                    <form method="post" class="form" action="<?= BASE_URL ?>controllers/registrasiController.php">
+                    <form method="post" class="form" action="<?= BASE_URL ?>controllers/registrasi/registrasiController.php">
                         <div class="card-body">
                             <div class="form-group">
                                 <label for="name">Name</label>
@@ -84,6 +85,9 @@ require __DIR__ . "/controllers/LoginController.php";
                             </div>
                         </div>
                         <div class="card-footer text-right">
+                            <?php if (isset($_SESSION['username'])): ?>
+                                <a href="<?= BASE_URL ?>pages/registrasi/" class="btn btn-light-success font-weight-bold">Kembali</a>
+                            <?php endif; ?>
                             <button type="reset" class="btn btn-light-danger font-weight-bold">Reset</button>
                             <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Registrasi</button>
                         </div>

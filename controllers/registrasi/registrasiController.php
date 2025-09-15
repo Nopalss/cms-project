@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../../includes/config.php';
 
 if (isset($_POST['submit'])) {
     date_default_timezone_set('Asia/Jakarta');
