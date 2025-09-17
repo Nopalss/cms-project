@@ -2,6 +2,12 @@
 require_once __DIR__ . '/config.php';
 
 session_unset();
-$_SESSION['success'] = "Anda telah berhasil logout.";
+$_SESSION['alert'] = [
+    'icon' => 'success',
+    'title' => 'Logout Berhasil',
+    'text' => 'Anda telah keluar dari sistem. Silakan login kembali jika ingin mengakses aplikasi.',
+    'button' => "Oke",
+    'style' => "success"
+];
 header("Location: " . BASE_URL);
 exit;

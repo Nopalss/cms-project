@@ -37,7 +37,13 @@ if (isset($_POST['submit'])) {
 
     // Pastikan semua data terisi
     if (!$name || !$phone || !$paket_internet || !$request_schedule || !$location || !validatePhone($phone)) {
-        $_SESSION['error'] = "Pendaftaran gagal. Pastikan semua data sudah diisi dengan benar";
+        $_SESSION['alert'] = [
+            'icon' => 'danger',
+            'title' => 'Oops! Ada yang Salah',
+            'text' => 'Pendaftaran gagal. Pastikan semua data sudah diisi dengan benar.',
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
         header("Location: " . BASE_URL . "registration.php");
         exit;
     }
@@ -58,17 +64,35 @@ if (isset($_POST['submit'])) {
             ':request_schedule' => $request_schedule,
             ':location' => $location
         ]);
-        $_SESSION['success'] = "Pendaftaran sukses. Tim kami akan segera menghubungi Anda.";
+        $_SESSION['alert'] = [
+            'icon' => 'success',
+            'title' => 'Selamat!',
+            'text' => 'Pendaftaran sukses. Tim kami akan segera menghubungi Anda',
+            'button' => "Oke",
+            'style' => "success"
+        ];
         header("Location: " . BASE_URL . "registration.php");
         exit;
     } catch (PDOException $e) {
         // echo $e;
-        $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi";
+        $_SESSION['alert'] = [
+            'icon' => 'danger',
+            'title' => 'Oops! Ada yang Salah',
+            'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
         header("Location: " . BASE_URL . "registration.php");
         exit;
     }
 } else {
-    $_SESSION['error'] = "Gagal melakukan registrasi, silakan coba lagi";
+    $_SESSION['alert'] = [
+        'icon' => 'danger',
+        'title' => 'Oops! Ada yang Salah',
+        'text' => 'Gagal melakukan registrasi, silakan coba lagi',
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
     header("Location: " . BASE_URL . "registration.php");
     exit;
 }

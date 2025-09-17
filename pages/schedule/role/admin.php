@@ -293,38 +293,3 @@ $issues_report = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-<?php if (!empty($_SESSION['success'])): ?>
-    <script>
-        Swal.fire({
-            icon: "success",
-            title: "Data Berhasil Di Update",
-            text: '<?= $_SESSION['success'] ?>',
-            confirmButtonText: 'Go!',
-            customClass: {
-                title: 'text-success',
-                confirmButton: "btn font-weight-bold btn-outline-success",
-                icon: 'm-auto'
-            }
-        });
-    </script>
-<?php unset($_SESSION['success']);
-endif; ?>
-
-<?php if (!empty($_SESSION['error'])): ?>
-    <script>
-        Swal.fire({
-            icon: "error",
-            title: "Oops! Ada error saat menyimpan data.",
-            text: '<?= $_SESSION['error'] ?>',
-            confirmButtonText: 'Coba Lagi',
-            customClass: {
-                title: 'text-danger',
-                confirmButton: "btn font-weight-bold btn-outline-danger",
-                icon: 'm-auto'
-            }
-
-        });
-    </script>
-<?php unset($_SESSION['error']);
-endif; ?>

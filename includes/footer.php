@@ -133,24 +133,23 @@ require_once __DIR__ . '/config.php';
 <script>
     var HOST_URL = "<?= BASE_URL ?>";
 </script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-<?php if (!empty($_SESSION['success'])): ?>
+<?php if (isset($_SESSION['alert'])): ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         Swal.fire({
-            icon: "success",
-            title: "Login Berhasil",
-            text: '<?= $_SESSION['success'] ?>',
-            confirmButtonText: 'Go!',
+            icon: "<?= $_SESSION['alert']['icon'] ?>",
+            title: "<?= $_SESSION['alert']['title'] ?>",
+            text: "<?= $_SESSION['alert']['text'] ?>",
+            confirmButtonText: "<?= $_SESSION['alert']['button'] ?> ",
             customClass: {
-                title: 'text-success',
-                confirmButton: "btn font-weight-bold btn-outline-success",
-                icon: 'm-auto'
+                confirmButton: "btn font-weight-bold btn-<?= $_SESSION['alert']['style'] ?>",
+                icon: "m-auto"
             }
-
         });
     </script>
-<?php unset($_SESSION['success']);
-endif; ?>
+    <?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
+
 <!--begin::Global Config(global config for global JS scripts)-->
 <script>
     var KTAppSettings = {
@@ -231,12 +230,192 @@ endif; ?>
 <?php if ($_SESSION['menu'] == "registrasi"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/registrasi.js"></script>
 <?php endif; ?>
+<?php if ($_SESSION['menu'] == "request ikr"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/request_ikr.js"></script>
+<?php endif; ?>
 
 <script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-timepicker.js"></script>
 <!--end::Page Scripts-->
 <!--begin::Page Scripts(used by this page)-->
 <script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-datepicker.js"></script>
 <script>
+    // registrasi
+    $(document).on("click", ".btn-detail-registrasi", function() {
+        $("#detail_registrasiId").text($(this).data("id"));
+        $("#detail_name").text($(this).data("name"));
+        $("#detail_location").text($(this).data("location"));
+        $("#detail_phone").text($(this).data("phone"));
+        $("#detail_paketInternet").text($(this).data("paket") + ' mbps');
+        const color = {
+            "Verified": 'success',
+            "Unverified": 'danger'
+        }
+        $("#detail_isVerified").text($(this).data("verified")).addClass(`badge badge-pill text-weight-bold badge-${color[$(this).data("verified")]}`);
+        const datetime = $(this).data("schedule");
+        const date = new Date(datetime.replace(" ", "T"));
+
+        // Bagian tanggal → pakai locale Indonesia
+        const tanggal = date.toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+
+        // Bagian jam → pakai locale Inggris (pemisah :)
+        const waktu = date.toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+        $("#detail_requestSchedule").text(`${tanggal}`);
+        $("#detail_requestJam").text(`${waktu}`);
+
+        $("#detailModalRegistrasi").modal("show");
+    });
+
+    function confirmDeleteRegistrasi(registrasiId) {
+        Swal.fire({
+            title: 'Yakin mau hapus?',
+            text: "Data Registrasi akan dihapus permanen!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = HOST_URL + "controllers/registrasi/delete.php?id=" + registrasiId;
+            }
+        });
+    }
+
+
+    // request ikr
+    $(document).ready(function() {
+
+        $('#registrasi_id').on('change', function() {
+            let id = $(this).val();
+            if (id) {
+                $.ajax({
+                    url: '<?= BASE_URL ?>api/get_register.php',
+                    type: 'GET',
+                    data: {
+                        id: id
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (Object.keys(data).length > 0) {
+                            $('#name').val(data.name);
+                            $('#registrasi_id2').val(data.registrasi_id);
+                            $('#phone').val(data.phone);
+                            $('#paket_internet').val(data.paket_internet).selectpicker('refresh');;
+                            $('#is_verified').val(data.is_verified).selectpicker('refresh');;
+                            $('#location').val(data.location);
+                            let schedule = data.request_schedule ? data.request_schedule.replace(' ', 'T').substring(0, 16) : '';
+                            $('#request_schedule').val(schedule);
+                            $('#jadwal_pemasangan').val(schedule);
+                        } else {
+                            // reset kalau tidak ada
+                            $('#name, #phone, #paket_internet, #location, #request_schedule').val('');
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("AJAX Error: " + status + " - " + error);
+                    }
+                });
+            } else {
+                $('#name, #phone, #paket_internet, #location, #request_schedule').val('');
+            }
+        });
+        $('#jadwal_pemasangan, #request_schedule').on('change', function() {
+            let date = $(this).val();
+            $('#request_schedule').val(date);
+            $('#jadwal_pemasangan').val(date);
+        })
+    });
+    // modal detail rikr
+    $(document).on("click", ".btn-detail-rikr", function() {
+        $("#detail_rikrId").text($(this).data("rikr-id"));
+        $("#detail_netpayId").text($(this).data("netpay-id"));
+        $("#detail_registrasiId").text($(this).data("registrasi-id"));
+        $("#detail_status").text($(this).data("status")).addClass(`font-weight-bold text-${$(this).data("state")}`);
+
+
+        const datetime = $(this).data("jadwal");
+        const date = new Date(datetime.replace(" ", "T"));
+
+        // Tanggal → format Indonesia
+        const tanggal = date.toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+
+        // Jam → format 24 jam dengan pemisah :
+        const waktu = date.toLocaleTimeString("en-GB", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+
+        $("#detail_jadwal").text(tanggal);
+        $("#detail_jam").text(`${waktu} WIB`);
+        $("#detail_catatan").text($(this).data("catatan"));
+        $("#detail_requestBy").text($(this).data("request-by"));
+        console.log($(this).data());
+        $("#detailModalRIKR").modal("show");
+    });
+
+    // pesan untuk menambahkan rikr
+    function updateUnverifiedCount() {
+        $.ajax({
+            url: "<?= BASE_URL ?>api/get_unverified_register.php",
+            method: "GET",
+            dataType: "json",
+            success: function(result) {
+                if (result.status === "success") {
+                    if (result.total > 0) {
+                        $("#unverifiedCount")
+                            .text(result.total)
+                            .show();
+                    } else {
+                        $("#unverifiedCount").hide();
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", error);
+            }
+        });
+    }
+
+    // load pertama kali
+    updateUnverifiedCount();
+
+    // ulangi tiap 10 detik
+    setInterval(updateUnverifiedCount, 10000);
+
+
+    function confirmDeleteRIKR(rikrId) {
+        Swal.fire({
+            title: 'Yakin mau hapus?',
+            text: "Data akan dihapus permanen!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = HOST_URL + "controllers/request/ikr/delete.php?id=" + rikrId;
+            }
+        });
+    }
+
+
+
     // get tanggal 
     $("#date, #tech_id").on("change", getJadwalTeknisi);
     $(document).ready(function() {
@@ -291,22 +470,6 @@ endif; ?>
         });
     }
 
-    function confirmDeleteRegistrasi(registrasiId) {
-        Swal.fire({
-            title: 'Yakin mau hapus?',
-            text: "Data Registrasi akan dihapus permanen!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = HOST_URL + "controllers/registrasi/delete.php?id=" + registrasiId;
-            }
-        });
-    }
 
     function confirmApproved(issueId, scheduleId) {
         console.log(Swal.version)
@@ -398,38 +561,8 @@ endif; ?>
         $("#detailModalIssue").modal("show");
     });
 
-    $(document).on("click", ".btn-detail-registrasi", function() {
-        $("#detail_registrasiId").text($(this).data("id"));
-        $("#detail_name").text($(this).data("name"));
-        $("#detail_location").text($(this).data("location"));
-        $("#detail_phone").text($(this).data("phone"));
-        $("#detail_paketInternet").text($(this).data("paket") + ' mbps');
-        const color = {
-            "Verified": 'success',
-            "Unverified": 'danger'
-        }
-        $("#detail_isVerified").text($(this).data("verified")).addClass(`badge badge-pill text-weight-bold badge-${color[$(this).data("verified")]}`);
-        const datetime = $(this).data("schedule");
-        const date = new Date(datetime.replace(" ", "T"));
 
-        // Bagian tanggal → pakai locale Indonesia
-        const tanggal = date.toLocaleDateString("id-ID", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric"
-        });
 
-        // Bagian jam → pakai locale Inggris (pemisah :)
-        const waktu = date.toLocaleTimeString("en-GB", {
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-        $("#detail_requestSchedule").text(`${tanggal}`);
-        $("#detail_requestJam").text(`${waktu}`);
-
-        $("#detailModalRegistrasi").modal("show");
-    });
 
     $(".btn-detail4").on("click", function() {
         console.log("halo");

@@ -95,42 +95,24 @@ require_once __DIR__ . '/includes/config.php';
                 </div>
             </div>
             <!-- sweetalert -->
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-            <?php if (!empty($_SESSION['success'])): ?>
+            <?php if (isset($_SESSION['alert'])): ?>
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
                 <script>
                     Swal.fire({
-                        icon: "success",
-                        title: "Registrasi Berhasil Berhasil",
-                        text: '<?= $_SESSION['success'] ?>',
-                        confirmButtonText: 'Go!',
+                        icon: "<?= $_SESSION['alert']['icon'] ?>",
+                        title: "<?= $_SESSION['alert']['title'] ?>",
+                        text: "<?= $_SESSION['alert']['text'] ?>",
+                        confirmButtonText: "<?= $_SESSION['alert']['button'] ?>",
                         customClass: {
-                            title: 'text-success',
-                            confirmButton: "btn font-weight-bold btn-outline-success",
-                            icon: 'm-auto'
+                            confirmButton: "btn font-weight-bold btn-<?= $_SESSION['alert']['style'] ?>",
+                            icon: "m-auto"
                         }
-
                     });
                 </script>
-            <?php unset($_SESSION['success']);
-            endif; ?>
-            <?php if (!empty($_SESSION['error'])): ?>
-                <script>
-                    Swal.fire({
-                        icon: "error",
-                        title: "Registrasi Gagal",
-                        text: '<?= $_SESSION['error'] ?>',
-                        confirmButtonText: 'Coba Lagi',
-                        customClass: {
-                            title: 'text-danger',
-                            confirmButton: "btn font-weight-bold btn-outline-danger",
-                            icon: 'm-auto'
-                        }
+                <?php unset($_SESSION['alert']); ?>
+            <?php endif; ?>
 
-                    });
-                </script>
-            <?php unset($_SESSION['error']);
-            endif; ?>
+
         </div>
         <!--end::Login-->
     </div>

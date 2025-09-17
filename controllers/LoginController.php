@@ -36,7 +36,14 @@ if (isset($_POST['login'])) {
                 $_SESSION['name']  = $karyawan['name'];
                 $_SESSION['username'] = $user['username'];
                 $_SESSION['role']     = $user['role'];
-                $_SESSION['success']  = "Login berhasil! Selamat datang, {$user['username']}";
+                $_SESSION['alert'] = [
+                    'icon' => 'success',
+                    'title' => 'Login Berhasil',
+                    'text' => 'Selamat datang kembali!',
+                    'button' => "Masuk",
+                    'style' => "success"
+                ];
+
                 if ($user['role'] == 'admin') {
                     header("Location: " . BASE_URL . "pages/dashboard.php");
                     exit;
@@ -44,17 +51,33 @@ if (isset($_POST['login'])) {
                 header("Location: " . BASE_URL . "pages/schedule/");
                 exit;
             } else {
-                $_SESSION['error'] = "Username atau password salah";
-                header("Location: " . BASE_URL);
-                exit;
+                $_SESSION['alert'] = [
+                    'icon' => 'error',
+                    'title' => 'Login Gagal',
+                    'text' => 'Username atau password salah!',
+                    'button' => "Coba Lagi",
+                    'style' => "danger"
+                ];
             }
         } catch (PDOException $e) {
-            $_SESSION['error'] = "Terjadi kesalahan pada server: " . $e->getMessage();
+            $_SESSION['alert'] = [
+                'icon' => 'warning', // bisa 'error' juga
+                'title' => 'Terjadi Kesalahan',
+                'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+                'button' => "Coba Lagi",
+                'style' => "danger"
+            ];
             header("Location: " . BASE_URL);
             exit;
         }
     } else {
-        $_SESSION['error'] = "Username atau password harus diisi";
+        $_SESSION['alert'] = [
+            'icon' => 'warning', // bisa 'error' juga
+            'title' => 'Username atau password harus diisi',
+            'text' => 'Silakan coba lagi',
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
         header("Location: " . BASE_URL);
         exit;
     }

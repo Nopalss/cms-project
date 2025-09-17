@@ -355,38 +355,3 @@ $statusClasses = [
     </script>
 <?php unset($_SESSION['info']);
 endif; ?>
-<?php if (!empty($_SESSION['error'])): ?>
-    <script>
-        Swal.fire({
-            icon: "error",
-            title: "Oops! Ada error saat menyimpan data.",
-            text: '<?= $_SESSION['error'] ?>',
-            confirmButtonText: 'Coba Lagi',
-            customClass: {
-                title: 'text-danger',
-                confirmButton: "btn font-weight-bold btn-outline-danger",
-                icon: 'm-auto'
-            }
-
-        });
-    </script>
-<?php unset($_SESSION['error']);
-endif; ?>
-
-<?php if (!empty($_SESSION['success'])): ?>
-    <script>
-        Swal.fire({
-            icon: "success",
-            title: "Selamat! Proses Berhasil",
-            text: '<?= $_SESSION['success'] ?>',
-            confirmButtonText: 'Done!',
-            customClass: {
-                title: 'text-success',
-                confirmButton: "btn font-weight-bold btn-outline-success",
-                icon: 'm-auto'
-            }
-
-        });
-    </script>
-<?php unset($_SESSION['success']);
-endif; ?>
