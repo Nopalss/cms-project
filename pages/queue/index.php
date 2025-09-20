@@ -57,6 +57,10 @@ require __DIR__ . '/../../includes/navbar.php';
                         </h3>
                     </div>
                     <div class="card-toolbar">
+                        <button type="button" class="btn btn-light-success font-weight-bolder" id="btn-issues" data-toggle="modal" data-target="#exampleModalScrollable">
+                            <i class="flaticon2-warning"></i>Schedule Now
+                            <small id="scheduleNow" class="ml-3 label label-danger mr-2" style="display:none;"></small>
+                        </button>
                         <!--begin::Dropdown-->
                         <div class="dropdown dropdown-inline mr-2">
 
@@ -172,6 +176,66 @@ require __DIR__ . '/../../includes/navbar.php';
         <!-- end::Container -->
     </div>
     <!-- end::entry -->
+
+    <!-- Modal issues report -->
+    <div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Schedule Now</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i aria-hidden="true" class="ki ki-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body" style="height: 300px;">
+                    <ul class="nav nav-light-success nav-bold nav-pills">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" href="#kt_tab_pane_4_1">
+                                <span class="nav-icon"><i class="flaticon2-chat-1"></i></span>
+                                <span class="nav-text">Instalasi</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#kt_tab_pane_4_2">
+                                <span class="nav-icon"><i class="flaticon2-drop"></i></span>
+                                <span class="nav-text">Maintenance</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#kt_tab_pane_4_3">
+                                <span class="nav-icon"><i class="flaticon2-drop"></i></span>
+                                <span class="nav-text">Dismantle</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="table-responsive-xl">
+                        <table class="table text-sm">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Queue ID</th>
+                                    <th scope="col">Type Queue</th>
+                                    <th scope="col">Request ID</th>
+                                    <th scope="col">Status</th>
+                                    <th scope="col">Created At</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <div class="tab-pane fade show active" id="kt_tab_pane_4_1" role="tabpanel" aria-labelledby="kt_tab_pane_4_1">
+                                <tbody id="table-scheduleNow">
+                                </tbody>
+                            </div>
+                            <div class="tab-pane fade" id="kt_tab_pane_4_2" role="tabpanel" aria-labelledby="kt_tab_pane_4_2">
+                                <tbody id="table-scheduleNow">
+                                </tbody>
+                            </div>
+
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <?php

@@ -397,6 +397,7 @@ require_once __DIR__ . '/config.php';
     // ulangi tiap 10 detik
     setInterval(updateUnverifiedCount, 10000);
 
+
     // deledet rikr
     function confirmDeleteRIKR(rikrId) {
         Swal.fire({
@@ -416,6 +417,68 @@ require_once __DIR__ . '/config.php';
     }
 
     // Schedule
+    // count scheduleNow
+    function scheduleNowCount() {
+        $.ajax({
+            url: "<?= BASE_URL ?>api/get_scheduleNow_count.php",
+            method: "GET",
+            dataType: "json",
+            success: function(result) {
+                if (result.status === "success") {
+                    if (result.total > 0) {
+                        $("#scheduleNow")
+                            .text(result.total)
+                            .show();
+                    } else {
+                        $("#scheduleNow").hide();
+                    }
+                    if (result.data && result.data.length > 0) {
+                        const groupedByJobType = result.data.reduce((acc, item) => {
+                            // cek apakah key dengan nama job_type sudah ada
+                            if (!acc[item.job_type]) {
+                                acc[item.job_type] = [];
+                            }
+
+                            // masukkan item ke array sesuai job_type
+                            acc[item.job_type].push(item);
+
+                            return acc;
+                        }, {});
+                        $("#table-scheduleNow").empty();
+                        result.data.forEach((data) => {
+                            console.log(data)
+                            $("#table-scheduleNow").append(`
+                                 <tr>
+                                    <td class="align-middle text-center">${data.queue_id}</td>
+                                    <td class="align-middle text-center">${data.type_queue}</td>
+                                    <td class="align-middle text-center">${data.request_id}</td>
+                                    <td class="align-middle text-center"><span class="badge badge-pill badge-info">${data.status}</span></td>
+                                    <td class="align-middle text-center">${data.created_at}</td>
+                                    <td class="align-middle text-center">
+                                        <form action="${HOST_URL}pages/schedule/create.php" method="post">
+                                        <span>
+                                            <button type="submit" name="id" class="btn btn-primary  border-0 btn-detail-rikr" value="${data.queue_id}">
+                                            <span class="navi-icon"><i class="flaticon-calendar-with-a-clock-time-tools"></i></span>
+                                            <span class="navi-text">Schedule Now</span>
+                                            </button>
+                                        </span>
+                                        </form>
+                                    </td>
+                                </tr>
+                            `)
+                        })
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error:", error);
+            }
+        });
+    }
+    // load pertama kali
+    scheduleNowCount();
+    setInterval(scheduleNowCount, 10000);
+
     // get tanggal 
     $("#date, #tech_id").on("change", getJadwalTeknisi);
     $(document).ready(function() {
