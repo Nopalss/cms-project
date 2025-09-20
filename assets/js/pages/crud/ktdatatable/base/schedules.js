@@ -46,6 +46,9 @@ var KTDatatableLocalSortDemo = function () {
                 field: 'schedule_id',
                 title: 'Schedule Id',
             }, {
+                field: 'netpay_id',
+                title: 'Netpay ID',
+            }, {
                 field: 'technician_name',
                 title: 'Teknisi',
             }, {
@@ -154,7 +157,7 @@ var KTDatatableLocalSortDemo = function () {
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a class="navi-link btn-detail" data-id="${row.schedule_id}" data-tech="${row.technician_name}" data-date="${row.date}" data-job="${row.job_type}" data-state="${status[row.status].state}" data-status="${row.status}" data-location="${row.location}">\
+                                        <a class="navi-link btn-detail" data-id="${row.schedule_id}" data-netpay="${row.netpay_id}" data-tech="${row.technician_name}" data-date="${row.date}" data-job="${row.job_type}" data-state="${status[row.status].state}" data-status="${row.status}" data-location="${row.location}">\
                                             <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>\
                                             <span class="navi-text">Detail</span>\
                                         </a>\

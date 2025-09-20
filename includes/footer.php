@@ -220,6 +220,7 @@ require_once __DIR__ . '/config.php';
 <!--end::Global Theme Bundle-->
 <?php if ($_SESSION['menu'] == "schedule"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/schedules.js"></script>
+    <script src="assets/js/pages/features/cards/tools.js"></script>
 <?php endif; ?>
 <?php if ($_SESSION['menu'] == "issue report"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/issues-report.js"></script>
@@ -232,6 +233,9 @@ require_once __DIR__ . '/config.php';
 <?php endif; ?>
 <?php if ($_SESSION['menu'] == "request ikr"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/request_ikr.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "queue"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/queue.js"></script>
 <?php endif; ?>
 
 <script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-timepicker.js"></script>
@@ -340,11 +344,8 @@ require_once __DIR__ . '/config.php';
         $("#detail_netpayId").text($(this).data("netpay-id"));
         $("#detail_registrasiId").text($(this).data("registrasi-id"));
         $("#detail_status").text($(this).data("status")).addClass(`font-weight-bold text-${$(this).data("state")}`);
-
-
         const datetime = $(this).data("jadwal");
         const date = new Date(datetime.replace(" ", "T"));
-
         // Tanggal → format Indonesia
         const tanggal = date.toLocaleDateString("id-ID", {
             weekday: "long",
@@ -367,7 +368,7 @@ require_once __DIR__ . '/config.php';
         $("#detailModalRIKR").modal("show");
     });
 
-    // pesan untuk menambahkan rikr
+    // notifikasi untuk menambahkan rikr
     function updateUnverifiedCount() {
         $.ajax({
             url: "<?= BASE_URL ?>api/get_unverified_register.php",
@@ -396,7 +397,7 @@ require_once __DIR__ . '/config.php';
     // ulangi tiap 10 detik
     setInterval(updateUnverifiedCount, 10000);
 
-
+    // deledet rikr
     function confirmDeleteRIKR(rikrId) {
         Swal.fire({
             title: 'Yakin mau hapus?',
@@ -414,8 +415,7 @@ require_once __DIR__ . '/config.php';
         });
     }
 
-
-
+    // Schedule
     // get tanggal 
     $("#date, #tech_id").on("change", getJadwalTeknisi);
     $(document).ready(function() {
@@ -436,22 +436,128 @@ require_once __DIR__ . '/config.php';
                 },
                 dataType: "json",
                 success: function(res) {
+                    // kosongkan time & timeline setiap kali request
                     $("#time").empty().append('<option value="">-- pilih Jam --</option>');
+                    $("#timeline").empty();
 
-                    if (res.length > 0) {
-                        res.forEach(function(time) {
+                    // === isi select jam ===
+                    if (res.jamKosong && res.jamKosong.length > 0) {
+                        res.jamKosong.forEach(function(time) {
                             $("#time").append(`<option value="${time}">${time}</option>`);
                         });
                     } else {
                         $("#time").append('<option value="">Tidak ada jam kosong</option>');
                     }
+
+                    // === isi timeline ===
+                    if (res.jadwal && res.jadwal.length > 0) {
+                        const badgeClasses = {
+                            'Instalasi': 'success',
+                            'Maintenance': 'warning',
+                            'dismantle': 'danger'
+                        };
+                        const statusClasses = {
+                            'Pending': "info",
+                            'On Progress': "primary",
+                            'Rescheduled': "warning",
+                            'Cancelled': "danger",
+                            'Done': "success"
+                        };
+
+                        res.jadwal.forEach((jadwal) => {
+                            const badgeClass = badgeClasses[jadwal['job_type']] || "secondary";
+                            const statusClass = statusClasses[jadwal['status']] || "dark";
+
+                            $("#timeline").append(`
+                            <div class="timeline-item align-items-start">
+                                <div class="timeline-label font-weight-bolder text-dark-75 font-size-lg">
+                                    ${jadwal.time.substr(0, 5)}
+                                </div>
+                                <!--begin::Badge-->
+                                <div class="timeline-badge">
+                                    <i class="fa fa-genderless text-${badgeClass} icon-xl"></i>
+                                </div>
+                                <!--end::Badge-->
+                                <!--begin::Text-->
+                                <div class="font-weight-mormal font-size-lg timeline-content pl-3">
+                                    <p class="mb-0 btn-detail2 cursor-pointer"
+                                        data-id="${jadwal['schedule_id']}"
+                                        data-tech="${jadwal['tech_id']}"
+                                        data-netpay="${jadwal['netpay_id']}"
+                                        data-date="${jadwal['date']}"
+                                        data-time="${jadwal['time'].substr(0, 5)}"
+                                        data-job="${jadwal['job_type']}"
+                                        data-state="${statusClass}"
+                                        data-status="${jadwal['status']}"
+                                        data-location="${jadwal['location']}">
+                                        ${jadwal['job_type']}
+                                        <a class="text-muted btn-detail font-size-sm cursor-pointer">
+                                            #${jadwal['schedule_id']}
+                                        </a>
+                                    </p>
+                                </div>
+                                <!--end::Text-->
+                            </div>
+                        `);
+                        });
+
+                    } else {
+                        $("#timeline").append(
+                            `<p class="text-center text-muted font-weight-bold">
+                            Tidak ada schedule yang terdaftar untuk hari ini
+                        </p>`
+                        );
+                    }
+
                     $('#time').selectpicker('refresh');
                 }
-            })
+            });
         }
-
     }
 
+    // modal detail schedule
+    $(document).on("click", ".btn-detail, .btn-detail2", function() {
+        $("#detail_id").text($(this).data("id"));
+        $("#detail_tech").text($(this).data("tech"));
+
+        const date = new Date($(this).data("date"));
+        const options = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
+        $("#detail_date").text(date.toLocaleDateString('id-ID', options));
+
+        $("#detail_job").text($(this).data("job"));
+        $("#detail_status")
+            .removeClass()
+            .addClass(`badge badge-pill badge-${$(this).data("state")}`)
+            .text($(this).data("status"));
+
+        $("#detail_location").text($(this).data("location"));
+        $("#detail_netpayId").text($(this).data("netpay"));
+
+        // hanya untuk btn-detail2 → kasih link report
+
+        if ($(this).hasClass("btn-detail2")) {
+            $("#detail_btn_report").attr(
+                "href", `${HOST_URL}pages/schedule/issue_report.php?id = ${$(this).data("id")}`
+            )
+            if ($(this).data("status") == "Cancelled" || $(this).data("status") == "Done") {
+                $("#detail_btn_report").addClass('d-none');
+                $("#detail_btn_done").addClass('d-none');
+            }
+            if ($(this).data("status") == "Pending" || $(this).data("status") == "Rescheduled") {
+                $("#detail_btn_report").removeClass('d-none');
+                $("#detail_btn_done").removeClass('d-none');
+            }
+            $("#detail_btn_done").attr(
+                "href", `${HOST_URL}pages/ikr/create.php?id=${$(this).data("id")}`
+            )
+        }
+        $("#detailModal").modal("show");
+    });
 
     function confirmDelete(scheduleId) {
         Swal.fire({
@@ -490,49 +596,7 @@ require_once __DIR__ . '/config.php';
             }
         });
     }
-    $(document).on("click", ".btn-detail, .btn-detail2", function() {
-        $("#detail_id").text($(this).data("id"));
-        $("#detail_tech").text($(this).data("tech"));
 
-        const date = new Date($(this).data("date"));
-        const options = {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        };
-        $("#detail_date").text(date.toLocaleDateString('id-ID', options));
-
-        $("#detail_job").text($(this).data("job"));
-        $("#detail_status")
-            .removeClass()
-            .addClass(`badge badge-pill badge-${$(this).data("state")}`)
-            .text($(this).data("status"));
-
-        $("#detail_location").text($(this).data("location"));
-
-        // hanya untuk btn-detail2 → kasih link report
-
-        if ($(this).hasClass("btn-detail2")) {
-            $("#detail_btn_report").attr(
-                "href",
-                `${HOST_URL}pages/schedule/issue_report.php?id=${$(this).data("id")}`
-            )
-            if ($(this).data("status") == "Cancelled" || $(this).data("status") == "Done") {
-                $("#detail_btn_report").addClass('d-none');
-                $("#detail_btn_done").addClass('d-none');
-            }
-            if ($(this).data("status") == "Pending" || $(this).data("status") == "Rescheduled") {
-                $("#detail_btn_report").removeClass('d-none');
-                $("#detail_btn_done").removeClass('d-none');
-            }
-            $("#detail_btn_done").attr(
-                "href",
-                `${HOST_URL}pages/ikr/create.php?id=${$(this).data("id")}`
-            )
-        }
-        $("#detailModal").modal("show");
-    });
     $(".btn-detail3").on("click", function() {
         $("#detail_idIssue").text($(this).data("id"));
         console.log($(this).data("id"))
@@ -555,8 +619,18 @@ require_once __DIR__ . '/config.php';
             hour: "2-digit",
             minute: "2-digit",
         });
-        $("#detail_dateIssue").text(`Jam ${waktu}. ${tanggal} `);
-        $("#detail_stat").text($(this).data("status")).addClass(`text-${$(this).data("state")} font-weight-bold`);
+        $("#detail_dateIssue").text(`
+                                            Jam $ {
+                                                waktu
+                                            }.$ {
+                                                tanggal
+                                            }
+                                            `);
+        $("#detail_stat").text($(this).data("status")).addClass(`
+                                            text - $ {
+                                                $(this).data("state")
+                                            }
+                                            font - weight - bold`);
         $("#detail_desc").text($(this).data("desc"));
         $("#detailModalIssue").modal("show");
     });

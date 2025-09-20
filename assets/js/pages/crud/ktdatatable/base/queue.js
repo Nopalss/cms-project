@@ -13,7 +13,7 @@ var KTDatatableLocalSortDemo = function () {
                 type: 'remote',
                 source: {
                     read: {
-                        url: HOST_URL + 'api/registrasi.php',
+                        url: HOST_URL + 'api/queue.php',
                     },
                 },
                 pageSize: 10,
@@ -43,38 +43,46 @@ var KTDatatableLocalSortDemo = function () {
             },
             // columns definition
             columns: [{
-                field: 'registrasi_id',
-                title: 'Registrasi Id',
+                field: 'queue_id',
+                title: 'Queue Id',
             }, {
-                field: 'name',
-                title: 'Name',
+                field: 'type_queue',
+                title: 'Type Queue',
             },
             {
-                field: 'paket_internet',
-                title: 'Paket',
-                template: function (row) {
-
-                    return `<span>${row.paket_internet} mbps</span>`;
-                },
-            }, {
-                field: 'is_verified',
+                field: 'request_id',
+                title: 'Request Id',
+            },
+            {
+                field: 'status',
                 title: 'Status',
                 autoHide: false,
                 // callback function support for column rendering
                 template: function (row) {
                     var status = {
-                        'Verified': {
-                            'title': 'Verified',
+                        'Accepted': {
+                            'title': 'Accepted',
                             'state': 'success'
                         },
-                        'Unverified': {
-                            'title': 'Unverified',
+                        'Rejected': {
+                            'title': 'Rejected',
                             'state': 'danger'
+                        },
+                        'Pending': {
+                            'title': 'Pending',
+                            'state': 'info'
+                        },
+                        'Not Queued': {
+                            'title': 'Not Queued',
+                            'state': 'muted'
                         },
 
                     };
-                    return '<span class="label label-' + status[row.is_verified].state + ' label-dot mr-2"></span><span class="font-weight-bold text-' + status[row.is_verified].state + '">' +
-                        status[row.is_verified].title + '</span>';
+                    var current = row.status ? row.status : 'Not Queued';
+
+                    return '<span class="label label-' + status[current].state + ' label-dot mr-2"></span>' +
+                        '<span class="font-weight-bold text-' + status[current].state + '">' +
+                        status[current].title + '</span>';
                 },
             }, {
                 field: 'Actions',
@@ -85,22 +93,23 @@ var KTDatatableLocalSortDemo = function () {
                 autoHide: false,
                 template: function (row) {
                     var status = {
+                        'Accepted': {
+                            'title': 'Accepted',
+                            'state': 'success'
+                        },
+                        'Rejected': {
+                            'title': 'Rejected',
+                            'state': 'danger'
+                        },
                         'Pending': {
                             'title': 'Pending',
                             'state': 'info'
                         },
-                        'Rescheduled': {
-                            'title': 'Rescheduled',
-                            'state': 'warning'
+                        'Not Queued': {
+                            'title': 'Not Queued',
+                            'state': 'muted'
                         },
-                        'Cancelled': {
-                            'title': 'Cancelled',
-                            'state': 'danger'
-                        },
-                        'Done': {
-                            'title': 'Done',
-                            'state': 'success'
-                        }
+
                     };
                     return `\
                         <div class="dropdown dropdown-inline">\
@@ -119,65 +128,45 @@ var KTDatatableLocalSortDemo = function () {
                                     <li class="navi-header font-weight-bolder text-uppercase font-size-xs text-primary pb-2">\
                                         Choose an action:\
                                     </li>\
-                                   ${row.is_verified === "Unverified"
+                                    ${row.status === "Pending"
                             ? `<li class="navi-item cursor-pointer">
-                                            <a href="${HOST_URL + 'pages/request/ikr/create.php?id=' + row.registrasi_id}" class="navi-link">
-                                                <span class="navi-icon"><i class="flaticon2-check-mark text-success"></i></span>
-                                                <span class="navi-text">Verified</span>
-                                            </a>
-                                        </li>
-                                        <li class="navi-item cursor-pointer">
-                                            <a href='${HOST_URL + ' pages /registrasi/update.php?id=' + row.registrasi_id}' class="navi-link">
-                                                <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>
-                                                <span class="navi-text">Edit</span>
-                                            </a>
-                                        </li >`
-                            : ""}
-<li class="navi-item cursor-pointer">\
-    <a onclick="confirmDeleteRegistrasi('${row.registrasi_id}')" class="navi-link">\
-        <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
-        <span class="navi-text">Hapus</span>\
-    </a>\
-</li>\
-<li class="navi-item cursor-pointer">\
-    <a class="navi-link btn-detail-registrasi" data-id="${row.registrasi_id}" data-name="${row.name}" data-location="${row.location}" data-phone="${row.phone}" data-paket="${row.paket_internet}" data-verified="${row.is_verified}" data-schedule="${row.request_schedule}">\
-        <span class="navi-icon"><i class="flaticon-eye text-info"></i></span>\
-        <span class="navi-text"> Detail</span>\
-    </a>\
-</li>\
-                                </ul >\
-                            </div >\
-                        </div >\
-
-`;
+                                    <form action="${HOST_URL}pages/schedule/create.php" method="post">
+                                        <button type="submit" name="id" class="btn  border-0 navi-link btn-detail-rikr" value="${row.queue_id}">
+                                            <span class="navi-icon"><i class="flaticon-calendar-with-a-clock-time-tools text-primary"></i></span>
+                                            <span class="navi-text"> Schedule Now</span>
+                                        </button>
+                                    </form>
+                                    </li>` : ""
+                        }
+                                    
+                                    <li class="navi-item cursor-pointer">\
+                                        <a onclick="confirmDeleteRIKR('${row.queue_id}')" class="navi-link">\
+                                            <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
+                                            <span class="navi-text">Hapus</span>\
+                                        </a>\
+                                    </li>\
+                                    <li class="navi-item cursor-pointer">\
+                                        <a class="navi-link btn-detail-rikr" href="${HOST_URL}pages/queue/detail.php?id=${row.queue_id}">\
+                                            <span class="navi-icon"><i class="flaticon-eye text-info"></i></span>\
+                                            <span class="navi-text"> Detail</span>\
+                                        </a>\
+                                    </li>\
+                                </ul>\
+                            </div>\
+                        </div>\
+                       
+                    `;
                 },
             }],
         });
 
-        function confirmDelete(scheduleId) {
-            Swal.fire({
-                title: 'Yakin mau hapus?',
-                text: "Data schedule akan dihapus permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect ke delete.php dengan parameter ID
-                    window.location.href = "<?= BASE_URL ?>controllers/schedules/delete.php?id=" + scheduleId;
-                }
-            });
-        }
 
         $('#kt_datatable_search_status').on('change', function () {
             datatable.search($(this).val().toLowerCase(), 'status');
         });
 
         $('#kt_datatable_search_type').on('change', function () {
-            datatable.search($(this).val().toLowerCase(), 'job_type');
+            datatable.search($(this).val().toLowerCase(), 'type');
         });
         $('#kt_datatable_search_tech').on('change', function () {
             datatable.search($(this).val().toLowerCase(), 'tech_id');

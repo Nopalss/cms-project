@@ -24,18 +24,21 @@ $jamKerja = [
     "16:00"
 ];
 
-// Ambil jam yang sudah terpakai
-$sql = "SELECT time FROM schedules WHERE tech_id = ? AND date = ?";
+// Ambil semua schedule untuk tech_id + date
+$sql = "SELECT * FROM schedules WHERE tech_id = ? AND date = ? ORDER BY time ASC";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$tech_id, $date]);
 
-$jamTerpakai = $stmt->fetchAll(PDO::FETCH_COLUMN);
+$jadwal = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Normalisasi format → ambil hanya HH:MM
-$jamTerpakai = array_map(fn($t) => substr($t, 0, 5), $jamTerpakai);
+// Ambil hanya kolom `time` untuk perhitungan jam kosong
+$jamTerpakai = array_map(fn($row) => substr($row['time'], 0, 5), $jadwal);
 
 // Hitung jam kosong = jam kerja - jam terpakai
 $jamKosong = array_values(array_diff($jamKerja, $jamTerpakai));
 
 // Kirim hasil dalam format JSON
-echo json_encode($jamKosong);
+echo json_encode([
+    "jadwal"    => $jadwal,    // semua data schedule
+    "jamKosong" => $jamKosong  // slot kosong
+]);

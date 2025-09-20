@@ -157,41 +157,61 @@ $role = $_SESSION['role'];
                                             </div>
                                         </li>
 
-                                        <!-- Schedule -->
-                                        <?php if ($_SESSION['menu'] == 'schedule'): ?>
-                                            <li class="menu-item  menu-item-active" aria-haspopup="true"><a href="<?= BASE_URL . 'pages/schedule/' ?>" class="menu-link ">
+                                        <!-- Queue -->
+                                        <?php if ($_SESSION['menu'] == 'queue'): ?>
+                                            <li class="menu-item  menu-item-active" aria-haspopup="true"><a href="<?= BASE_URL . 'pages/queue/' ?>" class="menu-link ">
                                                 <?php else: ?>
-                                            <li class="menu-item" aria-haspopup="true"><a href="<?= BASE_URL . 'pages/schedule/' ?>" class="menu-link ">
+                                            <li class="menu-item" aria-haspopup="true"><a href="<?= BASE_URL . 'pages/queue/' ?>" class="menu-link ">
                                                 <?php endif; ?>
-                                                <span class="svg-icon menu-icon svg-icon-2x"><!--begin::Svg Icon | path:C:\wamp64\www\keenthemes\themes\metronic\theme\html\demo1\dist/../src/media/svg/icons\Communication\Dial-numbers.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                <span class="svg-icon menu-icon svg-icon-2x"><!--begin::Svg Icon | path:C:\wamp64\www\keenthemes\themes\metronic\theme\html\demo1\dist/../src/media/svg/icons\Communication\Clipboard-list.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
                                                         <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                                             <rect x="0" y="0" width="24" height="24" />
-                                                            <rect fill="#000000" opacity="0.3" x="4" y="4" width="4" height="4" rx="2" />
-                                                            <rect fill="#000000" x="4" y="10" width="4" height="4" rx="2" />
-                                                            <rect fill="#000000" x="10" y="4" width="4" height="4" rx="2" />
-                                                            <rect fill="#000000" x="10" y="10" width="4" height="4" rx="2" />
-                                                            <rect fill="#000000" x="16" y="4" width="4" height="4" rx="2" />
-                                                            <rect fill="#000000" x="16" y="10" width="4" height="4" rx="2" />
-                                                            <rect fill="#000000" x="4" y="16" width="4" height="4" rx="2" />
-                                                            <rect fill="#000000" x="10" y="16" width="4" height="4" rx="2" />
-                                                            <rect fill="#000000" x="16" y="16" width="4" height="4" rx="2" />
+                                                            <path d="M8,3 L8,3.5 C8,4.32842712 8.67157288,5 9.5,5 L14.5,5 C15.3284271,5 16,4.32842712 16,3.5 L16,3 L18,3 C19.1045695,3 20,3.8954305 20,5 L20,21 C20,22.1045695 19.1045695,23 18,23 L6,23 C4.8954305,23 4,22.1045695 4,21 L4,5 C4,3.8954305 4.8954305,3 6,3 L8,3 Z" fill="#000000" opacity="0.3" />
+                                                            <path d="M11,2 C11,1.44771525 11.4477153,1 12,1 C12.5522847,1 13,1.44771525 13,2 L14.5,2 C14.7761424,2 15,2.22385763 15,2.5 L15,3.5 C15,3.77614237 14.7761424,4 14.5,4 L9.5,4 C9.22385763,4 9,3.77614237 9,3.5 L9,2.5 C9,2.22385763 9.22385763,2 9.5,2 L11,2 Z" fill="#000000" />
+                                                            <rect fill="#000000" opacity="0.3" x="10" y="9" width="7" height="2" rx="1" />
+                                                            <rect fill="#000000" opacity="0.3" x="7" y="9" width="2" height="2" rx="1" />
+                                                            <rect fill="#000000" opacity="0.3" x="7" y="13" width="2" height="2" rx="1" />
+                                                            <rect fill="#000000" opacity="0.3" x="10" y="13" width="7" height="2" rx="1" />
+                                                            <rect fill="#000000" opacity="0.3" x="7" y="17" width="2" height="2" rx="1" />
+                                                            <rect fill="#000000" opacity="0.3" x="10" y="17" width="7" height="2" rx="1" />
                                                         </g>
                                                     </svg><!--end::Svg Icon--></span>
-                                                <span class="menu-text">Schedule</span></a></li>
-                                            <!-- IKR -->
-                                            <?php if ($_SESSION['menu'] == 'ikr'): ?>
-                                                <li class="menu-item  menu-item-active" aria-haspopup="true"><a href="<?= BASE_URL . 'pages/ikr/' ?>" class="menu-link ">
+                                                <span class="menu-text">Queue</span></a></li>
+                                            <!-- Schedule -->
+                                            <?php if ($_SESSION['menu'] == 'schedule'): ?>
+                                                <li class="menu-item  menu-item-active" aria-haspopup="true"><a href="<?= BASE_URL . 'pages/schedule/' ?>" class="menu-link ">
                                                     <?php else: ?>
-                                                <li class="menu-item" aria-haspopup="true"><a href="<?= BASE_URL . 'pages/ikr/' ?>" class="menu-link ">
+                                                <li class="menu-item" aria-haspopup="true"><a href="<?= BASE_URL . 'pages/schedule/' ?>" class="menu-link ">
                                                     <?php endif; ?>
-                                                    <span class="svg-icon menu-icon svg-icon-2x"><!--begin::Svg Icon | path:C:\wamp64\www\keenthemes\themes\metronic\theme\html\demo1\dist/../src/media/svg/icons\Devices\Router2.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                    <span class="svg-icon menu-icon svg-icon-2x"><!--begin::Svg Icon | path:C:\wamp64\www\keenthemes\themes\metronic\theme\html\demo1\dist/../src/media/svg/icons\Communication\Dial-numbers.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
                                                             <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                                                 <rect x="0" y="0" width="24" height="24" />
-                                                                <rect fill="#000000" x="3" y="13" width="18" height="7" rx="2" />
-                                                                <path d="M17.4029496,9.54910207 L15.8599014,10.8215022 C14.9149052,9.67549895 13.5137472,9 12,9 C10.4912085,9 9.09418404,9.67104182 8.14910121,10.8106159 L6.60963188,9.53388797 C7.93073905,7.94090645 9.88958759,7 12,7 C14.1173586,7 16.0819686,7.94713944 17.4029496,9.54910207 Z M20.4681628,6.9788888 L18.929169,8.25618985 C17.2286725,6.20729644 14.7140097,5 12,5 C9.28974232,5 6.77820732,6.20393339 5.07766256,8.24796852 L3.54017812,6.96885102 C5.61676443,4.47281829 8.68922234,3 12,3 C15.3153667,3 18.3916375,4.47692603 20.4681628,6.9788888 Z" fill="#000000" fill-rule="nonzero" opacity="0.3" />
+                                                                <rect fill="#000000" opacity="0.3" x="4" y="4" width="4" height="4" rx="2" />
+                                                                <rect fill="#000000" x="4" y="10" width="4" height="4" rx="2" />
+                                                                <rect fill="#000000" x="10" y="4" width="4" height="4" rx="2" />
+                                                                <rect fill="#000000" x="10" y="10" width="4" height="4" rx="2" />
+                                                                <rect fill="#000000" x="16" y="4" width="4" height="4" rx="2" />
+                                                                <rect fill="#000000" x="16" y="10" width="4" height="4" rx="2" />
+                                                                <rect fill="#000000" x="4" y="16" width="4" height="4" rx="2" />
+                                                                <rect fill="#000000" x="10" y="16" width="4" height="4" rx="2" />
+                                                                <rect fill="#000000" x="16" y="16" width="4" height="4" rx="2" />
                                                             </g>
                                                         </svg><!--end::Svg Icon--></span>
-                                                    <span class="menu-text">IKR</span></a></li>
+                                                    <span class="menu-text">Schedule</span></a></li>
+                                                <!-- IKR -->
+                                                <?php if ($_SESSION['menu'] == 'ikr'): ?>
+                                                    <li class="menu-item  menu-item-active" aria-haspopup="true"><a href="<?= BASE_URL . 'pages/ikr/' ?>" class="menu-link ">
+                                                        <?php else: ?>
+                                                    <li class="menu-item" aria-haspopup="true"><a href="<?= BASE_URL . 'pages/ikr/' ?>" class="menu-link ">
+                                                        <?php endif; ?>
+                                                        <span class="svg-icon menu-icon svg-icon-2x"><!--begin::Svg Icon | path:C:\wamp64\www\keenthemes\themes\metronic\theme\html\demo1\dist/../src/media/svg/icons\Devices\Router2.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                                <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                                    <rect x="0" y="0" width="24" height="24" />
+                                                                    <rect fill="#000000" x="3" y="13" width="18" height="7" rx="2" />
+                                                                    <path d="M17.4029496,9.54910207 L15.8599014,10.8215022 C14.9149052,9.67549895 13.5137472,9 12,9 C10.4912085,9 9.09418404,9.67104182 8.14910121,10.8106159 L6.60963188,9.53388797 C7.93073905,7.94090645 9.88958759,7 12,7 C14.1173586,7 16.0819686,7.94713944 17.4029496,9.54910207 Z M20.4681628,6.9788888 L18.929169,8.25618985 C17.2286725,6.20729644 14.7140097,5 12,5 C9.28974232,5 6.77820732,6.20393339 5.07766256,8.24796852 L3.54017812,6.96885102 C5.61676443,4.47281829 8.68922234,3 12,3 C15.3153667,3 18.3916375,4.47692603 20.4681628,6.9788888 Z" fill="#000000" fill-rule="nonzero" opacity="0.3" />
+                                                                </g>
+                                                            </svg><!--end::Svg Icon--></span>
+                                                        <span class="menu-text">IKR</span></a></li>
 
                         </ul>
                         <!--end::Menu Nav-->

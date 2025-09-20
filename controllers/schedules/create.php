@@ -10,44 +10,65 @@ if (isset($_POST['submit'])) {
     }
 
     // Ambil & sanitasi data POST
+    $schedule_id   = isset($_POST['schedule_id']) ? sanitize($_POST['schedule_id']) : null;
+    $queue_id   = isset($_POST['queue_id']) ? sanitize($_POST['queue_id']) : null;
+    $netpay_id   = isset($_POST['netpay_id']) ? sanitize($_POST['netpay_id']) : null;
     $tech_id   = isset($_POST['tech_id']) ? sanitize($_POST['tech_id']) : null;
     $date = isset($_POST['date']) ? sanitize($_POST['date']) : null;
     $time      = isset($_POST['time']) ? sanitize($_POST['time']) : null;
     $job_type  = isset($_POST['job_type']) ? sanitize($_POST['job_type']) : null;
-    $location  = isset($_POST['location']) ? sanitize($_POST['location']) : null;
-    echo $time;
     // Konversi format tanggal (dari MM/DD/YYYY → YYYY-MM-DD)
 
     // Pastikan semua data terisi
-    if (!$tech_id || !$date || !$time || !$job_type || !$location) {
-        $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi.";
+    if (!$schedule_id || !$queue_id || !$netpay_id || !$tech_id || !$date || !$time || !$job_type) {
+        $_SESSION['alert'] = [
+            'icon' => 'danger',
+            'title' => 'Oops! Ada yang Salah',
+            'text' => 'Schedule gagal. Pastikan semua data sudah diisi dengan benar.',
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
         header("Location: " . BASE_URL . "pages/schedule/");
         exit;
     }
 
-    // Buat ID unik
-    $schedule_id = 'S' . date("YmdHs");
     try {
         // Query insert dengan prepared statement
-        $sql = "INSERT INTO schedules (schedule_id, tech_id, date, time, job_type, location) 
-                VALUES (:schedule_id, :tech_id, :date, :time, :job_type, :location)";
+        $sql = "INSERT INTO schedules (schedule_id, netpay_id ,tech_id, `date`, `time`, job_type, queue_id) 
+                VALUES (:schedule_id, :netpay_id, :tech_id, :date, :time, :job_type, :queue_id)";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([
+        $scheduleSuccess = $stmt->execute([
             ':schedule_id' => $schedule_id,
+            ':netpay_id' => $netpay_id,
             ':tech_id'     => $tech_id,
             ':date'        => $date,
             ':time'         => $time,
             ':job_type'    => $job_type,
-            ':location'    => $location
+            ':queue_id'     => $queue_id
         ]);
-        $_SESSION['success'] = "Data schedule berhasil dibuat dan tersimpan dengan aman";
-        header("Location: " . BASE_URL . "pages/schedule/");
-        exit;
+        if ($scheduleSuccess) {
+            $sql = "UPDATE queue_scheduling 
+                        SET status = 'Accepted' 
+                    WHERE queue_id = :queue_id";
+            $stmt = $pdo->prepare($sql);
+            $queueSuccess = $stmt->execute([":queue_id" => $queue_id]);
+            if ($queueSuccess) {
+                $_SESSION['alert'] = [
+                    'icon' => 'success',
+                    'title' => 'Selamat!',
+                    'text' => 'Data schedule berhasil dibuat dan tersimpan dengan aman',
+                    'button' => "Oke",
+                    'style' => "success"
+                ];
+                header("Location: " . BASE_URL . "pages/schedule/");
+                exit;
+            }
+        }
     } catch (PDOException $e) {
         echo $e;
-        $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi";
-        header("Location: " . BASE_URL . "pages/schedule/");
-        exit;
+        // $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi";
+        // header("Location: " . BASE_URL . "pages/schedule/");
+        // exit;
     }
 } else {
     $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi";

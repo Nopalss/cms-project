@@ -131,12 +131,14 @@ var KTDatatableLocalSortDemo = function () {
                                     <li class="navi-header font-weight-bolder text-uppercase font-size-xs text-primary pb-2">\
                                         Choose an action:\
                                     </li>\
-                                    <li class="navi-item cursor-pointer">\
-                                        <a href='${HOST_URL + 'pages/request/ikr/update.php?id=' + row.rikr_id}' class="navi-link">\
-                                            <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>\
-                                            <span class="navi-text">Edit</span>\
-                                        </a>\
-                                    </li>\
+                                    ${row.status === "Pending"
+                            ? `<li class="navi-item cursor-pointer">
+                                    <a href='${HOST_URL + 'pages/request/ikr/update.php?id=' + row.rikr_id}' class="navi-link">
+                                        <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>
+                                        <span class="navi-text">Edit</span>
+                                    </a>
+                                </li>`: ""
+                        }
                                     <li class="navi-item cursor-pointer">\
                                         <a onclick="confirmDeleteRIKR('${row.rikr_id}')" class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\

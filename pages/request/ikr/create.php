@@ -162,7 +162,7 @@ if (!isset($row)) {
                                 <div class="input-group">
                                     <div class="input-group-prepend">
 
-                                        <select name="netpay_kode" class="form-control selectpicker ">
+                                        <select name="netpay_kode" required class="form-control selectpicker ">
                                             <option value="">select</option>
                                             <?php foreach ($netpay_kode as $key => $value): ?>
                                                 <option value="<?= $key ?>"><?= $value ?></option>

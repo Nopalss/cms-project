@@ -38,7 +38,13 @@ if (isset($_POST['submit'])) {
 
     // Pastikan semua data terisi
     if (!$registrasi_id || !$name || !$phone || !$paket_internet || !$request_schedule || !$location || !$is_verified || !validatePhone($phone)) {
-        $_SESSION['error'] = "Update gagal. Pastikan semua data sudah diisi dengan benar";
+        $_SESSION['alert'] = [
+            'icon' => 'danger',
+            'title' => 'Oops! Ada yang Salah',
+            'text' => 'Update gagal. Pastikan semua data sudah diisi dengan benar.',
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
         header("Location: " . BASE_URL . "pages/registrasi/");
         exit;
     }
@@ -64,18 +70,34 @@ if (isset($_POST['submit'])) {
             ':location' => $location,
             ':is_verified' => $is_verified
         ]);
-
-        $_SESSION['success'] = "Data registrasi berhasil diperbarui.";
+        $_SESSION['alert'] = [
+            'icon' => 'success',
+            'title' => 'Selamat!',
+            'text' => 'Data registrasi berhasil diperbarui',
+            'button' => "Oke",
+            'style' => "success"
+        ];
         header("Location: " . BASE_URL . "pages/registrasi/");
         exit;
     } catch (PDOException $e) {
-        echo $e;
-        $_SESSION['error'] = "Gagal mengupdate data, silakan coba lagi";
+        $_SESSION['alert'] = [
+            'icon' => 'danger',
+            'title' => 'Oops! Ada yang Salah',
+            'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
         header("Location: " . BASE_URL . "pages/registrasi/");
         exit;
     }
 } else {
-    $_SESSION['error'] = "Akses tidak valid.";
+    $_SESSION['alert'] = [
+        'icon' => 'danger',
+        'title' => 'Oops! Ada yang Salah',
+        'text' => 'Gagal melakukan update, silakan coba lagi',
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
     header("Location: " . BASE_URL . "pages/registrasi/");
     exit;
 }

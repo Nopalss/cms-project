@@ -2,7 +2,6 @@
 
 require_once __DIR__ . "/../../../includes/config.php";
 
-var_dump($_POST);
 if (isset($_POST['submit'])) {
     // Fungsi sanitize untuk cegah HTML Injection
     function sanitize($data)
@@ -45,7 +44,13 @@ if (isset($_POST['submit'])) {
 
     // Pastikan semua data terisi
     if (!$name || !$phone || !$paket_internet || !$request_schedule || !$location || !validatePhone($phone) || !$is_verified || !$rikr_id || !$netpay_kode  || !$netpay_id || !$catatan ||  $jadwal_pemasangan != $request_schedule) {
-        $_SESSION['error'] = "Request gagal. Pastikan semua data sudah diisi dengan benar";
+        $_SESSION['alert'] = [
+            'icon' => 'danger',
+            'title' => 'Oops! Ada yang Salah',
+            'text' => 'Request gagal. Pastikan semua data sudah diisi dengan benar.',
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
         header("Location: " . BASE_URL . "pages/request/ikr/");
         exit;
     }
@@ -98,7 +103,7 @@ if (isset($_POST['submit'])) {
                                 paket_internet = :paket_internet,
                                 request_schedule = :request_schedule,
                                 location = :location,
-                                is_verified = :is_verified
+                                is_verified = 'Verified'
                             WHERE registrasi_id = :registrasi_id";
 
                     $stmt = $pdo->prepare($sql);
@@ -108,10 +113,15 @@ if (isset($_POST['submit'])) {
                         ':phone' => $phone,
                         ':paket_internet' => $paket_internet,
                         ':request_schedule' => $request_schedule,
-                        ':location' => $location,
-                        ':is_verified' => $is_verified
+                        ':location' => $location
                     ]);
-                    $_SESSION['success'] = "Pendaftaran Request sukses";
+                    $_SESSION['alert'] = [
+                        'icon' => 'success',
+                        'title' => 'Selamat!',
+                        'text' => 'Pendaftaran Request sukses',
+                        'button' => "Oke",
+                        'style' => "success"
+                    ];
                     header("Location: " . BASE_URL . "pages/request/ikr/");
                     exit;
                 }
@@ -119,12 +129,24 @@ if (isset($_POST['submit'])) {
         }
     } catch (PDOException $e) {
         // echo $e;
-        $_SESSION['error'] = "Gagal menyimpan data: " . $e->getMessage();
+        $_SESSION['alert'] = [
+            'icon' => 'danger',
+            'title' => 'Oops! Ada yang Salah',
+            'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
         header("Location: " . BASE_URL . "pages/request/ikr/");
         exit;
     }
 } else {
-    $_SESSION['error'] = "Gagal melakukan request, silakan coba lagi";
+    $_SESSION['alert'] = [
+        'icon' => 'danger',
+        'title' => 'Oops! Ada yang Salah',
+        'text' => 'Gagal melakukan request, silakan coba lagi',
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
     header("Location: " . BASE_URL . "pages/request/ikr/");
     exit;
 }

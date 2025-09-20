@@ -46,7 +46,13 @@ if (isset($_POST['submit'])) {
 
     // Pastikan semua data terisi
     if (!$name || !$phone || !$paket_internet || !$request_schedule || !$location || !$netpay_old || !validatePhone($phone) || !$is_verified || !$rikr_id || !$netpay_kode  || !$netpay_id || !$catatan ||  $jadwal_pemasangan != $request_schedule) {
-        $_SESSION['error'] = "Update gagal. Pastikan semua data sudah diisi dengan benar";
+        $_SESSION['alert'] = [
+            'icon' => 'danger',
+            'title' => 'Oops! Ada yang Salah',
+            'text' => 'Update gagal. Pastikan semua data sudah diisi dengan benar.',
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
         header("Location: " . BASE_URL . "pages/request/ikr/");
         exit;
     }
@@ -113,24 +119,38 @@ if (isset($_POST['submit'])) {
                     ':location' => $location,
                     ':is_verified' => $is_verified
                 ]);
-                if (!$registrasi_success) {
-                    $_SESSION['error'] = "Gagal menyimpan data: " . $e->getMessage();
-                    header("Location: " . BASE_URL . "pages/request/ikr/");
-                    exit;
-                }
-                $_SESSION['success'] = "Pendaftaran Request sukses";
+
+                $_SESSION['alert'] = [
+                    'icon' => 'success',
+                    'title' => 'Selamat!',
+                    'text' => 'Data Request berhasil diperbarui',
+                    'button' => "Oke",
+                    'style' => "success"
+                ];
                 header("Location: " . BASE_URL . "pages/request/ikr/");
                 exit;
             }
         }
     } catch (PDOException $e) {
         // echo $e;
-        $_SESSION['error'] = "Gagal menyimpan data: " . $e->getMessage();
+        $_SESSION['alert'] = [
+            'icon' => 'danger',
+            'title' => 'Oops! Ada yang Salah',
+            'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
         header("Location: " . BASE_URL . "pages/request/ikr/");
         exit;
     }
 } else {
-    $_SESSION['error'] = "Gagal melakukan request, silakan coba lagi";
+    $_SESSION['alert'] = [
+        'icon' => 'danger',
+        'title' => 'Oops! Ada yang Salah',
+        'text' => 'Gagal melakukan update, silakan coba lagi',
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
     header("Location: " . BASE_URL . "pages/request/ikr/");
     exit;
 }
