@@ -9,9 +9,8 @@ if ($id && $job_type) {
     require __DIR__ . '/../../includes/navbar.php';
 
     try {
-        $status = ['Pending', 'Rescheduled', 'Cancelled', 'Done'];
         $requestTables = [
-            "Instalasi"    => ["table" => "request_ikr", "id" => "rikr_id"],
+            "Install"    => ["table" => "request_ikr", "id" => "rikr_id"],
             "Maintenance" => ["table" => "request_maintenance", "id" => "rm_id"],
             "Dismantle"  => ["table" => "request_dismantle", "id" => "rd_id"],
         ];
@@ -28,26 +27,19 @@ if ($id && $job_type) {
             }
         }
 
-        if (isset($requestTables[$job_type])) {
-            $table = $requestTables[$job_type]['table'];
-            $idCol = $requestTables[$job_type]['id'];
-
-            $sql = "SELECT s.*, s.status as status_schedule, q.*, r.*, c.* 
+        $sql = "SELECT s.*, c.* 
             FROM schedules s
-            JOIN queue_scheduling q ON s.queue_id = q.queue_id
-            JOIN $table r ON q.request_id = r.$idCol
-            JOIN customers c ON r.netpay_id = c.netpay_id
+            JOIN customers c ON s.netpay_id = c.netpay_id
             WHERE s.schedule_id = :schedule_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':schedule_id', $id, PDO::PARAM_STR);
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':schedule_id', $id, PDO::PARAM_STR);
-            $stmt->execute();
-            $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        }
-        $tanggalSchedule   = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'date') : '';
-        $tanggalPemasangan = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'full') : '';
-        $jamPemasangan     = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'time') : '';
-        $cr                = formatDate($row['created_at'], 'full');
+        // $tanggalSchedule   = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'date') : '';
+        // $tanggalPemasangan = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'full') : '';
+        // $jamPemasangan     = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'time') : '';
+        // $cr                = formatDate($row['created_at'], 'full');
         $statusClasses = [
             'Pending' => "info",
             'Accepted' => "success",
@@ -87,7 +79,7 @@ if ($id && $job_type) {
                         </li>
                         <li class="breadcrumb-item">
                             <a href="" class="text-muted">
-                                <?= $row['schedule_id'] ?> </a>
+                                <?= $row["schedule_id"] ?> </a>
                         </li>
                     </ul>
                     <!-- end::Breadcrumb -->
@@ -107,7 +99,7 @@ if ($id && $job_type) {
             <div class="row align-items-stretch">
                 <div class="col-md-7">
                     <div class="card">
-                        <form action="<?= BASE_URL ?>controllers/schedules/update.php" method="post">
+                        <form action="<?= BASE_URL ?>controllers/schedules/create.php" method="post">
                             <div class="card-header">
                                 <h3>Update Schedule</h3>
                             </div>
@@ -115,8 +107,7 @@ if ($id && $job_type) {
                                 <div class="form-group">
                                     <label for="name">Netpay ID</label>
                                     <input type="text" class="form-control" value="<?= $row['netpay_id'] ?>" disabled="disabled" required>
-                                    <input type="hidden" class="form-control" name="schedule_id" value="<?= $row['schedule_id'] ?>">
-                                    <input type="hidden" class="form-control" name="queue_id" value="<?= $row['queue_id'] ?>">
+                                    <input type="hidden" class="form-control" name="schedule_id" value="<?= $row["schedule_id"] ?>">
                                     <input type="hidden" class="form-control" name="netpay_id" value="<?= $row['netpay_id'] ?>">
                                 </div>
                                 <div class="form-group">
@@ -124,8 +115,7 @@ if ($id && $job_type) {
                                     <select class="form-control selectpicker" id="tech_id" required name="tech_id" data-size=" 7" data-live-search="true">
                                         <option value="">Select</option>
                                         <?php foreach ($technicians as $t): ?>
-                                            <?php $selected = $row['tech_id'] ==  $t['tech_id'] ? "selected" : "" ?>
-                                            <option value="<?= $t['tech_id'] ?>" <?= $selected ?>><?= $t['name'] ?></option>
+                                            <option value="<?= $t['tech_id'] ?>"><?= $t['name'] ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
@@ -133,7 +123,7 @@ if ($id && $job_type) {
                                     <label class="text-right">Tanggal</label>
                                     <div>
                                         <div class="input-group date">
-                                            <input type="date" class="form-control" required name="date" value="<?= $tanggalSchedule ?>" id="date" min="<?= date('Y-m-d') ?>" />
+                                            <input type="date" class="form-control" required name="date" value="<?= $row["date"] ?>" id="date" min="<?= date('Y-m-d') ?>" />
                                         </div>
                                     </div>
                                 </div>
@@ -148,23 +138,13 @@ if ($id && $job_type) {
                                     <label>Tipe Job</label>
                                     <?php
                                     $typeJob = [
-                                        "Instalasi" => "Instalasi",
+                                        "Install" => "Instalasi",
                                         "Maintenance" => "Maintenance",
                                         "Dismantle" => "Dismantle",
                                     ];
                                     ?>
-                                    <input type="text" class="form-control" value="<?= $typeJob[$row['job_type']] ?>" disabled='disabled'>
-                                    <input type="hidden" name="job_type" value="<?= $typeJob[$row['job_type']] ?>">
-                                </div>
-                                <div class="form-group">
-                                    <label>Status</label>
-                                    <select class="form-control selectpicker" required name="status" data-size="7">
-                                        <option value="">--Select--</option>
-                                        <?php foreach ($status as $s): ?>
-                                            <?php $selected = ($s == $row['status_schedule']) ? 'selected' : ''; ?>
-                                            <option value="<?= $s ?>" <?= $selected ?>><?= $s ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
+                                    <input type="text" class="form-control" value="<?= $row['job_type'] ?>" disabled='disabled'>
+                                    <input type="hidden" name="job_type" value="<?= $row['job_type'] ?>">
                                 </div>
                                 <div class="form-group mb-1">
                                     <label for="exampleTextarea">Alamat</label>
@@ -236,50 +216,8 @@ if ($id && $job_type) {
                         </div>
                         <!--end: Card Body-->
                     </div>
-                    <div class="card card-custom mb-5" data-card="true">
-                        <?php if ($row['type_queue'] == "Install"): ?>
-                            <div class="card-header">
-                                <div class="card-title">
-                                    <h3 class="card-label">Data Request IKR</h3>
-                                </div>
-                                <div class="card-toolbar">
-                                    <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="toggle" data-toggle="tooltip" data-placement="top">
-                                        <i class="ki ki-arrow-down icon-nm"></i>
-                                    </a>
-
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="table-responsive">
-                                    <table class="table table-striped">
-                                        <tr>
-                                            <th>RIKR ID</th>
-                                            <td><?= $row['rikr_id'] ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Netpay ID</th>
-                                            <td><?= $row['netpay_id'] ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Jadwal Pemasangan</th>
-                                            <td><?= $tanggalPemasangan ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Jam</th>
-                                            <td><?= $jamPemasangan ?> </td>
-                                        </tr>
-                                        <tr>
-                                            <th>Request By</th>
-                                            <td><?= $row['request_by'] ?></td>
-                                        </tr>
-                                        <tr>
-                                            <th>Catatan</th>
-                                            <td><?= $row['catatan'] ?></td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                        <?php elseif ($row['type_queue'] == "Maintenance"): ?>
+                    <?php if ($row['job_type'] == "Maintenance"): ?>
+                        <div class="card card-custom mb-5" data-card="true">
                             <div class="card-header">
                                 <div class="card-title">
                                     <h3 class="card-label">Data Request Maintenance</h3>
@@ -317,7 +255,9 @@ if ($id && $job_type) {
                                     </table>
                                 </div>
                             </div>
-                        <?php elseif ($row['type_queue'] == "Dismantle"): ?>
+                        </div>
+                        <div class="card card-custom mb-5" data-card="true">
+                        <?php elseif ($row['job_type'] == "Dismantle"): ?>
                             <div class="card-header">
                                 <div class="card-title">
                                     <h3 class="card-label">Data Request Dismantle</h3>
@@ -355,47 +295,53 @@ if ($id && $job_type) {
                                     </table>
                                 </div>
                             </div>
-                        <?php endif; ?>
-                    </div>
-                    <div class="card card-custom card-collapsed mb-5" data-card="true">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <h5 class="card-label">Queue Info</h5>
-                            </div>
-                            <div class="card-toolbar">
-                                <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="toggle" data-toggle="tooltip" data-placement="top">
-                                    <i class="ki ki-arrow-down icon-nm"></i>
-                                </a>
+                        </div>
+                    <?php endif; ?>
+                    <?php if (isset($issue_id)): ?>
+                        <div class="card card-custom card-collapsed mb-5" data-card="true">
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h5 class="card-label">Issue Report</h5>
+                                </div>
+                                <div class="card-toolbar">
+                                    <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="toggle" data-toggle="tooltip" data-placement="top">
+                                        <i class="ki ki-arrow-down icon-nm"></i>
+                                    </a>
 
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>Issue ID</th>
+                                            <td><?= $row['issue_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Schedule ID</th>
+                                            <td><?= $row['schedule_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Reported By</th>
+                                            <td><?= $row['reported_by'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status</th>
+                                            <td><?= $row['status'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Issue Type</th>
+                                            <td><span><?= $row['issue_type'] ?></span></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Description</th>
+                                            <td><?= $row['description'] ?></td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <tr>
-                                        <th>Queue ID</th>
-                                        <td><?= $row['queue_id'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Type Queue</th>
-                                        <td><?= $row['type_queue'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Request ID</th>
-                                        <td><?= $row['request_id'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Status</th>
-                                        <td><span class="badge badge-pill badge-<?= $statusClasses[$row['status']] ?>"><?= $row['status'] ?></span></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Created At</th>
-                                        <td><?= $cr ?></td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    <?php endif; ?>
                     <div class="card card-custom card-collapsed mb-5" data-card="true">
                         <div class="card-header">
                             <div class="card-title">

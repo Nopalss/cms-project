@@ -7,8 +7,8 @@ if (isset($_GET['id'])) {
     try {
         $pdo->beginTransaction();
 
-        // Cari registrasi_id dari request_ikr
-        $sql = "SELECT registrasi_id FROM request_ikr WHERE rikr_id = :id";
+        // Pastikan request_maintenance ada
+        $sql = "SELECT rm_id FROM request_maintenance WHERE rm_id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -22,36 +22,27 @@ if (isset($_GET['id'])) {
                 'button' => "Oke",
                 'style' => "warning"
             ];
-            header("Location: " . BASE_URL . "pages/request/ikr/");
+            header("Location: " . BASE_URL . "pages/request/maintenance/");
             exit;
         }
 
-        // Update status register jadi Unverified
-        if (!empty($row['registrasi_id'])) {
-            $sql = "UPDATE register 
-                    SET is_verified = 'Unverified'
-                    WHERE registrasi_id = :registrasi_id";
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute([':registrasi_id' => $row['registrasi_id']]);
-        }
-
-        // Hapus dari queue_scheduling (anak)
+        // Hapus dulu dari queue_scheduling (anak)
         $sql = "DELETE FROM queue_scheduling WHERE request_id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':id' => $id]);
 
-        // Hapus dari request_ikr (induk)
-        $sql = "DELETE FROM request_ikr WHERE rikr_id = :id";
+        // Hapus dari request_maintenance (induk)
+        $sql = "DELETE FROM request_maintenance WHERE rm_id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':id' => $id]);
 
-        // Pastikan ada yang kehapus
         if ($stmt->rowCount() === 0) {
+            // Tidak ada baris terhapus → mungkin sudah dihapus sebelumnya
             $pdo->rollBack();
             $_SESSION['alert'] = [
                 'icon' => 'warning',
                 'title' => 'Oops!',
-                'text' => 'Tidak ada data yang dihapus.',
+                'text' => 'Data tidak bisa dihapus (mungkin sudah dihapus sebelumnya).',
                 'button' => "Oke",
                 'style' => "warning"
             ];
@@ -84,6 +75,5 @@ if (isset($_GET['id'])) {
         'style' => "warning"
     ];
 }
-
-header("Location: " . BASE_URL . "pages/request/ikr/");
+header("Location: " . BASE_URL . "pages/request/maintenance/");
 exit;

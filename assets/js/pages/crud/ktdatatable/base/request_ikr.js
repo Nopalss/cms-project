@@ -137,14 +137,16 @@ var KTDatatableLocalSortDemo = function () {
                                         <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>
                                         <span class="navi-text">Edit</span>
                                     </a>
-                                </li>`: ""
+                                </li>
+                                 <li class="navi-item cursor-pointer">
+                                        <a onclick="confirmDeleteTemplate('${row.rikr_id}', 'controllers/request/ikr/delete.php')" class="navi-link">
+                                            <span class="navi-icon "><i class="la la-trash text-danger"></i></span>
+                                            <span class="navi-text">Hapus</span>
+                                        </a>
+                                    </li>
+                                `: ""
                         }
-                                    <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteRIKR('${row.rikr_id}')" class="navi-link">\
-                                            <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
-                                            <span class="navi-text">Hapus</span>\
-                                        </a>\
-                                    </li>\
+                                   
                                     <li class="navi-item cursor-pointer">\
                                         <a class="navi-link btn-detail-rikr" data-rikr-id="${row.rikr_id}" data-status="${row.status}" data-state="${status[row.status].state}" data-registrasi-id="${row.registrasi_id}" data-netpay-id="${row.netpay_id}" data-jadwal="${row.jadwal_pemasangan}" data-catatan="${row.catatan}" data-request-by="${row.request_by}">\
                                             <span class="navi-icon"><i class="flaticon-eye text-info"></i></span>\

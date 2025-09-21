@@ -93,7 +93,7 @@ if (isset($_POST['submit'])) {
                 $queue_success = $stmt->execute([
                     ':queue_id' => $queue_id,
                     ':type_queue' => "Install",
-                    ':request_id' => $rikr_id,
+                    ':request_id' => $rikr_id
                 ]);
                 if ($queue_success) {
                     // Query update dengan prepared statement

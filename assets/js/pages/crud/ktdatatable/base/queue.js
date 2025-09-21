@@ -131,6 +131,7 @@ var KTDatatableLocalSortDemo = function () {
                                     ${row.status === "Pending"
                             ? `<li class="navi-item cursor-pointer">
                                     <form action="${HOST_URL}pages/schedule/create.php" method="post">
+                                        <input type="hidden" name="type_queue" value="${row.type_queue}">
                                         <button type="submit" name="id" class="btn  border-0 navi-link btn-detail-rikr" value="${row.queue_id}">
                                             <span class="navi-icon"><i class="flaticon-calendar-with-a-clock-time-tools text-primary"></i></span>
                                             <span class="navi-text"> Schedule Now</span>

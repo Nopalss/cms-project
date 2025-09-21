@@ -13,7 +13,7 @@ var KTDatatableLocalSortDemo = function () {
                 type: 'remote',
                 source: {
                     read: {
-                        url: HOST_URL + 'api/schedules.php',
+                        url: HOST_URL + 'api/request_maintenance.php',
                     },
                 },
                 pageSize: 10,
@@ -43,63 +43,52 @@ var KTDatatableLocalSortDemo = function () {
             },
             // columns definition
             columns: [{
-                field: 'schedule_id',
-                title: 'Schedule Id',
+                field: 'rm_id',
+                title: 'RM Id',
             }, {
                 field: 'netpay_id',
-                title: 'Netpay ID',
+                title: 'Netpay Id',
+            },
+            {
+                field: 'type_issue',
+                title: 'Type Issue',
             }, {
-                field: 'technician_name',
-                title: 'Teknisi',
+                field: 'request_by',
+                title: 'Request By',
             }, {
-                field: 'date',
-                title: 'Date',
-                template: function (row) {
-                    const date = new Date(row.date);
-                    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-                    const formattedDate = date.toLocaleDateString('id-ID', options);
-                    return formattedDate;
-                }
-            }, {
-                field: 'time',
-                title: 'Time',
-            }, {
-                field: 'location',
-                title: 'Location',
-            }, {
-                field: 'job_type',
-                title: 'Job Type',
-                autoHide: false,
-            }, {
+                field: 'created_at',
+                title: 'Created At',
+            },
+            {
                 field: 'status',
                 title: 'Status',
                 autoHide: false,
                 // callback function support for column rendering
                 template: function (row) {
                     var status = {
+                        'Accepted': {
+                            'title': 'Accepted',
+                            'state': 'success'
+                        },
+                        'Rejected': {
+                            'title': 'Rejected',
+                            'state': 'danger'
+                        },
                         'Pending': {
                             'title': 'Pending',
                             'state': 'info'
                         },
-                        'On Progress': {
-                            'title': 'On Progress',
-                            'state': 'primary'
+                        'Not Queued': {
+                            'title': 'Not Queued',
+                            'state': 'muted'
                         },
-                        'Rescheduled': {
-                            'title': 'Rescheduled',
-                            'state': 'warning'
-                        },
-                        'Cancelled': {
-                            'title': 'Cancelled',
-                            'state': 'danger'
-                        },
-                        'Done': {
-                            'title': 'Done',
-                            'state': 'success'
-                        },
+
                     };
-                    return '<span class="label label-' + status[row.status].state + ' label-dot mr-2"></span><span class="font-weight-bold text-' + status[row.status].state + '">' +
-                        status[row.status].title + '</span>';
+                    var current = row.status ? row.status : 'Not Queued';
+
+                    return '<span class="label label-' + status[current].state + ' label-dot mr-2"></span>' +
+                        '<span class="font-weight-bold text-' + status[current].state + '">' +
+                        status[current].title + '</span>';
                 },
             }, {
                 field: 'Actions',
@@ -110,22 +99,23 @@ var KTDatatableLocalSortDemo = function () {
                 autoHide: false,
                 template: function (row) {
                     var status = {
+                        'Accepted': {
+                            'title': 'Accepted',
+                            'state': 'success'
+                        },
+                        'Rejected': {
+                            'title': 'Rejected',
+                            'state': 'danger'
+                        },
                         'Pending': {
                             'title': 'Pending',
                             'state': 'info'
                         },
-                        'Rescheduled': {
-                            'title': 'Rescheduled',
-                            'state': 'warning'
+                        'Not Queued': {
+                            'title': 'Not Queued',
+                            'state': 'muted'
                         },
-                        'Cancelled': {
-                            'title': 'Cancelled',
-                            'state': 'danger'
-                        },
-                        'Done': {
-                            'title': 'Done',
-                            'state': 'success'
-                        }
+
                     };
                     return `\
                         <div class="dropdown dropdown-inline">\
@@ -144,25 +134,24 @@ var KTDatatableLocalSortDemo = function () {
                                     <li class="navi-header font-weight-bolder text-uppercase font-size-xs text-primary pb-2">\
                                         Choose an action:\
                                     </li>\
+                                    ${row.status === "Pending"
+                            ? `<li class="navi-item cursor-pointer">
+                                    <a href='${HOST_URL + 'pages/request/maintenance/update.php?id=' + row.rm_id}' class="navi-link">
+                                        <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>
+                                        <span class="navi-text">Edit</span>
+                                    </a>
+                                </li>`: ""
+                        }
                                     <li class="navi-item cursor-pointer">\
-                                        <form action="${HOST_URL}pages/schedule/update.php" method="post">\
-                                            <input type="hidden" name="job_type" value="${row.job_type}">\
-                                                <button type="submit" name="id" class="btn  border-0 navi-link btn-detail-rikr" value="${row.schedule_id}">\
-                                                <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>\
-                                                <span class="navi-text">Edit</span>\
-                                            </button>\
-                                        </form>\
-                                    </li>\
-                                    <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteTemplate('${row.schedule_id}', 'controllers/registrasi/delete.php')" class="navi-link">\
+                                        <a onclick="confirmDeleteTemplate('${row.rm_id}', 'controllers/request/maintenance/delete.php')" class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
                                             <span class="navi-text">Hapus</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a class="navi-link btn-detail" data-id="${row.schedule_id}" data-netpay="${row.netpay_id}" data-tech="${row.technician_name}" data-date="${row.date}" data-job="${row.job_type}" data-state="${status[row.status].state}" data-status="${row.status}" data-location="${row.location}">\
-                                            <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>\
-                                            <span class="navi-text">Detail</span>\
+                                        <a class="navi-link btn-detail-rm" data-rm-id="${row.rm_id}" data-status="${row.status}" data-state="${status[row.status].state}" data-netpay-id="${row.netpay_id}" data-type="${row.type_issue}" data-deskripsi="${row.deskripsi_issue}" data-request-by="${row.request_by}">\
+                                            <span class="navi-icon"><i class="flaticon-eye text-info"></i></span>\
+                                            <span class="navi-text"> Detail</span>\
                                         </a>\
                                     </li>\
                                 </ul>\
@@ -174,34 +163,11 @@ var KTDatatableLocalSortDemo = function () {
             }],
         });
 
-        function confirmDelete(scheduleId) {
-            Swal.fire({
-                title: 'Yakin mau hapus?',
-                text: "Data schedule akan dihapus permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect ke delete.php dengan parameter ID
-                    window.location.href = "<?= BASE_URL ?>controllers/schedules/delete.php?id=" + scheduleId;
-                }
-            });
-        }
 
         $('#kt_datatable_search_status').on('change', function () {
             datatable.search($(this).val().toLowerCase(), 'status');
         });
 
-        $('#kt_datatable_search_type').on('change', function () {
-            datatable.search($(this).val().toLowerCase(), 'job_type');
-        });
-        $('#kt_datatable_search_tech').on('change', function () {
-            datatable.search($(this).val().toLowerCase(), 'tech_id');
-        });
         $('#kt_datepicker_3').datepicker({
             format: 'mm/dd/yyyy',
             autoclose: true,
@@ -216,7 +182,7 @@ var KTDatatableLocalSortDemo = function () {
 
 
 
-        $('#kt_datatable_search_status, #kt_datatable_search_type, #kt_datatable_search_tech').selectpicker();
+        $('#kt_datatable_search_status, #kt_datatable_search_type').selectpicker();
     };
 
     return {

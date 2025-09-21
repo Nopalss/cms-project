@@ -1,28 +1,50 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
-$id = isset($_POST['id']) ? $_POST['id'] : null;;
-if ($id) {
+$id = isset($_POST['id']) ? $_POST['id'] : null;
+$type_queue = isset($_POST['type_queue']) ? $_POST['type_queue'] : null;
+if ($id && $type_queue) {
     $_SESSION['menu'] = 'schedule';
     require __DIR__ . '/../../includes/header.php';
     require __DIR__ . '/../../includes/aside.php';
     require __DIR__ . '/../../includes/navbar.php';
 
     try {
+        $requestTables = [
+            "Install"    => ["table" => "request_ikr", "id" => "rikr_id"],
+            "Maintenance" => ["table" => "request_maintenance", "id" => "rm_id"],
+            "Dismantle"  => ["table" => "request_dismantle", "id" => "rd_id"],
+        ];
+        function formatDate($datetime, $type = 'date')
+        {
+            $dt = new DateTime($datetime);
+            switch ($type) {
+                case 'date':
+                    return $dt->format('Y-m-d');
+                case 'full':
+                    return $dt->format('d F Y');
+                case 'time':
+                    return $dt->format('H:i');
+            }
+        }
+        if (isset($requestTables[$type_queue])) {
+            $table = $requestTables[$type_queue]['table'];
+            $idCol = $requestTables[$type_queue]['id'];
 
-        $sql = "SELECT q.*, r.*, c.* FROM queue_scheduling q 
-            JOIN request_ikr r ON q.request_id = r.rikr_id 
-            JOIN customers c ON r.netpay_id = c.netpay_id 
-        WHERE q.queue_id = :queue_id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':queue_id', $id, PDO::PARAM_STR); // karena ID string
-        $stmt->execute();
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        $jadwal = new DateTime($row['jadwal_pemasangan']);
-        $tanggalSchedule = $jadwal->format('Y-m-d');
-        $tanggalPemasangan = $jadwal->format('d F Y'); // 18 September 2025
-        $jamPemasangan    = $jadwal->format('H:i');
-        $cr = new DateTime($row['created_at']);
-        $cr = $cr->format("d F Y");
+            $sql = "SELECT q.*, r.*, c.* 
+            FROM queue_scheduling q
+            JOIN $table r ON q.request_id = r.$idCol
+            JOIN customers c ON r.netpay_id = c.netpay_id
+            WHERE q.queue_id = :queue_id";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':queue_id', $id, PDO::PARAM_STR);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+        $tanggalSchedule   = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'date') : '';
+        $tanggalPemasangan = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'full') : '';
+        $jamPemasangan     = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'time') : '';
+        $cr                = formatDate($row['created_at'], 'full');
         $statusClasses = [
             'Pending' => "info",
             'Accepted' => "success",
@@ -40,7 +62,6 @@ if ($id) {
     exit;
 }
 ?>
-
 
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Subheader-->
@@ -122,20 +143,15 @@ if ($id) {
                                 </div>
                                 <div class="form-group">
                                     <label>Tipe Job</label>
-                                    <select class="form-control selectpicker" required name="job_type" data-size="7">
-                                        <option value="">--Select--</option>
-                                        <?php
-                                        $typeJob = [
-                                            "Install" => "Instalasi",
-                                            "Maintenance" => "Maintenance",
-                                            "Dismantle" => "Dismantle",
-                                        ];
-                                        foreach ($typeJob as $key => $value):
-                                            $selected = ($key == $row['type_queue']) ? 'selected' : '';
-                                        ?>
-                                            <option value="<?= $value ?>" <?= $selected ?>><?= $value ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
+                                    <?php
+                                    $typeJob = [
+                                        "Install" => "Instalasi",
+                                        "Maintenance" => "Maintenance",
+                                        "Dismantle" => "Dismantle",
+                                    ];
+                                    ?>
+                                    <input type="text" class="form-control" value="<?= $typeJob[$row['type_queue']] ?>" disabled='disabled'>
+                                    <input type="hidden" name="job_type" value="<?= $typeJob[$row['type_queue']] ?>">
                                 </div>
                                 <div class="form-group mb-1">
                                     <label for="exampleTextarea">Alamat</label>
@@ -208,47 +224,125 @@ if ($id) {
                         <!--end: Card Body-->
                     </div>
                     <div class="card card-custom mb-5" data-card="true">
-                        <div class="card-header">
-                            <div class="card-title">
-                                <h3 class="card-label">Data Request IKR</h3>
-                            </div>
-                            <div class="card-toolbar">
-                                <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="toggle" data-toggle="tooltip" data-placement="top">
-                                    <i class="ki ki-arrow-down icon-nm"></i>
-                                </a>
+                        <?php if ($row['type_queue'] == "Install"): ?>
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h3 class="card-label">Data Request IKR</h3>
+                                </div>
+                                <div class="card-toolbar">
+                                    <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="toggle" data-toggle="tooltip" data-placement="top">
+                                        <i class="ki ki-arrow-down icon-nm"></i>
+                                    </a>
 
+                                </div>
                             </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <tr>
-                                        <th>RIKR ID</th>
-                                        <td><?= $row['rikr_id'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Netpay ID</th>
-                                        <td><?= $row['netpay_id'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Jadwal Pemasangan</th>
-                                        <td><?= $tanggalPemasangan ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Jam</th>
-                                        <td><?= $jamPemasangan ?> </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Request By</th>
-                                        <td><?= $row['request_by'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Catatan</th>
-                                        <td><?= $row['catatan'] ?></td>
-                                    </tr>
-                                </table>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>RIKR ID</th>
+                                            <td><?= $row['rikr_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Netpay ID</th>
+                                            <td><?= $row['netpay_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Jadwal Pemasangan</th>
+                                            <td><?= $tanggalPemasangan ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Jam</th>
+                                            <td><?= $jamPemasangan ?> </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Request By</th>
+                                            <td><?= $row['request_by'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Catatan</th>
+                                            <td><?= $row['catatan'] ?></td>
+                                        </tr>
+                                    </table>
+                                </div>
                             </div>
-                        </div>
+                        <?php elseif ($row['type_queue'] == "Maintenance"): ?>
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h3 class="card-label">Data Request Maintenance</h3>
+                                </div>
+                                <div class="card-toolbar">
+                                    <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="toggle" data-toggle="tooltip" data-placement="top">
+                                        <i class="ki ki-arrow-down icon-nm"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>RM ID</th>
+                                            <td><?= $row['rm_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Netpay ID</th>
+                                            <td><?= $row['netpay_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Type Issue</th>
+                                            <td><?= $row['type_issue'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Request By</th>
+                                            <td><?= $row['request_by'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Deskripsi Issue</th>
+                                            <td><?= $row['deskripsi_issue'] ?> </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        <?php elseif ($row['type_queue'] == "Dismantle"): ?>
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h3 class="card-label">Data Request Dismantle</h3>
+                                </div>
+                                <div class="card-toolbar">
+                                    <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="toggle" data-toggle="tooltip" data-placement="top">
+                                        <i class="ki ki-arrow-down icon-nm"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>RD ID</th>
+                                            <td><?= $row['rd_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Netpay ID</th>
+                                            <td><?= $row['netpay_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Type Dismantle</th>
+                                            <td><?= $row['type_dismantle'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Request By</th>
+                                            <td><?= $row['request_by'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Deskripsi Dismantle</th>
+                                            <td><?= $row['deskripsi_dismantle'] ?> </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="card card-custom card-collapsed mb-5" data-card="true">
                         <div class="card-header">

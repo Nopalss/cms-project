@@ -234,6 +234,9 @@ require_once __DIR__ . '/config.php';
 <?php if ($_SESSION['menu'] == "request ikr"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/request_ikr.js"></script>
 <?php endif; ?>
+<?php if ($_SESSION['menu'] == "request maintenance"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/request_maintenance.js"></script>
+<?php endif; ?>
 <?php if ($_SESSION['menu'] == "queue"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/queue.js"></script>
 <?php endif; ?>
@@ -243,6 +246,24 @@ require_once __DIR__ . '/config.php';
 <!--begin::Page Scripts(used by this page)-->
 <script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-datepicker.js"></script>
 <script>
+    //  delete template
+    function confirmDeleteTemplate(id, url, title = "Yakin mau hapus?", text = "Data akan dihapus permanen!") {
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Ya, hapus!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `${HOST_URL}${url}?id=${id}`;
+            }
+        });
+    }
+
     // registrasi
     $(document).on("click", ".btn-detail-registrasi", function() {
         $("#detail_registrasiId").text($(this).data("id"));
@@ -416,6 +437,60 @@ require_once __DIR__ . '/config.php';
         });
     }
 
+    // rm 
+    // get customer
+    function getCustomer() {
+        $.ajax({
+            url: "<?= BASE_URL ?>api/get_customer.php",
+            method: "POST",
+            data: {
+                netpay_id: $("#netpay_id").val()
+            },
+            dataType: "json",
+            success: function(res) {
+                if (res.data) {
+                    $("#data-netpay").text(res.data.netpay_id);
+                    $("#data-name").text(res.data.name);
+                    $("#data-phone").text(res.data.phone);
+                    $("#data-paket").text(`${res.data.paket_internet} Mbps`);
+                    $("#data-location").text(res.data.location);
+                }
+
+            }
+        })
+    }
+    $("#netpay_id").on("change", getCustomer);
+
+    // modal detail rm
+    $(document).on("click", ".btn-detail-rm", function() {
+        $("#detail_RmId").text($(this).data("rm-id"));
+        $("#detail_netpayId").text($(this).data("netpay-id"));
+        $("#detail_type").text($(this).data("type"));
+        $("#detail_status").text($(this).data("status")).addClass(`font-weight-bold text-${$(this).data("state")}`);
+        // const datetime = $(this).data("jadwal");
+        // const date = new Date(datetime.replace(" ", "T"));
+        // // Tanggal → format Indonesia
+        // const tanggal = date.toLocaleDateString("id-ID", {
+        //     weekday: "long",
+        //     day: "numeric",
+        //     month: "long",
+        //     year: "numeric"
+        // });
+
+        // // Jam → format 24 jam dengan pemisah :
+        // const waktu = date.toLocaleTimeString("en-GB", {
+        //     hour: "2-digit",
+        //     minute: "2-digit",
+        // });
+
+        // $("#detail_jadwal").text(tanggal);
+        // $("#detail_jam").text(`${waktu} WIB`);
+        $("#detail_catatan").text($(this).data("deskripsi"));
+        $("#detail_requestBy").text($(this).data("request-by"));
+        console.log($(this).data());
+        $("#detailModalRm").modal("show");
+    });
+
     // Schedule
     // count scheduleNow
     function scheduleNowCount() {
@@ -425,49 +500,61 @@ require_once __DIR__ . '/config.php';
             dataType: "json",
             success: function(result) {
                 if (result.status === "success") {
+                    // update badge total
                     if (result.total > 0) {
-                        $("#scheduleNow")
-                            .text(result.total)
-                            .show();
+                        $("#scheduleNow").text(result.total).show();
                     } else {
                         $("#scheduleNow").hide();
                     }
-                    if (result.data && result.data.length > 0) {
-                        const groupedByJobType = result.data.reduce((acc, item) => {
-                            // cek apakah key dengan nama job_type sudah ada
-                            if (!acc[item.job_type]) {
-                                acc[item.job_type] = [];
-                            }
 
-                            // masukkan item ke array sesuai job_type
-                            acc[item.job_type].push(item);
+                    // list kategori yang mau ditampilkan
+                    const categories = {
+                        data: "#table-scheduleNowAll",
+                        install: "#table-scheduleNowInstall",
+                        maintenance: "#table-scheduleNowMaintenance",
+                        dismantle: "#table-scheduleNowDismantle"
+                    };
 
-                            return acc;
-                        }, {});
-                        $("#table-scheduleNow").empty();
-                        result.data.forEach((data) => {
-                            console.log(data)
-                            $("#table-scheduleNow").append(`
-                                 <tr>
-                                    <td class="align-middle text-center">${data.queue_id}</td>
-                                    <td class="align-middle text-center">${data.type_queue}</td>
-                                    <td class="align-middle text-center">${data.request_id}</td>
-                                    <td class="align-middle text-center"><span class="badge badge-pill badge-info">${data.status}</span></td>
-                                    <td class="align-middle text-center">${data.created_at}</td>
-                                    <td class="align-middle text-center">
-                                        <form action="${HOST_URL}pages/schedule/create.php" method="post">
-                                        <span>
-                                            <button type="submit" name="id" class="btn btn-primary  border-0 btn-detail-rikr" value="${data.queue_id}">
-                                            <span class="navi-icon"><i class="flaticon-calendar-with-a-clock-time-tools"></i></span>
-                                            <span class="navi-text">Schedule Now</span>
-                                            </button>
-                                        </span>
-                                        </form>
-                                    </td>
-                                </tr>
-                            `)
-                        })
-                    }
+                    // looping setiap kategori
+                    Object.keys(categories).forEach((key) => {
+                        const target = $(categories[key]); // definisikan dulu di luar if
+                        target.empty();
+
+                        if (result[key] && result[key].length > 0) {
+                            result[key].forEach((item) => {
+                                target.append(`
+                                    <tr>
+                                        <td class="align-middle text-center">${item.queue_id}</td>
+                                        <td class="align-middle text-center">${item.type_queue}</td>
+                                        <td class="align-middle text-center">${item.request_id}</td>
+                                        <td class="align-middle text-center">
+                                            <span class="badge badge-pill badge-info">${item.status}</span>
+                                        </td>
+                                        <td class="align-middle text-center">${item.created_at}</td>
+                                        <td class="align-middle text-center">
+                                            <form action="${HOST_URL}pages/schedule/create.php" method="post">
+                                                <span>
+                                                    <input type="hidden" name="type_queue" value="${item.type_queue}">
+                                                    <button type="submit" name="id" class="btn btn-primary border-0 btn-detail-rikr" value="${item.queue_id}">
+                                                        <span class="navi-icon"><i class="flaticon-calendar-with-a-clock-time-tools"></i></span>
+                                                        <span class="navi-text">Schedule Now</span>
+                                                    </button>
+                                                </span>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                `);
+                            });
+                        } else {
+                            target.append(`
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <p class="text-muted font-weight-bold mb-0">Tidak ada antrian</p>
+                                        </td>
+                                    </tr>
+                                `);
+                        }
+                    });
                 }
             },
             error: function(xhr, status, error) {
@@ -475,14 +562,17 @@ require_once __DIR__ . '/config.php';
             }
         });
     }
+
     // load pertama kali
     scheduleNowCount();
     setInterval(scheduleNowCount, 10000);
 
+
     // get tanggal 
     $("#date, #tech_id").on("change", getJadwalTeknisi);
     $(document).ready(function() {
-        getJadwalTeknisi(); // langsung isi jam berdasarkan nilai default
+        getJadwalTeknisi();
+        getCustomer()
     });
 
     function getJadwalTeknisi() {
@@ -502,11 +592,15 @@ require_once __DIR__ . '/config.php';
                     // kosongkan time & timeline setiap kali request
                     $("#time").empty().append('<option value="">-- pilih Jam --</option>');
                     $("#timeline").empty();
-
+                    let jam = <?= isset($row['time']) ? json_encode(substr($row['time'], 0, 5)) : 'null' ?>;
+                    console.log(jam);
                     // === isi select jam ===
                     if (res.jamKosong && res.jamKosong.length > 0) {
+                        if (jam) {
+                            $("#time").append(`<option value = "${jam}" selected>${jam}</option>`);
+                        }
                         res.jamKosong.forEach(function(time) {
-                            $("#time").append(`<option value="${time}">${time}</option>`);
+                            $("#time").append(`<option value = "${time}">${time}</option>`);
                         });
                     } else {
                         $("#time").append('<option value="">Tidak ada jam kosong</option>');
@@ -542,7 +636,7 @@ require_once __DIR__ . '/config.php';
                                 </div>
                                 <!--end::Badge-->
                                 <!--begin::Text-->
-                                <div class="font-weight-mormal font-size-lg timeline-content pl-3">
+                                <div class="font-weight-normal font-size-lg timeline-content pl-3">
                                     <p class="mb-0 btn-detail2 cursor-pointer"
                                         data-id="${jadwal['schedule_id']}"
                                         data-tech="${jadwal['tech_id']}"

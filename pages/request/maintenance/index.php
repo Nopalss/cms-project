@@ -1,9 +1,19 @@
 <?php
-require_once __DIR__ . '/../../includes/config.php';
-$_SESSION['menu'] = 'queue';
-require __DIR__ . '/../../includes/header.php';
-require __DIR__ . '/../../includes/aside.php';
-require __DIR__ . '/../../includes/navbar.php';
+require_once __DIR__ . '/../../../includes/config.php';
+$_SESSION['menu'] = 'request maintenance';
+require __DIR__ . '/../../../includes/header.php';
+require __DIR__ . '/../../../includes/aside.php';
+require __DIR__ . '/../../../includes/navbar.php';
+
+$sql = "
+        SELECT *
+        FROM register
+        WHERE is_verified = 'Unverified'";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute();
+
+$register = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -19,7 +29,7 @@ require __DIR__ . '/../../includes/navbar.php';
                 <div class="d-flex align-items-baseline flex-wrap mr-5">
                     <!--begin::Page Title-->
                     <h5 class="text-dark font-weight-bold my-1 mr-5">
-                        Queue Schedule </h5>
+                        Request IKR </h5>
 
                     <!--end::Page Title-->
 
@@ -53,14 +63,10 @@ require __DIR__ . '/../../includes/navbar.php';
                 <div class="card-header flex-wrap border-0 pt-6 pb-0">
                     <div class="card-title">
                         <h3 class="card-label">
-                            Data Queue Schedule
+                            Data Request Maintenance
                         </h3>
                     </div>
                     <div class="card-toolbar">
-                        <button type="button" class="btn btn-light-success font-weight-bolder" id="btn-issues" data-toggle="modal" data-target="#exampleModalScrollable">
-                            <i class="flaticon2-warning"></i>Schedule Now
-                            <small id="scheduleNow" class="ml-3 label label-danger mr-2" style="display:none;"></small>
-                        </button>
                         <!--begin::Dropdown-->
                         <div class="dropdown dropdown-inline mr-2">
 
@@ -108,7 +114,17 @@ require __DIR__ . '/../../includes/navbar.php';
                         </div>
                         <!--end::Dropdown-->
 
-
+                        <!--begin::Button-->
+                        <a href="<?= BASE_URL ?>pages/request/maintenance/create.php" class="btn btn-primary font-weight-bolder">
+                            <span class="svg-icon svg-icon-md"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                        <rect x="0" y="0" width="24" height="24" />
+                                        <circle fill="#000000" cx="9" cy="15" r="6" />
+                                        <path d="M8.8012943,7.00241953 C9.83837775,5.20768121 11.7781543,4 14,4 C17.3137085,4 20,6.6862915 20,10 C20,12.2218457 18.7923188,14.1616223 16.9975805,15.1987057 C16.9991904,15.1326658 17,15.0664274 17,15 C17,10.581722 13.418278,7 9,7 C8.93357256,7 8.86733422,7.00080962 8.8012943,7.00241953 Z" fill="#000000" opacity="0.3" />
+                                    </g>
+                                </svg><!--end::Svg Icon--></span>New Request
+                            <small id="unverifiedCount" class="ml-3 label label-danger mr-2" style="display:none;"></small>
+                        </a>
                         <!--end::Button-->
                     </div>
                 </div>
@@ -123,17 +139,6 @@ require __DIR__ . '/../../includes/navbar.php';
                                         <div class="input-icon">
                                             <input type="text" class="form-control" placeholder="Search..." id="kt_datatable_search_query" />
                                             <span><i class="flaticon2-search-1 text-muted"></i></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 my-2 my-md-0">
-                                        <div class="d-flex align-items-center">
-                                            <label class="mr-3 mb-0 d-none d-md-block">Type:</label>
-                                            <select class="form-control" id="kt_datatable_search_type">
-                                                <option value="">All</option>
-                                                <option value="Install">Install</option>
-                                                <option value="Maintenance">Maintenance</option>
-                                                <option value="Dismantle">Dismantle</option>
-                                            </select>
                                         </div>
                                     </div>
                                     <div class="col-md-3 my-2 my-md-0">
@@ -175,126 +180,53 @@ require __DIR__ . '/../../includes/navbar.php';
         </div>
         <!-- end::Container -->
     </div>
-</div>
-<!-- end::entry -->
-
-<!-- Modal issues report -->
-<div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Schedule Now</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <i aria-hidden="true" class="ki ki-close"></i>
-                </button>
-            </div>
-            <div class="modal-body" style="height: 300px;">
-                <ul class="nav nav-light-success nav-bold nav-pills">
-                    <li class="nav-item">
-                        <a class="nav-link active" data-toggle="tab" href="#kt_tab_pane_4_1">
-                            <span class="nav-text">All</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#kt_tab_pane_4_2">
-                            <span class="nav-text">Instalasi</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#kt_tab_pane_4_3">
-                            <span class="nav-text">Maintenance</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-toggle="tab" href="#kt_tab_pane_4_4">
-                            <span class="nav-text">Dismantle</span>
-                        </a>
-                    </li>
-                </ul>
-
-                <div class="tab-content mt-3">
-                    <!-- All -->
-                    <div class="tab-pane fade show active" id="kt_tab_pane_4_1" role="tabpanel">
-                        <div class="table-responsive-xl">
-                            <table class="table text-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Queue ID</th>
-                                        <th>Type Queue</th>
-                                        <th>Request ID</th>
-                                        <th>Status</th>
-                                        <th>Created At</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-scheduleNowAll"></tbody>
-                            </table>
+    <!-- end::entry -->
+    <!-- modal detail registrasi-->
+    <div class="modal fade" id="detailModalRm" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+            <div class="modal-content shadow-lg border-0 rounded-lg">
+                <div class="modal-header">
+                    <h4 class="modal-title"><i class="la la-info-circle text-info"></i> Detail Request Maintenance</h4>
+                    <button type="button" class="close text-danger" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-2 pl-2">
+                        <div class="col-4 font-weight-bold">RM ID</div>
+                        <div class="col-8" id="detail_RmId"></div>
+                    </div>
+                    <div class="row mb-2 pl-2">
+                        <div class="col-4 font-weight-bold">Netpay ID</div>
+                        <div class="col-8" id="detail_netpayId"></div>
+                    </div>
+                    <div class="row mb-2 pl-2">
+                        <div class="col-4 font-weight-bold">Type Issue</div>
+                        <div class="col-8" id="detail_type"></div>
+                    </div>
+                    <div class="row mb-2 pl-2">
+                        <div class="col-4 font-weight-bold">Status</div>
+                        <div class="col-8" id="detail_status"></div>
+                    </div>
+                    <div class="row mb-2 pl-2">
+                        <div class="col-4 font-weight-bold">Request By</div>
+                        <div class="col-8" id="detail_requestBy"></div>
+                    </div>
+                    <div class="row mb-2 pl-2">
+                        <div class="col-4 font-weight-bold">Deskripsi</div>
+                        <div class="col-8">
+                            <div id="detail_catatan"></div>
                         </div>
                     </div>
-
-                    <!-- Install -->
-                    <div class="tab-pane fade" id="kt_tab_pane_4_2" role="tabpanel">
-                        <div class="table-responsive-xl">
-                            <table class="table text-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Queue ID</th>
-                                        <th>Type Queue</th>
-                                        <th>Request ID</th>
-                                        <th>Status</th>
-                                        <th>Created At</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-scheduleNowInstall"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Maintenance -->
-                    <div class="tab-pane fade" id="kt_tab_pane_4_3" role="tabpanel">
-                        <div class="table-responsive-xl">
-                            <table class="table text-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Queue ID</th>
-                                        <th>Type Queue</th>
-                                        <th>Request ID</th>
-                                        <th>Status</th>
-                                        <th>Created At</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-scheduleNowMaintenance"></tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- Dismantle -->
-                    <div class="tab-pane fade" id="kt_tab_pane_4_4" role="tabpanel">
-                        <div class="table-responsive-xl">
-                            <table class="table text-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Queue ID</th>
-                                        <th>Type Queue</th>
-                                        <th>Request ID</th>
-                                        <th>Status</th>
-                                        <th>Created At</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-scheduleNowDismantle"></tbody>
-                            </table>
-                        </div>
-                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-dismiss="modal">
+                        <i class="la la-times"></i> Tutup
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-
 <?php
-require __DIR__ . '/../../includes/footer.php';
+require __DIR__ . '/../../../includes/footer.php';
 ?>

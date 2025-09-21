@@ -138,7 +138,7 @@ $role = $_SESSION['role'];
                                                             <span class="menu-text">Request IKR</span></a>
                                                         </li>
                                                         <?php if ($_SESSION['menu'] == 'request maintenance'): ?>
-                                                            <li class="menu-item menu-item-active" aria-haspopup="true"><a href="<?= BASE_URL ?>pages/request/ikr/" class="menu-link ">
+                                                            <li class="menu-item menu-item-active" aria-haspopup="true"><a href="<?= BASE_URL ?>pages/request/maintenance/" class="menu-link ">
                                                                 <?php else: ?>
                                                             <li class="menu-item " aria-haspopup="true"><a href="<?= BASE_URL ?>pages/request/maintenance/" class="menu-link ">
                                                                 <?php endif; ?>
@@ -146,7 +146,7 @@ $role = $_SESSION['role'];
                                                                 <span class="menu-text">Request Maintenance</span></a>
                                                             </li>
                                                             <?php if ($_SESSION['menu'] == 'request dismantle'): ?>
-                                                                <li class="menu-item menu-item-active" aria-haspopup="true"><a href="<?= BASE_URL ?>pages/request/ikr/" class="menu-link ">
+                                                                <li class="menu-item menu-item-active" aria-haspopup="true"><a href="<?= BASE_URL ?>pages/request/dismantle/" class="menu-link ">
                                                                     <?php else: ?>
                                                                 <li class="menu-item " aria-haspopup="true"><a href="<?= BASE_URL ?>pages/request/dismantle/" class="menu-link ">
                                                                     <?php endif; ?>

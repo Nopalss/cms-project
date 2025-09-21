@@ -180,62 +180,63 @@ $register = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
         <!-- end::Container -->
     </div>
-    <!-- end::entry -->
-    <!-- modal detail registrasi-->
-    <div class="modal fade" id="detailModalRIKR" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-            <div class="modal-content shadow-lg border-0 rounded-lg">
-                <div class="modal-header">
-                    <h4 class="modal-title"><i class="la la-info-circle text-info"></i> Detail Request IKR</h4>
-                    <button type="button" class="close text-danger" data-dismiss="modal">&times;</button>
+</div>
+<!-- end::entry -->
+<!-- modal detail registrasi-->
+<div class="modal fade" id="detailModalRIKR" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content shadow-lg border-0 rounded-lg">
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="la la-info-circle text-info"></i> Detail Request IKR</h4>
+                <button type="button" class="close text-danger" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">RIKR ID</div>
+                    <div class="col-8" id="detail_rikrId"></div>
                 </div>
-                <div class="modal-body">
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">RIKR ID</div>
-                        <div class="col-8" id="detail_rikrId"></div>
-                    </div>
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">Netpay ID</div>
-                        <div class="col-8" id="detail_netpayId"></div>
-                    </div>
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">Registrasi ID</div>
-                        <div class="col-8" id="detail_registrasiId"></div>
-                    </div>
-                    <div class="row mb-2 pl-2 justify-content-center align-items-center">
-                        <div class="col-4 font-weight-bold">Jadwal Pemasangan</div>
-                        <div class="col-8">
-                            <div id="detail_jadwal"></div>
-                        </div>
-                    </div>
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">Jam</div>
-                        <div class="col-8" id="detail_jam"></div>
-                    </div>
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">Status</div>
-                        <div class="col-8" id="detail_status"></div>
-                    </div>
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">Request By</div>
-                        <div class="col-8" id="detail_requestBy"></div>
-                    </div>
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">Catatan</div>
-                        <div class="col-8">
-                            <div id="detail_catatan"></div>
-                        </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Netpay ID</div>
+                    <div class="col-8" id="detail_netpayId"></div>
+                </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Registrasi ID</div>
+                    <div class="col-8" id="detail_registrasiId"></div>
+                </div>
+                <div class="row mb-2 pl-2 justify-content-center align-items-center">
+                    <div class="col-4 font-weight-bold">Jadwal Pemasangan</div>
+                    <div class="col-8">
+                        <div id="detail_jadwal"></div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-dismiss="modal">
-                        <i class="la la-times"></i> Tutup
-                    </button>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Jam</div>
+                    <div class="col-8" id="detail_jam"></div>
                 </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Status</div>
+                    <div class="col-8" id="detail_status"></div>
+                </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Request By</div>
+                    <div class="col-8" id="detail_requestBy"></div>
+                </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Catatan</div>
+                    <div class="col-8">
+                        <div id="detail_catatan"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-dismiss="modal">
+                    <i class="la la-times"></i> Tutup
+                </button>
             </div>
         </div>
     </div>
+</div>
 
-    <?php
-    require __DIR__ . '/../../../includes/footer.php';
-    ?>
+<?php
+require __DIR__ . '/../../../includes/footer.php';
+?>
