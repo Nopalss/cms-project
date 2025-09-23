@@ -1,7 +1,8 @@
 <?php
 $tech_id = 1;
 // Mengambil data scehdule berdasarkan id teknisi
-$sql = "SELECT * FROM schedules
+$sql = "SELECT s.*, c.location, c.phone FROM schedules s
+        JOIN customers c ON s.netpay_id = c.netpay_id
         WHERE date = CURDATE()
         AND tech_id = :tech_id
         ORDER BY time ASC";
@@ -80,16 +81,8 @@ $statusClasses = [
                                                         <li class="navi-header font-weight-bolder text-uppercase font-size-xs text-primary pb-2">
                                                             Choose an action:
                                                         </li>
-                                                        <?php if ($s['status'] == 'Pending' || $s['status'] == 'Rescheduled'): ?>
-                                                            <li class="navi-item cursor-pointer">
-                                                                <a class="navi-link" href="<?= BASE_URL ?>pages/schedule/issue_report.php?id=<?= $s['schedule_id'] ?>">
-                                                                    <span class="navi-icon "><i class="flaticon2-warning text-warning"></i></span>
-                                                                    <span class="navi-text">Task Issue Report</span>
-                                                                </a>
-                                                            </li>
-                                                        <?php endif; ?>
                                                         <li class="navi-item cursor-pointer">
-                                                            <a class="navi-link btn-detail2" data-id="<?= $s['schedule_id'] ?>" data-tech="<?= $s['tech_id'] ?>" data-date="<?= $s['date'] ?>" data-job="<?= $s['job_type'] ?>" data-state="<?= $statusClasses[$s['status']] ?>" data-status="<?= $s['status'] ?>" data-location="<?= $s['location'] ?>">
+                                                            <a class="navi-link" href="<?= BASE_URL ?>pages/schedule/detail.php?id=<?= $s['schedule_id'] ?>">
                                                                 <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>
                                                                 <span class="navi-text">Detail</span>
                                                             </a>
@@ -142,14 +135,14 @@ $statusClasses = [
                                 <li class="navi-item">
                                     <a href="#" class="navi-link">
                                         <span class="navi-text">
-                                            <span class="label label-xl label-inline label-light-danger">Maintenance</span>
+                                            <span class="label label-xl label-inline label-light-danger">Dismantle</span>
                                         </span>
                                     </a>
                                 </li>
                                 <li class="navi-item">
                                     <a href="#" class="navi-link">
                                         <span class="navi-text">
-                                            <span class="label label-xl label-inline label-light-warning">Perbaikan</span>
+                                            <span class="label label-xl label-inline label-light-warning">Maintenance</span>
                                         </span>
                                     </a>
                                 </li>
@@ -182,19 +175,12 @@ $statusClasses = [
 
                                     <!--begin::Text-->
                                     <div class="font-weight-mormal font-size-lg timeline-content pl-3 ">
-                                        <p class="mb-0 btn-detail2 cursor-pointer"
-                                            data-id="<?= $s['schedule_id'] ?>"
-                                            data-tech="<?= $s['tech_id'] ?>"
-                                            data-date="<?= $s['date'] ?>"
-                                            data-job="<?= $s['job_type'] ?>"
-                                            data-state="<?= $statusClasses[$s['status']] ?>"
-                                            data-status="<?= $s['status'] ?>"
-                                            data-location="<?= $s['location'] ?>">
+                                        <a href="<?= BASE_URL ?>pages/schedule/detail.php?id=<?= $s['schedule_id'] ?>" class="mb-0 text-dark cursor-pointer">
                                             <?= $s['job_type'] ?>
-                                            <a class="text-muted btn-detail font-size-sm cursor-pointer">
+                                            <a class="text-muted font-size-sm cursor-pointer">
                                                 #<?= $s['schedule_id'] ?>
                                             </a>
-                                        </p>
+                                        </a>
                                     </div>
                                     <!--end::Text-->
                                 </div>
@@ -217,10 +203,10 @@ $statusClasses = [
             </div>
             <div class="card-body pt-0">
                 <div class="table-responsive">
-                    <table class="table text-sm">
+                    <table class="table text-sm" style="min-height:180px;">
                         <thead>
                             <tr>
-                                <th scope="col">Issue Id</th>
+                                <th scope=" col">Issue Id</th>
                                 <th scope="col">Schedule Id</th>
                                 <th scope="col">Issue Type</th>
                                 <th scope="col">Status</th>
@@ -268,6 +254,20 @@ $statusClasses = [
                                                                 <span class="navi-text">Detail</span>
                                                             </a>
                                                         </li>
+                                                        <?php if ($i['status'] == "Pending"): ?>
+                                                            <li class="navi-item cursor-pointer">
+                                                                <a href='<?= BASE_URL ?>pages/schedule/update_issue_report.php?id=<?= $i['issue_id'] ?>' class="navi-link">
+                                                                    <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>
+                                                                    <span class="navi-text">Edit</span>
+                                                                </a>
+                                                            </li>
+                                                            <li class="navi-item cursor-pointer">
+                                                                <a onclick="confirmDeleteTemplate('<?= $i['issue_id'] ?>', 'controllers/schedules/delete_issue_report.php')" class="navi-link">
+                                                                    <span class="navi-icon "><i class="la la-trash text-danger"></i></span>
+                                                                    <span class="navi-text">Hapus</span>
+                                                                </a>
+                                                            </li>
+                                                        <?php endif; ?>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -290,53 +290,6 @@ $statusClasses = [
 </div>
 
 
-<!-- modal detail schedule-->
-<div class=" modal fade" id="detailModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-        <div class="modal-content shadow-lg border-0 rounded-lg">
-            <div class="modal-header">
-                <h4 class="modal-title"><i class="la la-info-circle text-info"></i> Detail Schedule</h4>
-                <button type="button" class="close text-danger" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Schedule ID</div>
-                    <div class="col-8" id="detail_id"></div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Teknisi</div>
-                    <div class="col-8" id="detail_tech"></div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Tanggal</div>
-                    <div class="col-8" id="detail_date"></div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Job Type</div>
-                    <div class="col-8" id="detail_job"></div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Status</div>
-                    <div class="col-8">
-                        <div id="detail_status"></div>
-                    </div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Location</div>
-                    <div class="col-8" id="detail_location"></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <a class="btn btn-warning" id="detail_btn_report">
-                    <i class="flaticon2-warning"></i>Task Issue Report
-                </a>
-                <a class="btn btn-success" id="detail_btn_done">
-                    <i class="flaticon2-check-mark"></i> Done
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <?php if (!empty($_SESSION['info'])): ?>

@@ -237,6 +237,9 @@ require_once __DIR__ . '/config.php';
 <?php if ($_SESSION['menu'] == "request maintenance"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/request_maintenance.js"></script>
 <?php endif; ?>
+<?php if ($_SESSION['menu'] == "request dismantle"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/request_dismantle.js"></script>
+<?php endif; ?>
 <?php if ($_SESSION['menu'] == "queue"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/queue.js"></script>
 <?php endif; ?>
@@ -453,6 +456,7 @@ require_once __DIR__ . '/config.php';
                     $("#data-name").text(res.data.name);
                     $("#data-phone").text(res.data.phone);
                     $("#data-paket").text(`${res.data.paket_internet} Mbps`);
+                    $("#data-active").text(res.data.is_active);
                     $("#data-location").text(res.data.location);
                 }
 
@@ -489,6 +493,36 @@ require_once __DIR__ . '/config.php';
         $("#detail_requestBy").text($(this).data("request-by"));
         console.log($(this).data());
         $("#detailModalRm").modal("show");
+    });
+    // RD
+    // modal detail rd
+    $(document).on("click", ".btn-detail-rd", function() {
+        $("#detail_RdId").text($(this).data("rd-id"));
+        $("#detail_netpayId").text($(this).data("netpay-id"));
+        $("#detail_type").text($(this).data("type"));
+        $("#detail_status").text($(this).data("status")).addClass(`font-weight-bold text-${$(this).data("state")}`);
+        // const datetime = $(this).data("jadwal");
+        // const date = new Date(datetime.replace(" ", "T"));
+        // // Tanggal → format Indonesia
+        // const tanggal = date.toLocaleDateString("id-ID", {
+        //     weekday: "long",
+        //     day: "numeric",
+        //     month: "long",
+        //     year: "numeric"
+        // });
+
+        // // Jam → format 24 jam dengan pemisah :
+        // const waktu = date.toLocaleTimeString("en-GB", {
+        //     hour: "2-digit",
+        //     minute: "2-digit",
+        // });
+
+        // $("#detail_jadwal").text(tanggal);
+        // $("#detail_jam").text(`${waktu} WIB`);
+        $("#detail_catatan").text($(this).data("deskripsi"));
+        $("#detail_requestBy").text($(this).data("request-by"));
+        console.log($(this).data());
+        $("#detailModalRd").modal("show");
     });
 
     // Schedule
@@ -694,12 +728,13 @@ require_once __DIR__ . '/config.php';
 
         $("#detail_location").text($(this).data("location"));
         $("#detail_netpayId").text($(this).data("netpay"));
+        $("#detail_phone").text($(this).data("phone"));
 
         // hanya untuk btn-detail2 → kasih link report
 
         if ($(this).hasClass("btn-detail2")) {
             $("#detail_btn_report").attr(
-                "href", `${HOST_URL}pages/schedule/issue_report.php?id = ${$(this).data("id")}`
+                "href", `${HOST_URL}pages/schedule/issue_report.php?id=${$(this).data("id")}`
             )
             if ($(this).data("status") == "Cancelled" || $(this).data("status") == "Done") {
                 $("#detail_btn_report").addClass('d-none');
@@ -734,8 +769,7 @@ require_once __DIR__ . '/config.php';
     }
 
 
-    function confirmApproved(issueId, scheduleId) {
-        console.log(Swal.version)
+    function confirmApproved(issueId, scheduleId, jobType) {
         Swal.fire({
             title: 'Apa yang harus dilakukan?',
             text: "Schedule ini bisa dibatalkan atau dijadwalkan ulang",
@@ -747,12 +781,47 @@ require_once __DIR__ . '/config.php';
             cancelButtonText: 'Reschedule',
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = HOST_URL + "controllers/schedules/approve_report.php?id=" + issueId + "&scheduleId=" + scheduleId;
+                $.post(HOST_URL + "controllers/schedules/approve_report.php", {
+                    id: issueId,
+                    scheduleId: scheduleId
+                }).done(function(res) {
+                    Swal.fire('Sukses!', 'Schedule berhasil di-approve.', 'success')
+                        .then(() => {
+                            location.reload(); // atau window.location.href ke halaman lain
+                        });
+                }).fail(function() {
+                    Swal.fire('Error!', 'Terjadi kesalahan.', 'error');
+                });
             } else if (result.dismiss === Swal.DismissReason.cancel) {
-                window.location.href = HOST_URL + "pages/schedule/update.php?id=" + scheduleId + "&issueId=" + issueId;
+                // redirect ke update.php dengan POST
+                let form = $('<form>', {
+                    method: 'POST',
+                    action: HOST_URL + "pages/schedule/update.php"
+                });
+
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'id',
+                    value: scheduleId
+                }).appendTo(form);
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'job_type',
+                    value: jobType
+                }).appendTo(form);
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'issue_id',
+                    value: issueId
+                }).appendTo(form);
+
+                $(document.body).append(form);
+                form.submit();
             }
         });
     }
+
+
 
     $(".btn-detail3").on("click", function() {
         $("#detail_idIssue").text($(this).data("id"));
@@ -776,18 +845,8 @@ require_once __DIR__ . '/config.php';
             hour: "2-digit",
             minute: "2-digit",
         });
-        $("#detail_dateIssue").text(`
-                                            Jam $ {
-                                                waktu
-                                            }.$ {
-                                                tanggal
-                                            }
-                                            `);
-        $("#detail_stat").text($(this).data("status")).addClass(`
-                                            text - $ {
-                                                $(this).data("state")
-                                            }
-                                            font - weight - bold`);
+        $("#detail_dateIssue").text(`Jam ${waktu}.${tanggal}`);
+        $("#detail_stat").text($(this).data("status")).addClass(`text-${$(this).data("state")} font-weight-bold`);
         $("#detail_desc").text($(this).data("desc"));
         $("#detailModalIssue").modal("show");
     });

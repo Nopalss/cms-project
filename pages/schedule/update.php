@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
 $id = isset($_POST['id']) ? $_POST['id'] : null;
+$issue_id = isset($_POST['issue_id']) ? $_POST['issue_id'] : null;
 $job_type = isset($_POST['job_type']) ? $_POST['job_type'] : null;
 if ($id && $job_type) {
     $_SESSION['menu'] = 'schedule';
@@ -56,6 +57,12 @@ if ($id && $job_type) {
         $sql = "SELECT * FROM technician";
         $stmt = $pdo->query($sql);
         $technicians = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if ($issue_id) {
+            $sql = "SELECT * FROM issues_report WHERE issue_id = :issue_id";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':issue_id' => $issue_id]);
+            $issue = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
     }
@@ -166,6 +173,9 @@ if ($id && $job_type) {
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
+                                <?php if (isset($issue)): ?>
+                                    <input type="hidden" name="issue_id" value="<?= $issue['issue_id'] ?>">
+                                <?php endif; ?>
                                 <div class="form-group mb-1">
                                     <label for="exampleTextarea">Alamat</label>
                                     <textarea class="form-control" id="exampleTextarea" readonly name="location" rows="3"><?= $row['location'] ?></textarea>
@@ -227,7 +237,7 @@ if ($id && $job_type) {
                         </div>
                         <!--end::Header-->
 
-                        <!--begin::Body-->
+
                         <div class="card-body pt-4" id="card-timeline">
                             <!--begin::Timeline-->
                             <div class="timeline timeline-6 mt-3" id="timeline">
@@ -236,6 +246,52 @@ if ($id && $job_type) {
                         </div>
                         <!--end: Card Body-->
                     </div>
+                    <?php if (isset($issue)): ?>
+                        <div class="card card-custom card-collapsed mb-5" data-card="true">
+
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h3 class="card-label">Issue Report</h3>
+                                </div>
+                                <div class="card-toolbar">
+                                    <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="toggle" data-toggle="tooltip" data-placement="top">
+                                        <i class="ki ki-arrow-down icon-nm"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>Issue ID</th>
+                                            <td><?= $issue['issue_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Schedule ID</th>
+                                            <td><?= $issue['schedule_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Reported By</th>
+                                            <td><?= $issue['reported_by'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Issue_type</th>
+                                            <td><?= $issue['issue_type'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Status</th>
+                                            <td><?= $issue['status'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Description</th>
+                                            <td class="text-wrap"><?= $issue['description'] ?></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                     <div class="card card-custom mb-5" data-card="true">
                         <?php if ($row['type_queue'] == "Install"): ?>
                             <div class="card-header">

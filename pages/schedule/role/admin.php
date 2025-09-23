@@ -2,9 +2,10 @@
 
 // mengambil data issues report berdasarkan id teknisi
 $sql = "
-        SELECT *
-        FROM issues_report
-        WHERE status = 'Pending' 
+        SELECT i.*, s.job_type
+        FROM issues_report i
+        JOIN schedules s ON i.schedule_id = s.schedule_id
+        WHERE i.status = 'Pending' 
           AND created_at >= CURDATE()
           AND created_at < CURDATE() + INTERVAL 1 DAY";
 
@@ -31,7 +32,99 @@ $issues_report = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <small class="ml-3 label label-danger mr-2"><?= count($issues_report) ?></small>
                     <?php endif; ?>
                 </button>
+                <!-- Modal issues report -->
+                <div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Issues Report</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <i aria-hidden="true" class="ki ki-close"></i>
+                                </button>
+                            </div>
+                            <div class="modal-body" style="height: 300px;">
+                                <div class="table-responsive-xl">
+                                    <table class="table text-sm">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Issue Id</th>
+                                                <th scope="col">Schedule Id</th>
+                                                <th scope="col">Reported By</th>
+                                                <th scope="col">Issue Type</th>
+                                                <th scope="col">Status</th>
+                                                <th scope="col">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <?php if (count($issues_report) > 0): ?>
+                                            <tbody>
+                                                <?php foreach ($issues_report as $i): ?>
+                                                    <tr>
+                                                        <th scope="row"><?= $i['issue_id'] ?></th>
+                                                        <td><?= $i['schedule_id'] ?></td>
+                                                        <td><?= $i['reported_by'] ?></td>
+                                                        <td><?= $i['issue_type'] ?></td>
+                                                        <td class="text-sm"><span class="badge badge-pill badge-<?= $statusIssueClasses[$i['status']] ?>"><?= $i['status'] ?></span></td>
+                                                        <td>
+                                                            <div class="dropdown dropdown-inline">
+                                                                <a href="javascript:;" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" data-toggle="dropdown">
+                                                                    <span class="svg-icon svg-icon-md">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
+                                                                            <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                                                                                <rect x="0" y="0" width="24" height="24" />
+                                                                                <path d="M5,8.6862915 L5,5 L8.6862915,5 L11.5857864,2.10050506 L14.4852814,5 L19,5 L19,9.51471863 L21.4852814,12 L19,14.4852814 L19,19 L14.4852814,19 L11.5857864,21.8994949 L8.6862915,19 L5,19 L5,15.3137085 L1.6862915,12 L5,8.6862915 Z M12,15 C13.6568542,15 15,13.6568542 15,12 C15,10.3431458 13.6568542,9 12,9 C10.3431458,9 9,10.3431458 9,12 C9,13.6568542 10.3431458,15 12,15 Z" fill="#000000" />
+                                                                            </g>
+                                                                        </svg>
+                                                                    </span>
+                                                                </a>
+                                                                <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
+                                                                    <ul class="navi flex-column navi-hover py-2">
+                                                                        <li class="navi-header font-weight-bolder text-uppercase font-size-xs text-primary pb-2">
+                                                                            Choose an action:
+                                                                        </li>
+                                                                        <li class="navi-item cursor-pointer">
+                                                                            <a
+                                                                                class="navi-link btn-detail3"
+                                                                                data-id="<?= $i['issue_id'] ?>"
+                                                                                data-schedule="<?= $i['schedule_id'] ?>"
+                                                                                data-reported="<?= $i['reported_by'] ?>"
+                                                                                data-type="<?= $i['issue_type'] ?>"
+                                                                                data-desc="<?= $i['description'] ?>"
+                                                                                data-date="<?= $i['created_at'] ?>"
+                                                                                data-status="<?= $i['status'] ?>"
+                                                                                data-state="<?= $statusIssueClasses[$i['status']] ?>">
 
+                                                                                <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>
+                                                                                <span class="navi-text">Detail</span>
+                                                                            </a>
+                                                                        </li>
+                                                                        <li class="navi-item cursor-pointer">
+                                                                            <a class="navi-link btn-approved" onclick="confirmApproved('<?= $i['issue_id'] ?>','<?= $i['schedule_id'] ?>', '<?= $i['job_type'] ?>')">
+                                                                                <span class="navi-icon "><i class="flaticon2-check-mark text-success"></i></span>
+                                                                                <span class="navi-text">Approved</span>
+                                                                            </a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        <?php else: ?>
+                                            <tr>
+                                                <td class="text-center text-muted text-weight-bold" colspan="6">Tidak ada Issue Report</td>
+                                            </tr>
+                                        <?php endif; ?>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Close</button>
+                                <!-- <button type="button" class="btn btn-primary font-weight-bold">Save changes</button> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <!--begin::Dropdown Menu-->
                 <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">

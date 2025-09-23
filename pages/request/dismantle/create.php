@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../../includes/config.php';
-$_SESSION['menu'] = 'request maintenance';
+$_SESSION['menu'] = 'request dismantle';
 require __DIR__ . '/../../../includes/header.php';
 require __DIR__ . '/../../../includes/aside.php';
 require __DIR__ . '/../../../includes/navbar.php';
@@ -10,7 +10,7 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $rm_id = "RM" . date("YmdHs");
+    $rd_id = "RD" . date("YmdHs");
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -20,23 +20,23 @@ try {
     <div class=" d-flex flex-column-fluid">
         <!--begin::Container-->
         <div class="container">
-            <form method="post" class="form row" action="<?= BASE_URL ?>controllers/request/maintenance/create.php">
+            <form method="post" class="form row" action="<?= BASE_URL ?>controllers/request/dismantle/create.php">
                 <!-- card create request IKR -->
                 <div class="col-md-6 mb-10">
                     <div class="card card-custom shadow-sm">
                         <div class="card-header pt-5">
                             <div class="card-title">
                                 <h3 class="card-label">
-                                    Create Request Maintenance
+                                    Create Request Dismantle
                                 </h3>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label class="text-right">Request Maintenance ID</label>
+                                <label class="text-right">Request Dismantle ID</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" value="<?= $rm_id ?>" disabled="disabled" />
-                                    <input type="hidden" class="form-control" name="rm_id" value="<?= $rm_id ?>" />
+                                    <input type="text" class="form-control" value="<?= $rd_id ?>" disabled="disabled" />
+                                    <input type="hidden" class="form-control" name="rd_id" value="<?= $rd_id ?>" />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -50,21 +50,22 @@ try {
                             </div>
 
                             <div class="form-group">
-                                <label class="text-right">Type Issue</label>
-                                <select class="form-control selectpicker" id="type_issue" required name="type_issue">
+                                <label class="text-right">Type dismantle</label>
+                                <select class="form-control selectpicker" id="type_dismantle" required name="type_dismantle">
                                     <option value="">Select</option>
-                                    <option value="Signal Lemah">Signal Lemah</option>
-                                    <option value="Modem Rusak">Modem Rusak</option>
-                                    <option value="Modem Rusak">Modem Rusak</option>
-                                    <option value="Gangguan Internet">Gangguan Internet</option>
-                                    <option value="Upgrade Paket">Upgrade Paket</option>
+                                    <option value="Pindah Alamat">Pindah Alamat</option>
+                                    <option value="Biaya Mahal">Biaya Mahal</option>
+                                    <option value="Jarang Digunakan">Jarang Digunakan</option>
+                                    <option value="Pelayanan Buruk">Pelayanan Buruk</option>
+                                    <option value="Gangguan Berkepanjangan">Gangguan Berkepanjangan</option>
+                                    <option value="Ganti Provider">Ganti Provider</option>
                                     <option value="Lainnya">Lainnya</option>
                                 </select>
                             </div>
 
                             <div class="form-group mb-1">
-                                <label for="exampleTextarea">Deskripsi Issue</label>
-                                <textarea class="form-control" id="exampleTextarea" required name="deskripsi_issue" rows="3"></textarea>
+                                <label for="exampleTextarea">Deskripsi Dismantle</label>
+                                <textarea class="form-control" id="exampleTextarea" required name="deskripsi_dismantle" rows="3"></textarea>
                             </div>
                         </div>
                         <div class="card-footer text-right">
@@ -103,10 +104,6 @@ try {
                                     <tr>
                                         <th>Paket</th>
                                         <td id="data-paket"> </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Is Active?</th>
-                                        <td id="data-active"></td>
                                     </tr>
                                     <tr>
                                         <th>Location</th>

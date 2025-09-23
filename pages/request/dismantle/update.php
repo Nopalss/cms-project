@@ -1,16 +1,22 @@
 <?php
 
 require_once __DIR__ . '/../../../includes/config.php';
-$_SESSION['menu'] = 'request maintenance';
+$_SESSION['menu'] = 'request dismantle';
 require __DIR__ . '/../../../includes/header.php';
 require __DIR__ . '/../../../includes/aside.php';
 require __DIR__ . '/../../../includes/navbar.php';
 try {
+    $rd_id = isset($_GET['id']) ? $_GET['id'] : null;
     $sql = "SELECT netpay_id, name FROM customers";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $rm_id = "RM" . date("YmdHs");
+    $sql = "SELECT * FROM request_dismantle WHERE rd_id = :rd_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':rd_id', $rd_id, PDO::PARAM_STR);
+    $stmt->execute();
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $type_dismantle = ['Pindah Alamat', 'Biaya Mahal', 'Jarang Digunakan', 'Pelayanan Buruk', 'Gangguan Berkepanjangan', 'Ganti Provider', 'Lainnya'];
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -20,23 +26,23 @@ try {
     <div class=" d-flex flex-column-fluid">
         <!--begin::Container-->
         <div class="container">
-            <form method="post" class="form row" action="<?= BASE_URL ?>controllers/request/maintenance/create.php">
-                <!-- card create request IKR -->
+            <form method="post" class="form row" action="<?= BASE_URL ?>controllers/request/dismantle/update.php">
+                <!-- card Update request Maintenance -->
                 <div class="col-md-6 mb-10">
                     <div class="card card-custom shadow-sm">
                         <div class="card-header pt-5">
                             <div class="card-title">
                                 <h3 class="card-label">
-                                    Create Request Maintenance
+                                    Update Request Dismantle
                                 </h3>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label class="text-right">Request Maintenance ID</label>
+                                <label class="text-right">Request Dismantle ID</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" value="<?= $rm_id ?>" disabled="disabled" />
-                                    <input type="hidden" class="form-control" name="rm_id" value="<?= $rm_id ?>" />
+                                    <input type="text" class="form-control" value="<?= $rd_id ?>" disabled="disabled" />
+                                    <input type="hidden" class="form-control" name="rd_id" value="<?= $rd_id ?>" />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -44,32 +50,31 @@ try {
                                 <select class="form-control selectpicker" id="netpay_id" required name="netpay_id" data-size=" 7" data-live-search="true">
                                     <option value="">Select</option>
                                     <?php foreach ($customers as $c): ?>
-                                        <option value="<?= $c['netpay_id'] ?>"><?= $c['netpay_id'] . " - " .  $c['name']  ?></option>
+                                        <?php $selected = $c['netpay_id'] == $row['netpay_id'] ? 'selected' : '' ?>
+                                        <option value="<?= $c['netpay_id'] ?>" <?= $selected ?>><?= $c['netpay_id'] . ' - ' .  $c['name'] ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label class="text-right">Type Issue</label>
-                                <select class="form-control selectpicker" id="type_issue" required name="type_issue">
+                                <label class="text-right">Type Dismantle</label>
+                                <select class="form-control selectpicker" id="type_dismantle" required name="type_dismantle">
                                     <option value="">Select</option>
-                                    <option value="Signal Lemah">Signal Lemah</option>
-                                    <option value="Modem Rusak">Modem Rusak</option>
-                                    <option value="Modem Rusak">Modem Rusak</option>
-                                    <option value="Gangguan Internet">Gangguan Internet</option>
-                                    <option value="Upgrade Paket">Upgrade Paket</option>
-                                    <option value="Lainnya">Lainnya</option>
+                                    <?php foreach ($type_dismantle as $t): ?>
+                                        <?php $selected = $t == $row['type_dismantle'] ? 'selected' : '' ?>
+                                        <option value="<?= $t ?>" <?= $selected ?>><?= $t ?></option>
+                                    <?php endforeach; ?>
                                 </select>
                             </div>
 
                             <div class="form-group mb-1">
-                                <label for="exampleTextarea">Deskripsi Issue</label>
-                                <textarea class="form-control" id="exampleTextarea" required name="deskripsi_issue" rows="3"></textarea>
+                                <label for="exampleTextarea">Deskripsi Dismantle</label>
+                                <textarea class="form-control" id="exampleTextarea" required name="deskripsi_dismantle" rows="3"><?= $row['deskripsi_dismantle'] ?></textarea>
                             </div>
                         </div>
                         <div class="card-footer text-right">
-                            <a href="<?= BASE_URL ?>pages/request/maintenance" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
-                            <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Create</button>
+                            <a href="<?= BASE_URL ?>pages/request/dismantle/" class="btn btn-light-danger font-weight-bold">Cancel</a>
+                            <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Update</button>
                         </div>
                     </div>
                 </div>
@@ -103,10 +108,6 @@ try {
                                     <tr>
                                         <th>Paket</th>
                                         <td id="data-paket"> </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Is Active?</th>
-                                        <td id="data-active"></td>
                                     </tr>
                                     <tr>
                                         <th>Location</th>

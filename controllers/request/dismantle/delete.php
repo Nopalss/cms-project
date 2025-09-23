@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../../includes/config.php";
+require_once __DIR__ . "/../../../includes/config.php";
 
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
@@ -7,14 +7,14 @@ if (isset($_GET['id'])) {
     try {
         $pdo->beginTransaction();
 
-        // Pastikan schedule ada
-        $sql = "SELECT schedule_id, queue_id FROM schedules WHERE schedule_id = :id";
+        // Pastikan request_maintenance ada
+        $sql = "SELECT rd_id FROM request_dismantle WHERE rd_id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$row) {
-            if ($pdo->inTransaction()) $pdo->rollBack();
+            $pdo->rollBack();
             $_SESSION['alert'] = [
                 'icon' => 'warning',
                 'title' => 'Oops!',
@@ -22,24 +22,23 @@ if (isset($_GET['id'])) {
                 'button' => "Oke",
                 'style' => "warning"
             ];
-            header("Location: " . BASE_URL . "pages/schedule/");
+            header("Location: " . BASE_URL . "pages/request/dismantle/");
             exit;
         }
 
-        // Update queue_scheduling → set status Pending
-        $sql = "UPDATE queue_scheduling 
-                SET status = 'Pending'
-                WHERE queue_id = :id";
+        // Hapus dulu dari queue_scheduling (anak)
+        $sql = "DELETE FROM queue_scheduling WHERE request_id = :id";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([':id' => $row['queue_id']]);
+        $stmt->execute([':id' => $id]);
 
-        // Hapus schedule
-        $sql = "DELETE FROM schedules WHERE schedule_id = :id";
+        // Hapus dari request_maintenance (induk)
+        $sql = "DELETE FROM request_dismantle WHERE rd_id = :id";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':id' => $id]);
 
         if ($stmt->rowCount() === 0) {
-            if ($pdo->inTransaction()) $pdo->rollBack();
+            // Tidak ada baris terhapus → mungkin sudah dihapus sebelumnya
+            $pdo->rollBack();
             $_SESSION['alert'] = [
                 'icon' => 'warning',
                 'title' => 'Oops!',
@@ -58,15 +57,14 @@ if (isset($_GET['id'])) {
             ];
         }
     } catch (PDOException $e) {
-        if ($pdo->inTransaction()) $pdo->rollBack();
+        $pdo->rollBack();
         $_SESSION['alert'] = [
             'icon' => 'danger',
             'title' => 'Oops! Ada yang Salah',
-            'text' => 'Silakan coba lagi nanti.',
+            'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        error_log($e->getMessage());
     }
 } else {
     $_SESSION['alert'] = [
@@ -77,6 +75,5 @@ if (isset($_GET['id'])) {
         'style' => "warning"
     ];
 }
-
-header("Location: " . BASE_URL . "pages/schedule/");
+header("Location: " . BASE_URL . "pages/request/dismantle/");
 exit;

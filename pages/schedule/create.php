@@ -415,6 +415,10 @@ if ($id && $type_queue) {
                                         <td><?= $row['paket_internet'] ?> Mbps</td>
                                     </tr>
                                     <tr>
+                                        <th>Is Active?</th>
+                                        <td><?= $row['is_active'] ?></td>
+                                    </tr>
+                                    <tr>
                                         <th>Location</th>
                                         <td><?= $row['location'] ?></td>
                                     </tr>

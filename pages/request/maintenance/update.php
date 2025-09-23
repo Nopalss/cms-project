@@ -7,7 +7,7 @@ require __DIR__ . '/../../../includes/aside.php';
 require __DIR__ . '/../../../includes/navbar.php';
 try {
     $rm_id = isset($_GET['id']) ? $_GET['id'] : null;
-    $sql = "SELECT netpay_id FROM customers";
+    $sql = "SELECT netpay_id, name FROM customers";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -51,7 +51,7 @@ try {
                                     <option value="">Select</option>
                                     <?php foreach ($customers as $c): ?>
                                         <?php $selected = $c['netpay_id'] == $row['netpay_id'] ? 'selected' : '' ?>
-                                        <option value="<?= $c['netpay_id'] ?>" <?= $selected ?>><?= $c['netpay_id'] ?></option>
+                                        <option value="<?= $c['netpay_id'] ?>" <?= $selected ?>><?= $c['netpay_id'] . ' - ' .  $c['name'] ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -108,6 +108,10 @@ try {
                                     <tr>
                                         <th>Paket</th>
                                         <td id="data-paket"> </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Is Active?</th>
+                                        <td id="data-active"></td>
                                     </tr>
                                     <tr>
                                         <th>Location</th>

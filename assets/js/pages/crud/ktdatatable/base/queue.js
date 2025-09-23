@@ -132,7 +132,7 @@ var KTDatatableLocalSortDemo = function () {
                             ? `<li class="navi-item cursor-pointer">
                                     <form action="${HOST_URL}pages/schedule/create.php" method="post">
                                         <input type="hidden" name="type_queue" value="${row.type_queue}">
-                                        <button type="submit" name="id" class="btn  border-0 navi-link btn-detail-rikr" value="${row.queue_id}">
+                                        <button type="submit" name="id" class="btn  border-0 navi-link" value="${row.queue_id}">
                                             <span class="navi-icon"><i class="flaticon-calendar-with-a-clock-time-tools text-primary"></i></span>
                                             <span class="navi-text"> Schedule Now</span>
                                         </button>
@@ -147,10 +147,14 @@ var KTDatatableLocalSortDemo = function () {
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a class="navi-link btn-detail-rikr" href="${HOST_URL}pages/queue/detail.php?id=${row.queue_id}">\
+                                        <form action="${HOST_URL}pages/queue/detail.php" method="post">\
+                                            <input type="hidden" name="type_queue" value="${row.type_queue}" >\
+                                            <button type="submit" class="btn border-0 navi-link" name="id" value="${row.queue_id}">\
                                             <span class="navi-icon"><i class="flaticon-eye text-info"></i></span>\
                                             <span class="navi-text"> Detail</span>\
-                                        </a>\
+                                            </button>\
+                                        </form>\
+                                    
                                     </li>\
                                 </ul>\
                             </div>\

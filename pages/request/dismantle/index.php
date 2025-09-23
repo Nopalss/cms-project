@@ -1,22 +1,11 @@
 <?php
-require_once __DIR__ . '/../../includes/config.php';
-$_SESSION['menu'] = 'ikr';
-require __DIR__ . '/../../includes/header.php';
-require __DIR__ . '/../../includes/aside.php';
-require __DIR__ . '/../../includes/navbar.php';
-$statusIssueClasses = [
-    'Pending' => "info",
-    'Approved' => "success",
-    'Rejected' => "danger",
-];
 
-try {
-    $sql = "SELECT * FROM technician";
-    $stmt = $pdo->query($sql);
-    $technicians = $stmt->fetchAll(PDO::FETCH_ASSOC);
-} catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
-}
+require_once __DIR__ . '/../../../includes/config.php';
+$_SESSION['menu'] = 'request dismantle';
+require __DIR__ . '/../../../includes/header.php';
+require __DIR__ . '/../../../includes/aside.php';
+require __DIR__ . '/../../../includes/navbar.php';
+
 ?>
 
 
@@ -31,7 +20,7 @@ try {
                 <div class="d-flex align-items-baseline flex-wrap mr-5">
                     <!--begin::Page Title-->
                     <h5 class="text-dark font-weight-bold my-1 mr-5">
-                        IKR </h5>
+                        Request Dismantle </h5>
 
                     <!--end::Page Title-->
 
@@ -59,40 +48,18 @@ try {
     <div class="d-flex flex-column-fluid">
         <!--begin::Container-->
         <div class=" container ">
-            <?php
 
-            // mengambil data issues report berdasarkan id teknisi
-            $sql = "
-        SELECT *
-        FROM issues_report
-        WHERE status = 'Pending' 
-          AND created_at >= CURDATE()
-          AND created_at < CURDATE() + INTERVAL 1 DAY";
-
-            $stmt = $pdo->prepare($sql);
-            $stmt->execute();
-
-            $issues_report = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-            ?>
             <!--begin::Card-->
             <div class="card card-custom">
                 <div class="card-header flex-wrap border-0 pt-6 pb-0">
                     <div class="card-title">
                         <h3 class="card-label">
-                            Data IKR
+                            Data Request Dismantle
                         </h3>
                     </div>
                     <div class="card-toolbar">
                         <!--begin::Dropdown-->
                         <div class="dropdown dropdown-inline mr-2">
-                            <!-- <button type="button" class="btn btn-light-warning font-weight-bolder" id="btn-issues" data-toggle="modal" data-target="#exampleModalScrollable">
-                                <i class="flaticon2-warning"></i>Issues Report
-                                <?php if (count($issues_report) > 0): ?>
-                                    <small class="ml-3 label label-danger mr-2"><?= count($issues_report) ?></small>
-                                <?php endif; ?>
-                            </button> -->
-
 
                             <!--begin::Dropdown Menu-->
                             <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
@@ -139,15 +106,16 @@ try {
                         <!--end::Dropdown-->
 
                         <!--begin::Button-->
-                        <button type="button" class="btn btn-primary font-weight-bolder" data-toggle="modal" data-target="#staticBackdrop">
+                        <a href="<?= BASE_URL ?>pages/request/dismantle/create.php" class="btn btn-primary font-weight-bolder">
                             <span class="svg-icon svg-icon-md"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
                                     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                         <rect x="0" y="0" width="24" height="24" />
                                         <circle fill="#000000" cx="9" cy="15" r="6" />
                                         <path d="M8.8012943,7.00241953 C9.83837775,5.20768121 11.7781543,4 14,4 C17.3137085,4 20,6.6862915 20,10 C20,12.2218457 18.7923188,14.1616223 16.9975805,15.1987057 C16.9991904,15.1326658 17,15.0664274 17,15 C17,10.581722 13.418278,7 9,7 C8.93357256,7 8.86733422,7.00080962 8.8012943,7.00241953 Z" fill="#000000" opacity="0.3" />
                                     </g>
-                                </svg><!--end::Svg Icon--></span> New IKR
-                        </button>
+                                </svg><!--end::Svg Icon--></span>New Request
+                            <small id="unverifiedCount" class="ml-3 label label-danger mr-2" style="display:none;"></small>
+                        </a>
                         <!--end::Button-->
                     </div>
                 </div>
@@ -164,27 +132,14 @@ try {
                                             <span><i class="flaticon2-search-1 text-muted"></i></span>
                                         </div>
                                     </div>
-
                                     <div class="col-md-3 my-2 my-md-0">
                                         <div class="d-flex align-items-center">
                                             <label class="mr-3 mb-0 d-none d-md-block">Status:</label>
                                             <select class="form-control" id="kt_datatable_search_status">
                                                 <option value="">All</option>
+                                                <option value="Accepted">Accepted</option>
+                                                <option value="Rejected">Rejected</option>
                                                 <option value="Pending">Pending</option>
-                                                <option value="Rescheduled">Rescheduled</option>
-                                                <option value="Cancelled">Cancelled</option>
-                                                <option value="Done">Done</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3 my-2 my-md-0">
-                                        <div class="d-flex align-items-center">
-                                            <label class="mr-3 mb-0 d-none d-md-block">Teknisi:</label>
-                                            <select class="form-control" id="kt_datatable_search_tech">
-                                                <option value="">All</option>
-                                                <?php foreach ($technicians as $t): ?>
-                                                    <option value="<?= $t['tech_id'] ?>"><?= $t['name'] ?></option>
-                                                <?php endforeach; ?>
                                             </select>
                                         </div>
                                     </div>
@@ -213,112 +168,56 @@ try {
                 </div>
             </div>
             <!--end::Card-->
-
-
-
-            <!-- modal detail -->
-            <div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
-                <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-                    <div class="modal-content shadow-lg border-0 rounded-lg">
-                        <div class="modal-header">
-                            <h4 class="modal-title"><i class="la la-info-circle text-info"></i> Detail Schedule</h4>
-                            <button type="button" class="close text-danger" data-dismiss="modal">&times;</button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row mb-2 pl-2">
-                                <div class="col-4 font-weight-bold">Schedule ID</div>
-                                <div class="col-8" id="detail_id"></div>
-                            </div>
-                            <div class="row mb-2 pl-2">
-                                <div class="col-4 font-weight-bold">Teknisi</div>
-                                <div class="col-8" id="detail_tech"></div>
-                            </div>
-                            <div class="row mb-2 pl-2">
-                                <div class="col-4 font-weight-bold">Tanggal</div>
-                                <div class="col-8" id="detail_date"></div>
-                            </div>
-                            <div class="row mb-2 pl-2">
-                                <div class="col-4 font-weight-bold">Job Type</div>
-                                <div class="col-8" id="detail_job"></div>
-                            </div>
-                            <div class="row mb-2 pl-2">
-                                <div class="col-4 font-weight-bold">Status</div>
-                                <div class="col-8">
-                                    <div id="detail_status"></div>
-                                </div>
-                            </div>
-                            <div class="row mb-2 pl-2">
-                                <div class="col-4 font-weight-bold">Location</div>
-                                <div class="col-8" id="detail_location"></div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-primary" data-dismiss="modal">
-                                <i class="la la-times"></i> Tutup
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
         </div>
         <!-- end::Container -->
     </div>
-</div>
-<!-- end::entry -->
-<!-- modal detail issue report-->
-<div class=" modal fade" id="detailModalIssue" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-        <div class="modal-content shadow-lg border-0 rounded-lg">
-            <div class="modal-header">
-                <h4 class="modal-title"><i class="la la-info-circle text-info"></i> Detail issue report</h4>
-                <button type="button" class="close text-danger" data-dismiss="modal">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Issue ID</div>
-                    <div class="col-8" id="detail_idIssue"></div>
+    <!-- end::entry -->
+    <!-- modal detail registrasi-->
+    <div class="modal fade" id="detailModalRd" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+            <div class="modal-content shadow-lg border-0 rounded-lg">
+                <div class="modal-header">
+                    <h4 class="modal-title"><i class="la la-info-circle text-info"></i> Detail Request Dismantle</h4>
+                    <button type="button" class="close text-danger" data-dismiss="modal">&times;</button>
                 </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Schedule ID</div>
-                    <div class="col-8" id="detail_schedule"></div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Reported</div>
-                    <div class="col-8" id="detail_reported"></div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Issue Type</div>
-                    <div class="col-8" id="detail_issue"></div>
-                </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Created At</div>
-                    <div class="col-8">
-                        <div id="detail_dateIssue"></div>
+                <div class="modal-body">
+                    <div class="row mb-2 pl-2">
+                        <div class="col-4 font-weight-bold">RD ID</div>
+                        <div class="col-8" id="detail_RdId"></div>
+                    </div>
+                    <div class="row mb-2 pl-2">
+                        <div class="col-4 font-weight-bold">Netpay ID</div>
+                        <div class="col-8" id="detail_netpayId"></div>
+                    </div>
+                    <div class="row mb-2 pl-2">
+                        <div class="col-4 font-weight-bold">Type Dismantle</div>
+                        <div class="col-8" id="detail_type"></div>
+                    </div>
+                    <div class="row mb-2 pl-2">
+                        <div class="col-4 font-weight-bold">Status</div>
+                        <div class="col-8" id="detail_status"></div>
+                    </div>
+                    <div class="row mb-2 pl-2">
+                        <div class="col-4 font-weight-bold">Request By</div>
+                        <div class="col-8" id="detail_requestBy"></div>
+                    </div>
+                    <div class="row mb-2 pl-2">
+                        <div class="col-4 font-weight-bold">Deskripsi</div>
+                        <div class="col-8">
+                            <div id="detail_catatan"></div>
+                        </div>
                     </div>
                 </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Status Report</div>
-                    <div class="col-8">
-                        <div id="detail_stat"></div>
-                    </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" data-dismiss="modal">
+                        <i class="la la-times"></i> Tutup
+                    </button>
                 </div>
-                <div class="row mb-2 pl-2">
-                    <div class="col-4 font-weight-bold">Description</div>
-                    <div class="col-8" id="detail_desc"></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" data-dismiss="modal">
-                    <i class="la la-times"></i> Tutup
-                </button>
             </div>
         </div>
     </div>
 </div>
 
 <?php
-require __DIR__ . '/../../includes/footer.php';
+require __DIR__ . '/../../../includes/footer.php';
 ?>

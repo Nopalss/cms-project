@@ -5,16 +5,6 @@ require __DIR__ . '/../../../includes/header.php';
 require __DIR__ . '/../../../includes/aside.php';
 require __DIR__ . '/../../../includes/navbar.php';
 
-$sql = "
-        SELECT *
-        FROM register
-        WHERE is_verified = 'Unverified'";
-
-$stmt = $pdo->prepare($sql);
-$stmt->execute();
-
-$register = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>
 
 
@@ -29,7 +19,7 @@ $register = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <div class="d-flex align-items-baseline flex-wrap mr-5">
                     <!--begin::Page Title-->
                     <h5 class="text-dark font-weight-bold my-1 mr-5">
-                        Request IKR </h5>
+                        Request Maintenance </h5>
 
                     <!--end::Page Title-->
 

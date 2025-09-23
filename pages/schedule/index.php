@@ -112,7 +112,7 @@ try {
                 </div>
                 <div class="row mb-2 pl-2">
                     <div class="col-4 font-weight-bold">Description</div>
-                    <div class="col-8" id="detail_desc"></div>
+                    <div class="col-8 text-wrap" id="detail_desc"></div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -125,6 +125,5 @@ try {
 </div>
 
 <?php
-require __DIR__ . "/modal_create_schedule.php";
 require __DIR__ . '/../../includes/footer.php';
 ?>

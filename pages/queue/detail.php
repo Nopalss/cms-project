@@ -1,32 +1,62 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
-$_SESSION['menu'] = 'queue';
-require __DIR__ . '/../../includes/header.php';
-require __DIR__ . '/../../includes/aside.php';
-require __DIR__ . '/../../includes/navbar.php';
-
-$id = $_GET['id'];
-$sql = "SELECT q.*, r.*, c.* FROM queue_scheduling q 
-            JOIN request_ikr r ON q.request_id = r.rikr_id 
-            JOIN customers c ON r.netpay_id = c.netpay_id 
-        WHERE q.queue_id = :queue_id";
-try {
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':queue_id', $id, PDO::PARAM_STR); // karena ID string
-    $stmt->execute();
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    $jadwal = new DateTime($row['jadwal_pemasangan']);
-    $tanggalPemasangan = $jadwal->format('d F Y'); // 18 September 2025
-    $jamPemasangan    = $jadwal->format('H:i');
-    $cr = new DateTime($row['created_at']);
-    $cr = $cr->format("d F Y");
-    $statusClasses = [
-        'Pending' => "info",
-        'Accepted' => "success",
-        'Rejected' => "danger",
+$id = isset($_POST['id']) ? $_POST['id'] : null;
+$type_queue = isset($_POST['type_queue']) ? $_POST['type_queue'] : null;
+if ($id && $type_queue) {
+    $_SESSION['menu'] = 'queue';
+    require __DIR__ . '/../../includes/header.php';
+    require __DIR__ . '/../../includes/aside.php';
+    require __DIR__ . '/../../includes/navbar.php';
+    $requestTables = [
+        "Install"    => ["table" => "request_ikr", "id" => "rikr_id"],
+        "Maintenance" => ["table" => "request_maintenance", "id" => "rm_id"],
+        "Dismantle"  => ["table" => "request_dismantle", "id" => "rd_id"],
     ];
-} catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    function formatDate($datetime, $type = 'date')
+    {
+        $dt = new DateTime($datetime);
+        switch ($type) {
+            case 'date':
+                return $dt->format('Y-m-d');
+            case 'full':
+                return $dt->format('d F Y');
+            case 'time':
+                return $dt->format('H:i');
+        }
+    }
+
+
+    try {
+        if (isset($requestTables[$type_queue])) {
+            $table = $requestTables[$type_queue]['table'];
+            $idCol = $requestTables[$type_queue]['id'];
+
+            $sql = "SELECT q.*, r.*, c.* 
+            FROM queue_scheduling q
+            JOIN $table r ON q.request_id = r.$idCol
+            JOIN customers c ON r.netpay_id = c.netpay_id
+            WHERE q.queue_id = :queue_id";
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':queue_id', $id, PDO::PARAM_STR);
+            $stmt->execute();
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+        $tanggalSchedule   = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'date') : '';
+        $tanggalPemasangan = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'full') : '';
+        $jamPemasangan     = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'time') : '';
+        $cr                = formatDate($row['created_at'], 'full');
+        $statusClasses = [
+            'Pending' => "info",
+            'Accepted' => "success",
+            'Rejected' => "danger",
+        ];
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+} else {
+    header("Location: " . BASE_URL . "pages/schedule/");
+    exit;
 }
 ?>
 
@@ -61,7 +91,15 @@ try {
                 <!--end::Page Heading-->
             </div>
             <?php if ($row['status'] == 'Pending'): ?>
-                <a class="btn btn-light-primary align-self-end" href="<?= BASE_URL ?>pages/schedule/create.php?id=<?= $row['queue_id'] ?>">Scheduling</a>
+                <form action="<?= BASE_URL ?>pages/schedule/create.php" method="post">
+                    <span>
+                        <input type="hidden" name="type_queue" value="<?= $row['type_queue'] ?>">
+                        <button type="submit" name="id" class="btn border-0  btn-light-primary align-self-end" value="<?= $row['queue_id'] ?>">
+                            <span class="navi-icon"><i class="flaticon-calendar-with-a-clock-time-tools"></i></span>
+                            <span class="navi-text">Schedule Now</span>
+                        </button>
+                    </span>
+                </form>
             <?php endif; ?>
             <!--end::Info-->
         </div>
@@ -109,40 +147,126 @@ try {
                 </div>
                 <div class="col-md-6">
                     <!-- Data Request IKR -->
-                    <div class="card card-stretch mb-5">
-                        <div class="card-header">
-                            <h3>Data Request IKR</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <tr>
-                                        <th>RIKR ID</th>
-                                        <td><?= $row['rikr_id'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Netpay ID</th>
-                                        <td><?= $row['netpay_id'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Jadwal Pemasangan</th>
-                                        <td><?= $tanggalPemasangan ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Jam</th>
-                                        <td><?= $jamPemasangan ?> </td>
-                                    </tr>
-                                    <tr>
-                                        <th>Request By</th>
-                                        <td><?= $row['request_by'] ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Catatan</th>
-                                        <td><?= $row['catatan'] ?></td>
-                                    </tr>
-                                </table>
+                    <div class="card card-custom mb-5" data-card="true">
+                        <?php if ($row['type_queue'] == "Install"): ?>
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h3 class="card-label">Data Request IKR</h3>
+                                </div>
+                                <div class="card-toolbar">
+                                    <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="toggle" data-toggle="tooltip" data-placement="top">
+                                        <i class="ki ki-arrow-down icon-nm"></i>
+                                    </a>
+
+                                </div>
                             </div>
-                        </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>RIKR ID</th>
+                                            <td><?= $row['rikr_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Netpay ID</th>
+                                            <td><?= $row['netpay_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Jadwal Pemasangan</th>
+                                            <td><?= $tanggalPemasangan ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Jam</th>
+                                            <td><?= $jamPemasangan ?> </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Request By</th>
+                                            <td><?= $row['request_by'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Catatan</th>
+                                            <td><?= $row['catatan'] ?></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        <?php elseif ($row['type_queue'] == "Maintenance"): ?>
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h3 class="card-label">Data Request Maintenance</h3>
+                                </div>
+                                <div class="card-toolbar">
+                                    <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="toggle" data-toggle="tooltip" data-placement="top">
+                                        <i class="ki ki-arrow-down icon-nm"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>RM ID</th>
+                                            <td><?= $row['rm_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Netpay ID</th>
+                                            <td><?= $row['netpay_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Type Issue</th>
+                                            <td><?= $row['type_issue'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Request By</th>
+                                            <td><?= $row['request_by'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Deskripsi Issue</th>
+                                            <td><?= $row['deskripsi_issue'] ?> </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        <?php elseif ($row['type_queue'] == "Dismantle"): ?>
+                            <div class="card-header">
+                                <div class="card-title">
+                                    <h3 class="card-label">Data Request Dismantle</h3>
+                                </div>
+                                <div class="card-toolbar">
+                                    <a href="#" class="btn btn-icon btn-sm btn-hover-light-primary mr-1" data-card-tool="toggle" data-toggle="tooltip" data-placement="top">
+                                        <i class="ki ki-arrow-down icon-nm"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>RD ID</th>
+                                            <td><?= $row['rd_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Netpay ID</th>
+                                            <td><?= $row['netpay_id'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Type Dismantle</th>
+                                            <td><?= $row['type_dismantle'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Request By</th>
+                                            <td><?= $row['request_by'] ?></td>
+                                        </tr>
+                                        <tr>
+                                            <th>Deskripsi Dismantle</th>
+                                            <td><?= $row['deskripsi_dismantle'] ?> </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <!-- card customer -->
                     <div class="card card-stretch">
@@ -169,6 +293,10 @@ try {
                                         <td><?= $row['paket_internet'] ?> Mbps</td>
                                     </tr>
                                     <tr>
+                                        <th>Is Active?</th>
+                                        <td><?= $row['is_active'] ?></td>
+                                    </tr>
+                                    <tr>
                                         <th>Location</th>
                                         <td><?= $row['location'] ?></td>
                                     </tr>
@@ -187,4 +315,5 @@ try {
 
 <?php
 require __DIR__ . '/../../includes/footer.php';
+
 ?>
