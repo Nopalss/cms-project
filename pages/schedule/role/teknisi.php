@@ -25,8 +25,8 @@ $issues_report = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // ini buat style
 $badgeClasses = [
     'Instalasi'   => 'success',
-    'Maintenance' => 'danger',
-    'Perbaikan'   => 'warning'
+    'Maintenance' => 'warning',
+    'Dismantle'   => 'danger'
 ];
 $statusClasses = [
     'Pending' => "info",
@@ -82,10 +82,13 @@ $statusClasses = [
                                                             Choose an action:
                                                         </li>
                                                         <li class="navi-item cursor-pointer">
-                                                            <a class="navi-link" href="<?= BASE_URL ?>pages/schedule/detail.php?id=<?= $s['schedule_id'] ?>">
-                                                                <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>
-                                                                <span class="navi-text">Detail</span>
-                                                            </a>
+                                                            <form action="<?= BASE_URL ?>pages/schedule/detail.php" method="post">
+                                                                <input type="hidden" name="job_type" value="<?= $s['job_type'] ?>">
+                                                                <button type="submit" name="id" class="btn  border-0 navi-link btn-detail-rikr" value="<?= $s['schedule_id'] ?>">
+                                                                    <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>
+                                                                    <span class="navi-text">Detail</span>
+                                                                </button>
+                                                            </form>
                                                         </li>
                                                     </ul>
                                                 </div>

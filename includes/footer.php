@@ -228,6 +228,15 @@ require_once __DIR__ . '/config.php';
 <?php if ($_SESSION['menu'] == "ikr"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/ikr.js"></script>
 <?php endif; ?>
+<?php if ($_SESSION['menu'] == "service"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/service.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "dismantle"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/dismantle.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "customer"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/customer.js"></script>
+<?php endif; ?>
 <?php if ($_SESSION['menu'] == "registrasi"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/registrasi.js"></script>
 <?php endif; ?>
@@ -258,14 +267,57 @@ require_once __DIR__ . '/config.php';
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Ya, hapus!',
+            confirmButtonText: 'Lanjut',
             cancelButtonText: 'Batal'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = `${HOST_URL}${url}?id=${id}`;
+                // Munculin modal input password
+                Swal.fire({
+                    title: 'Masukkan Password',
+                    input: 'password',
+                    inputPlaceholder: 'Password Anda',
+                    inputAttributes: {
+                        maxlength: 50,
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Hapus',
+                    cancelButtonText: 'Batal',
+                    preConfirm: (password) => {
+                        if (!password) {
+                            Swal.showValidationMessage('Password wajib diisi!');
+                            return false;
+                        }
+                        return password;
+                    }
+                }).then((res) => {
+                    if (res.isConfirmed) {
+                        // Kirim password ke backend (POST) biar bisa diverifikasi
+                        const form = document.createElement("form");
+                        form.method = "POST";
+                        form.action = `${HOST_URL}${url}`;
+
+                        const inputId = document.createElement("input");
+                        inputId.type = "hidden";
+                        inputId.name = "id";
+                        inputId.value = id;
+
+                        const inputPw = document.createElement("input");
+                        inputPw.type = "hidden";
+                        inputPw.name = "password";
+                        inputPw.value = res.value;
+
+                        form.appendChild(inputId);
+                        form.appendChild(inputPw);
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
             }
         });
     }
+
 
     // registrasi
     $(document).on("click", ".btn-detail-registrasi", function() {

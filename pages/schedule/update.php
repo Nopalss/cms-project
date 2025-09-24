@@ -5,9 +5,7 @@ $issue_id = isset($_POST['issue_id']) ? $_POST['issue_id'] : null;
 $job_type = isset($_POST['job_type']) ? $_POST['job_type'] : null;
 if ($id && $job_type) {
     $_SESSION['menu'] = 'schedule';
-    require __DIR__ . '/../../includes/header.php';
-    require __DIR__ . '/../../includes/aside.php';
-    require __DIR__ . '/../../includes/navbar.php';
+
 
     try {
         $status = ['Pending', 'Rescheduled', 'Cancelled', 'Done'];
@@ -44,6 +42,17 @@ if ($id && $job_type) {
             $stmt->bindParam(':schedule_id', $id, PDO::PARAM_STR);
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) {
+                $_SESSION['alert'] = [
+                    'icon' => 'danger',
+                    'title' => 'Data tidak ditemukan',
+                    'text' => 'Schedule dengan ID ' . htmlspecialchars($id) . ' tidak tersedia.',
+                    'button' => 'Kembali',
+                    'style' => 'danger'
+                ];
+                header("Location: " . BASE_URL . "pages/schedule/");
+                exit;
+            }
         }
         $tanggalSchedule   = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'date') : '';
         $tanggalPemasangan = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'full') : '';
@@ -63,6 +72,9 @@ if ($id && $job_type) {
             $stmt->execute([':issue_id' => $issue_id]);
             $issue = $stmt->fetch(PDO::FETCH_ASSOC);
         }
+        require __DIR__ . '/../../includes/header.php';
+        require __DIR__ . '/../../includes/aside.php';
+        require __DIR__ . '/../../includes/navbar.php';
     } catch (PDOException $e) {
         echo "Error: " . $e->getMessage();
     }
@@ -94,7 +106,7 @@ if ($id && $job_type) {
                         </li>
                         <li class="breadcrumb-item">
                             <a href="" class="text-muted">
-                                <?= $row['schedule_id'] ?> </a>
+                                <?= $id ?> </a>
                         </li>
                     </ul>
                     <!-- end::Breadcrumb -->

@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
-$_SESSION['menu'] = 'ikr';
+$_SESSION['menu'] = 'service';
 require __DIR__ . '/../../includes/header.php';
 require __DIR__ . '/../../includes/aside.php';
 require __DIR__ . '/../../includes/navbar.php';
@@ -18,7 +18,7 @@ require __DIR__ . '/../../includes/navbar.php';
                 <div class="d-flex align-items-baseline flex-wrap mr-5">
                     <!--begin::Page Title-->
                     <h5 class="text-dark font-weight-bold my-1 mr-5">
-                        Report IKR </h5>
+                        Service Report </h5>
 
                     <!--end::Page Title-->
 
@@ -54,15 +54,12 @@ require __DIR__ . '/../../includes/navbar.php';
                 <div class="card-header flex-wrap border-0 pt-6 pb-0">
                     <div class="card-title">
                         <h3 class="card-label">
-                            Data Report IKR
+                            Data Service Report
                         </h3>
                     </div>
                     <div class="card-toolbar">
                         <!--begin::Dropdown-->
                         <div class="dropdown dropdown-inline mr-2">
-
-
-
                             <!--begin::Dropdown Menu-->
                             <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
                                 <!--begin::Navigation-->

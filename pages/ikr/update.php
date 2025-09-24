@@ -6,12 +6,11 @@ require __DIR__ . '/../../includes/header.php';
 require __DIR__ . '/../../includes/aside.php';
 require __DIR__ . '/../../includes/navbar.php';
 try {
-    $id = isset($_POST['id']) ? $_POST['id'] : null;
-    $sql = "SELECT s.schedule_id ,s.netpay_id, c.* FROM schedules s JOIN customers c ON s.netpay_id = c.netpay_id WHERE s.schedule_id = :id";
+    $ikr_id = isset($_GET['id']) ? $_GET['id'] : null;
+    $sql = "SELECT ikr.* , c.* FROM ikr JOIN customers c ON ikr.netpay_id = c.netpay_id WHERE ikr.ikr_id = :id";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([":id" => $id]);
+    $stmt->execute([":id" => $ikr_id]);
     $customer = $stmt->fetch(PDO::FETCH_ASSOC);
-    $ikr_id = "SI" . date("YmdHis");
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -21,7 +20,7 @@ try {
     <div class=" d-flex flex-column-fluid">
         <!--begin::Container-->
         <div class="container">
-            <form method="post" class="form row" action="<?= BASE_URL ?>controllers/report/ikr/create.php">
+            <form method="post" class="form row" action="<?= BASE_URL ?>controllers/report/ikr/update.php">
                 <!-- card create request IKR -->
                 <div class="col-md-6 mb-10">
                     <div class="card card-custom shadow-sm">
@@ -38,7 +37,6 @@ try {
                                 <div class="input-group">
                                     <input type="text" class="form-control" value="<?= $ikr_id ?>" disabled="disabled" />
                                     <input type="hidden" class="form-control" name="ikr_id" value="<?= $ikr_id ?>" />
-                                    <input type="hidden" class="form-control" name="schedule_id" value="<?= $id ?>" />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -49,49 +47,49 @@ try {
                             <!-- Group IKR -->
                             <div class="form-group">
                                 <label for="group_ikr">Group IKR</label>
-                                <input type="text" class="form-control" id="group_ikr" name="group_ikr" required>
+                                <input type="text" class="form-control" id="group_ikr" name="group_ikr" value="<?= $customer['group_ikr'] ?>" required>
                             </div>
 
                             <!-- IKR AN -->
-                            <div class="form-group">
+                            <div class=" form-group">
                                 <label for="ikr_an">IKR AN</label>
-                                <input type="text" class="form-control" id="ikr_an" name="ikr_an" value="<?= $customer['name'] ?>" required>
+                                <input type="text" class="form-control" id="ikr_an" name="ikr_an" value="<?= $customer['name'] ?>" value="<?= $customer['name'] ?>" required>
                             </div>
 
                             <!-- Alamat -->
-                            <div class="form-group">
+                            <div class=" form-group">
                                 <label for="alamat">Alamat</label>
-                                <input type="text" class="form-control" id="alamat" name="alamat" value="<?= $customer['location'] ?>" required>
+                                <input type="text" class="form-control" id="alamat" name="alamat" value="<?= $customer['location'] ?>" value="<?= $customer['alamat'] ?>" required>
                             </div>
 
                             <!-- RT & RW dalam row -->
-                            <div class="form-row">
+                            <div class=" form-row">
                                 <div class="form-group col-md-6">
                                     <label for="rt">RT</label>
-                                    <input type="text" class="form-control" id="rt" name="rt" required>
+                                    <input type="text" class="form-control" id="rt" name="rt" value="<?= $customer['rt'] ?>" required>
                                 </div>
-                                <div class="form-group col-md-6">
+                                <div class=" form-group col-md-6">
                                     <label for="rw">RW</label>
-                                    <input type="text" class="form-control" id="rw" name="rw" required>
+                                    <input type="text" class="form-control" id="rw" name="rw" value="<?= $customer['rw'] ?>" required>
                                 </div>
                             </div>
 
                             <!-- Desa, Kecamatan, Kabupaten -->
-                            <div class="form-group">
+                            <div class=" form-group">
                                 <label for="desa">Desa</label>
-                                <input type="text" class="form-control" id="desa" name="desa" required>
+                                <input type="text" class="form-control" id="desa" name="desa" value="<?= $customer['desa'] ?>" required>
                             </div>
-                            <div class="form-group">
+                            <div class=" form-group">
                                 <label for="kec">Kecamatan</label>
-                                <input type="text" class="form-control" id="kec" name="kec" required>
+                                <input type="text" class="form-control" id="kec" name="kec" value="<?= $customer['kec'] ?>" required>
                             </div>
-                            <div class="form-group">
+                            <div class=" form-group">
                                 <label for="kab">Kabupaten</label>
-                                <input type="text" class="form-control" id="kab" name="kab" required>
+                                <input type="text" class="form-control" id="kab" name="kab" value="<?= $customer['kab'] ?>" required>
                             </div>
 
                             <!-- Telepon -->
-                            <div class="form-group">
+                            <div class=" form-group">
                                 <label for="telp">Telepon</label>
                                 <input type="text" class="form-control" id="telp" name="telp" value="<?= $customer['phone'] ?>" required>
                             </div>
@@ -99,75 +97,75 @@ try {
                             <!-- S/N -->
                             <div class="form-group">
                                 <label for="sn">S/N</label>
-                                <input type="text" class="form-control" id="sn" name="sn" required>
+                                <input type="text" class="form-control" id="sn" name="sn" value="<?= $customer['sn'] ?>" required>
                             </div>
 
                             <!-- Paket & Type ONT -->
-                            <div class="form-row">
+                            <div class=" form-row">
                                 <div class="form-group col-md-6">
                                     <label for="paket">Paket</label>
-                                    <input type="text" class="form-control" id="paket" name="paket" required>
+                                    <input type="text" class="form-control" id="paket" name="paket" value="<?= $customer['paket'] ?>" required>
                                 </div>
-                                <div class="form-group col-md-6">
+                                <div class=" form-group col-md-6">
                                     <label for="type_ont">Type ONT</label>
-                                    <input type="text" class="form-control" id="type_ont" name="type_ont" required>
+                                    <input type="text" class="form-control" id="type_ont" name="type_ont" value="<?= $customer['type_ont'] ?>" required>
                                 </div>
                             </div>
 
                             <!-- Redaman -->
-                            <div class="form-group">
+                            <div class=" form-group">
                                 <label for="redaman">Redaman</label>
-                                <input type="text" class="form-control" id="redaman" name="redaman" required>
+                                <input type="text" class="form-control" id="redaman" name="redaman" value="<?= $customer['redaman'] ?>" required>
                             </div>
 
                             <!-- ODP, ODC, JC No -->
-                            <div class="form-row">
+                            <div class=" form-row">
                                 <div class="form-group col-md-4">
                                     <label for="odp_no">ODP No</label>
-                                    <input type="text" class="form-control" id="odp_no" name="odp_no" required>
+                                    <input type="text" class="form-control" id="odp_no" name="odp_no" value="<?= $customer['odp_no'] ?>" required>
                                 </div>
-                                <div class="form-group col-md-4">
+                                <div class=" form-group col-md-4">
                                     <label for="odc_no">ODC No</label>
-                                    <input type="text" class="form-control" id="odc_no" name="odc_no" required>
+                                    <input type="text" class="form-control" id="odc_no" name="odc_no" value="<?= $customer['odc_no'] ?>" required>
                                 </div>
-                                <div class="form-group col-md-4">
+                                <div class=" form-group col-md-4">
                                     <label for="jc_no">JC No</label>
-                                    <input type="text" class="form-control" id="jc_no" name="jc_no" required>
+                                    <input type="text" class="form-control" id="jc_no" name="jc_no" value="<?= $customer['jc_no'] ?>" required>
                                 </div>
                             </div>
 
                             <!-- MAC sebelum & sesudah -->
-                            <div class="form-row">
+                            <div class=" form-row">
                                 <div class="form-group col-md-6">
                                     <label for="mac_sebelum">MAC Sebelum</label>
-                                    <input type="text" class="form-control" id="mac_sebelum" name="mac_sebelum">
+                                    <input type="text" class="form-control" id="mac_sebelum" name="mac_sebelum" value="<?= $customer['mac_sebelum'] ?>">
                                 </div>
-                                <div class="form-group col-md-6">
+                                <div class=" form-group col-md-6">
                                     <label for="mac_sesudah">MAC Sesudah</label>
-                                    <input type="text" class="form-control" id="mac_sesudah" name="mac_sesudah">
+                                    <input type="text" class="form-control" id="mac_sesudah" name="mac_sesudah" value="<?= $customer['mac_sesudah'] ?>">
                                 </div>
                             </div>
 
                             <!-- ODP, ODC, Enclosure, Paket No -->
-                            <div class="form-group">
+                            <div class=" form-group">
                                 <label for="odp">ODP</label>
-                                <input type="text" class="form-control" id="odp" name="odp" required>
+                                <input type="text" class="form-control" id="odp" name="odp" value="<?= $customer['odp'] ?>" required>
                             </div>
-                            <div class="form-group">
+                            <div class=" form-group">
                                 <label for="odc">ODC</label>
-                                <input type="text" class="form-control" id="odc" name="odc" required>
+                                <input type="text" class="form-control" id="odc" name="odc" value="<?= $customer['odc'] ?>" required>
                             </div>
-                            <div class="form-group">
+                            <div class=" form-group">
                                 <label for="enclosure">Enclosure</label>
-                                <input type="text" class="form-control" id="enclosure" name="enclosure" required>
+                                <input type="text" class="form-control" id="enclosure" name="enclosure" value="<?= $customer['enclosure'] ?>" required>
                             </div>
-                            <div class="form-group">
+                            <div class=" form-group">
                                 <label for="paket_no">Paket No</label>
-                                <input type="text" class="form-control" id="paket_no" name="paket_no" required>
+                                <input type="text" class="form-control" id="paket_no" name="paket_no" value="<?= $customer['paket_no'] ?>" required>
                             </div>
 
                         </div>
-                        <div class="card-footer text-right">
+                        <div class=" card-footer text-right">
                             <a href="<?= BASE_URL ?>pages/ikr/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
                             <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Create</button>
                         </div>

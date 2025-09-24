@@ -63,8 +63,34 @@ $issues = ['Absence', 'Equipment', 'Customer not available', 'Other'];
                         </div>
                     </div>
                     <div class="card-footer text-right">
+
+
                         <a href="<?= BASE_URL ?>pages/schedule/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
-                        <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Create</button>
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#passwordModal">
+                            Create
+                        </button>
+
+                        <!-- Modal Password -->
+                        <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="passwordModalLabel" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="passwordModalLabel">Confirm Your Password</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <i class="ki ki-close"></i>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="password" name="password" class="form-control" placeholder="Password" required />
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-light-primary" data-dismiss="modal">Close</button>
+                                        <!-- Tombol submit sebenarnya -->
+                                        <button type="submit" name="submit" class="btn btn-primary">Create</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>

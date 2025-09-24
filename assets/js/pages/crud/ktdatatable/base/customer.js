@@ -13,7 +13,7 @@ var KTDatatableLocalSortDemo = function () {
                 type: 'remote',
                 source: {
                     read: {
-                        url: HOST_URL + 'api/ikr.php',
+                        url: HOST_URL + 'api/customers.php',
                     },
                 },
                 pageSize: 10,
@@ -43,28 +43,43 @@ var KTDatatableLocalSortDemo = function () {
             },
             // columns definition
             columns: [{
-                field: 'ikr_id',
-                title: 'IKR Id',
-            }, {
                 field: 'netpay_id',
                 title: 'Netpay Id',
             }, {
-                field: 'ikr_an',
+                field: 'name',
                 title: 'Name',
-
             }, {
-                field: 'created_at',
-                title: 'Date',
+                field: 'phone',
+                title: 'Phone',
+            }, {
+                field: 'paket_internet',
+                title: 'Paket',
                 template: function (row) {
-                    const date = new Date(row.created_at);
-                    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-                    const formattedDate = date.toLocaleDateString('id-ID', options);
-                    return formattedDate;
+                    return `${row.paket_internet} Mbps`
                 }
             }, {
-                field: 'alamat',
+                field: 'is_active',
+                title: 'Is Active',
+                autoHide: false,
+                // callback function support for column rendering
+                template: function (row) {
+                    var status = {
+                        'Active': {
+                            'title': 'Active',
+                            'state': 'success'
+                        },
+                        'Inactive': {
+                            'title': 'Inactive',
+                            'state': 'danger'
+                        }
+                    };
+                    return '<span class="label label-' + status[row.is_active].state + ' label-dot mr-2"></span>' +
+                        '<span class="font-weight-bold text-' + status[row.is_active].state + '">' +
+                        status[row.is_active].title + '</span>';
+                },
+            }, {
+                field: 'location',
                 title: 'Alamat',
-
             }, {
                 field: 'Actions',
                 title: 'Actions',
@@ -91,19 +106,19 @@ var KTDatatableLocalSortDemo = function () {
                                         Choose an action:\
                                     </li>\
                                     <li class="navi-item">\
-                                        <a href='${HOST_URL + 'pages/report/ikr/update.php?id=' + row.ikr_id}' class="navi-link">\
+                                        <a href='${HOST_URL + 'pages/customers/update.php?id=' + row.netpay_id}' class="navi-link">\
                                             <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>\
                                             <span class="navi-text">Edit</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteTemplate('${row.ikr_id}', 'controllers/report/ikr/delete.php')"class="navi-link">\
+                                        <a onclick="confirmDeleteTemplate('${row.netpay_id}', 'controllers/customer/delete.php')"class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
                                             <span class="navi-text">Hapus</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a class="navi-link btn-detail" href="${HOST_URL + 'pages/ikr/detail.php?id=' + row.ikr_id}">\
+                                        <a class="navi-link btn-detail" href="${HOST_URL + 'pages/customers/detail.php?id=' + row.netpay_id}">\
                                             <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>\
                                             <span class="navi-text">Detail</span>\
                                         </a>\
@@ -117,23 +132,6 @@ var KTDatatableLocalSortDemo = function () {
             }],
         });
 
-        function confirmDelete(scheduleId) {
-            Swal.fire({
-                title: 'Yakin mau hapus?',
-                text: "Data schedule akan dihapus permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect ke delete.php dengan parameter ID
-                    window.location.href = "<?= BASE_URL ?>controllers/schedules/delete.php?id=" + scheduleId;
-                }
-            });
-        }
 
         $('#kt_datatable_search_status').on('change', function () {
             datatable.search($(this).val().toLowerCase(), 'status');
@@ -142,8 +140,8 @@ var KTDatatableLocalSortDemo = function () {
         $('#kt_datatable_search_type').on('change', function () {
             datatable.search($(this).val().toLowerCase(), 'job_type');
         });
-        $('#kt_datatable_search_tech').on('change', function () {
-            datatable.search($(this).val().toLowerCase(), 'tech_id');
+        $('#kt_datatable_search_paket').on('change', function () {
+            datatable.search($(this).val().toLowerCase(), 'paket_internet');
         });
         $('#kt_datepicker_3').datepicker({
             format: 'mm/dd/yyyy',
@@ -159,7 +157,7 @@ var KTDatatableLocalSortDemo = function () {
 
 
 
-        $('#kt_datatable_search_status, #kt_datatable_search_type, #kt_datatable_search_tech').selectpicker();
+        $('#kt_datatable_search_status, #kt_datatable_search_paket, #kt_datatable_search_type, #kt_datatable_search_tech').selectpicker();
     };
 
     return {

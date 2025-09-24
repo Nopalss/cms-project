@@ -13,7 +13,7 @@ var KTDatatableLocalSortDemo = function () {
                 type: 'remote',
                 source: {
                     read: {
-                        url: HOST_URL + 'api/ikr.php',
+                        url: HOST_URL + 'api/dismantle_report.php',
                     },
                 },
                 pageSize: 10,
@@ -43,18 +43,17 @@ var KTDatatableLocalSortDemo = function () {
             },
             // columns definition
             columns: [{
-                field: 'ikr_id',
-                title: 'IKR Id',
+                field: 'dismantle_id',
+                title: 'Dismantle Id',
             }, {
                 field: 'netpay_id',
                 title: 'Netpay Id',
             }, {
-                field: 'ikr_an',
-                title: 'Name',
-
+                field: 'jam',
+                title: 'Jam',
             }, {
-                field: 'created_at',
-                title: 'Date',
+                field: 'tanggal',
+                title: 'Tanggal',
                 template: function (row) {
                     const date = new Date(row.created_at);
                     const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
@@ -64,7 +63,6 @@ var KTDatatableLocalSortDemo = function () {
             }, {
                 field: 'alamat',
                 title: 'Alamat',
-
             }, {
                 field: 'Actions',
                 title: 'Actions',
@@ -91,19 +89,19 @@ var KTDatatableLocalSortDemo = function () {
                                         Choose an action:\
                                     </li>\
                                     <li class="navi-item">\
-                                        <a href='${HOST_URL + 'pages/report/ikr/update.php?id=' + row.ikr_id}' class="navi-link">\
+                                        <a href='${HOST_URL + 'pages/dismantle/update.php?id=' + row.dismantle_id}' class="navi-link">\
                                             <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>\
                                             <span class="navi-text">Edit</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteTemplate('${row.ikr_id}', 'controllers/report/ikr/delete.php')"class="navi-link">\
+                                        <a onclick="confirmDeleteTemplate('${row.dismantle_id}', 'controllers/report/dismantle/delete.php')"class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
                                             <span class="navi-text">Hapus</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a class="navi-link btn-detail" href="${HOST_URL + 'pages/ikr/detail.php?id=' + row.ikr_id}">\
+                                        <a class="navi-link btn-detail" href="${HOST_URL + 'pages/dismantle/detail.php?id=' + row.dismantle_id}">\
                                             <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>\
                                             <span class="navi-text">Detail</span>\
                                         </a>\
@@ -117,23 +115,6 @@ var KTDatatableLocalSortDemo = function () {
             }],
         });
 
-        function confirmDelete(scheduleId) {
-            Swal.fire({
-                title: 'Yakin mau hapus?',
-                text: "Data schedule akan dihapus permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect ke delete.php dengan parameter ID
-                    window.location.href = "<?= BASE_URL ?>controllers/schedules/delete.php?id=" + scheduleId;
-                }
-            });
-        }
 
         $('#kt_datatable_search_status').on('change', function () {
             datatable.search($(this).val().toLowerCase(), 'status');

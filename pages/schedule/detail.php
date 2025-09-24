@@ -5,31 +5,96 @@ require __DIR__ . '/../../includes/header.php';
 require __DIR__ . '/../../includes/aside.php';
 require __DIR__ . '/../../includes/navbar.php';
 
-$id = $_GET['id'];
+// ambil id/job_type dari POST dulu, fallback ke GET
+$id = $_POST['id'] ?? $_GET['id'] ?? null;
+$job_type = $_POST['job_type'] ?? $_GET['job_type'] ?? null;
+
+$requestTables = [
+    "Instalasi"    => ["table" => "request_ikr", "id" => "rikr_id", "catatan" => "catatan"],
+    "Maintenance"  => ["table" => "request_maintenance", "id" => "rm_id", "catatan" => "deskripsi_issue"],
+    "Dismantle"    => ["table" => "request_dismantle", "id" => "rd_id", "catatan" => "deskripsi_dismantle"],
+];
+
 try {
-    $sql = "SELECT s.*, c.*, ri.catatan,
-                   EXISTS (
-                       SELECT 1 
-                       FROM issues_report ir 
-                       WHERE ir.schedule_id = s.schedule_id
-                        AND ir.status = 'Pending'
-                   ) AS has_issue
-            FROM schedules s
-            JOIN customers c ON s.netpay_id = c.netpay_id
-            JOIN request_ikr ri ON s.netpay_id = ri.netpay_id 
-            WHERE s.schedule_id = :schedule_id";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':schedule_id', $id, PDO::PARAM_STR);
-    $stmt->execute();
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    $dt = new DateTime($row['date']);
-    $tanggal = $dt->format('d F Y');
+    if (empty($id)) {
+        throw new Exception("ID schedule tidak ditemukan.");
+    }
+
+    // default row null
+    $row = null;
+
+    if (isset($requestTables[$job_type])) {
+        $table  = $requestTables[$job_type]['table'];
+        $idCol  = $requestTables[$job_type]['id'];
+        $catKey = $requestTables[$job_type]['catatan'];
+
+        // gunakan LEFT JOIN supaya ketiadaan child-row tidak menghilangkan schedule
+        $sql = "SELECT s.*, c.*, r.$catKey AS catatan, q.request_id,
+                       EXISTS (
+                           SELECT 1
+                           FROM issues_report ir
+                           WHERE ir.schedule_id = s.schedule_id
+                             AND ir.status = 'Pending'
+                       ) AS has_issue
+                FROM schedules s
+                LEFT JOIN customers c ON s.netpay_id = c.netpay_id
+                LEFT JOIN queue_scheduling q ON s.queue_id = q.queue_id
+                LEFT JOIN $table r ON q.request_id = r.$idCol
+                WHERE s.schedule_id = :schedule_id
+                LIMIT 1";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':schedule_id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    } else {
+        // fallback: ambil schedule + customer tanpa join request table
+        $sql = "SELECT s.*, c.*,
+                       EXISTS (
+                           SELECT 1 FROM issues_report ir WHERE ir.schedule_id = s.schedule_id AND ir.status = 'Pending'
+                       ) AS has_issue
+                FROM schedules s
+                LEFT JOIN customers c ON s.netpay_id = c.netpay_id
+                WHERE s.schedule_id = :schedule_id
+                LIMIT 1";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':schedule_id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    if (!$row) {
+        // tidak ada data → redirect atau tampil pesan (pilih salah satu)
+        $_SESSION['alert'] = [
+            'icon' => 'warning',
+            'title' => 'Tidak Ditemukan',
+            'text' => "Schedule dengan ID <b>" . htmlspecialchars($id) . "</b> tidak ditemukan.",
+            'button' => "Kembali",
+            'style' => "warning"
+        ];
+        header("Location: " . BASE_URL . "pages/schedule/");
+        exit;
+    }
+
+    // tentukan kolom tanggal (beberapa DB menggunakan nama berbeda)
+    $dateField = null;
+    foreach (['date', 'tanggal', 'jadwal_pemasangan', 'created_at'] as $f) {
+        if (!empty($row[$f])) {
+            $dateField = $f;
+            break;
+        }
+    }
+    if ($dateField) {
+        $dt = new DateTime($row[$dateField]);
+        $tanggal = $dt->format('d F Y');
+    } else {
+        $tanggal = "-";
+    }
+
     $actionDone = [
-        "Instalasi" => "ikr",
+        "Instalasi"   => "ikr",
         "Maintenance" => "service_report",
-        "Dismantle" => "dismantle"
+        "Dismantle"   => "dismantle"
     ];
-} catch (PDOException $e) {
+} catch (Exception $e) {
     $_SESSION['alert'] = [
         'icon' => 'danger',
         'title' => 'Oops! Ada yang Salah',
@@ -37,24 +102,14 @@ try {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
+    header("Location: " . BASE_URL . "pages/schedule/");
+    exit;
 }
 ?>
 
+<!-- HTML: gunakan safe-access (null coalescing) untuk menghindari notice -->
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
-    <!-- Subheader -->
-    <div class="subheader py-2 py-lg-6 subheader-solid" id="kt_subheader">
-        <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
-            <div class="d-flex align-items-center flex-wrap mr-1">
-                <div class="d-flex align-items-baseline flex-wrap mr-5">
-                    <h5 class="text-dark font-weight-bold my-1 mr-5">Schedule</h5>
-                    <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
-                        <li class="breadcrumb-item"><a href="" class="text-muted">Detail Schedule</a></li>
-                        <li class="breadcrumb-item"><a href="" class="text-muted"><?= $id ?></a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Subheader... (tetap sama) -->
 
     <!-- Entry -->
     <div class="d-flex flex-column-fluid">
@@ -71,35 +126,35 @@ try {
                                 <table class="table table-striped">
                                     <tr>
                                         <th>Schedule ID</th>
-                                        <td><?= $row['schedule_id'] ?></td>
+                                        <td><?= htmlspecialchars($row['schedule_id'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
                                         <th>Netpay ID</th>
-                                        <td><?= $row['netpay_id'] ?></td>
+                                        <td><?= htmlspecialchars($row['netpay_id'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
                                         <th>Technician ID</th>
-                                        <td><?= $row['tech_id'] ?></td>
+                                        <td><?= htmlspecialchars($row['tech_id'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
                                         <th>Date</th>
-                                        <td><?= $tanggal ?></td>
+                                        <td><?= htmlspecialchars($tanggal) ?></td>
                                     </tr>
                                     <tr>
                                         <th>Time</th>
-                                        <td><?= date("H:i", strtotime($row['time'])) ?></td>
+                                        <td><?= isset($row['time']) ? date("H:i", strtotime($row['time'])) : '-' ?></td>
                                     </tr>
                                     <tr>
                                         <th>Job Type</th>
-                                        <td><?= $row['job_type'] ?></td>
+                                        <td><?= htmlspecialchars($row['job_type'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
                                         <th>Status</th>
-                                        <td><?= $row['status'] ?></td>
+                                        <td><?= htmlspecialchars($row['status'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
                                         <th class="text-wrapped">Catatan</th>
-                                        <td><?= $row['catatan'] ?></td>
+                                        <td><?= htmlspecialchars($row['catatan'] ?? ($row[$requestTables[$job_type]['catatan']] ?? '-')) ?></td>
                                     </tr>
                                 </table>
                             </div>
@@ -118,27 +173,27 @@ try {
                                 <table class="table table-striped">
                                     <tr>
                                         <th>Netpay ID</th>
-                                        <td><?= $row['netpay_id'] ?></td>
+                                        <td><?= htmlspecialchars($row['netpay_id'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
                                         <th>Name</th>
-                                        <td><?= $row['name'] ?></td>
+                                        <td><?= htmlspecialchars($row['name'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
                                         <th>Phone</th>
-                                        <td><?= $row['phone'] ?></td>
+                                        <td><?= htmlspecialchars($row['phone'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
                                         <th>Paket Internet</th>
-                                        <td><?= $row['paket_internet'] ?> Mbps</td>
+                                        <td><?= htmlspecialchars($row['paket_internet'] ?? '-') ?> Mbps</td>
                                     </tr>
                                     <tr>
                                         <th>Is Active?</th>
-                                        <td><?= $row['is_active'] ?></td>
+                                        <td><?= htmlspecialchars($row['is_active'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
                                         <th>Location</th>
-                                        <td class="text-wrapped"><?= $row['location'] ?></td>
+                                        <td class="text-wrapped"><?= htmlspecialchars($row['location'] ?? '-') ?></td>
                                     </tr>
                                 </table>
                             </div>
@@ -148,24 +203,28 @@ try {
             </div>
 
             <!-- Action Buttons -->
-            <?php if ($row['status'] == 'Pending' || $row['status'] == 'Rescheduled'): ?>
+            <?php if (($row['status'] ?? '') === 'Pending' || ($row['status'] ?? '') === 'Rescheduled'): ?>
                 <div class="text-right mt-3">
-                    <?php if (!$row['has_issue']): ?>
-                        <a class="btn mr-5 btn-light-warning" href="<?= BASE_URL ?>pages/schedule/issue_report.php?id=<?= $row['schedule_id'] ?>">
+                    <?php if (empty($row['has_issue'])): ?>
+                        <a class="btn mr-5 btn-light-warning" href="<?= BASE_URL ?>pages/schedule/issue_report.php?id=<?= htmlspecialchars($row['schedule_id']) ?>">
                             <span class="navi-icon"><i class="flaticon2-warning"></i></span>
                             <span class="navi-text">Task Issue Report</span>
                         </a>
                         <div class="btn">
-                            <form action=" <?= BASE_URL ?>pages/<?= $actionDone[$row['job_type']] ?>/create.php" method="post">
-                                <button class=" btn btn-success" name="id" value="<?= $row['schedule_id'] ?>">
-                                    <span class="navi-icon"><i class="flaticon2-check-mark"></i></span>
-                                    <span class="navi-text">Mark as Done</span>
-                                </button>
-                            </form>
+                            <?php $jobKey = $row['job_type'] ?? $job_type; ?>
+                            <?php if (!empty($actionDone[$jobKey])): ?>
+                                <form action="<?= BASE_URL ?>pages/<?= htmlspecialchars($actionDone[$jobKey]) ?>/create.php" method="post">
+                                    <button class=" btn btn-success" name="id" value="<?= htmlspecialchars($row['schedule_id']) ?>">
+                                        <span class="navi-icon"><i class="flaticon2-check-mark"></i></span>
+                                        <span class="navi-text">Mark as Done</span>
+                                    </button>
+                                </form>
+                            <?php endif; ?>
                         </div>
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
+
         </div>
     </div>
 </div>

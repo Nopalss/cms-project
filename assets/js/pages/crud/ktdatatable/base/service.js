@@ -13,7 +13,7 @@ var KTDatatableLocalSortDemo = function () {
                 type: 'remote',
                 source: {
                     read: {
-                        url: HOST_URL + 'api/ikr.php',
+                        url: HOST_URL + 'api/service_report.php',
                     },
                 },
                 pageSize: 10,
@@ -43,18 +43,17 @@ var KTDatatableLocalSortDemo = function () {
             },
             // columns definition
             columns: [{
-                field: 'ikr_id',
-                title: 'IKR Id',
+                field: 'srv_id',
+                title: 'Service Id',
             }, {
                 field: 'netpay_id',
                 title: 'Netpay Id',
             }, {
-                field: 'ikr_an',
-                title: 'Name',
-
+                field: 'jam',
+                title: 'Jam',
             }, {
-                field: 'created_at',
-                title: 'Date',
+                field: 'tanggal',
+                title: 'Tanggal',
                 template: function (row) {
                     const date = new Date(row.created_at);
                     const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
@@ -62,9 +61,11 @@ var KTDatatableLocalSortDemo = function () {
                     return formattedDate;
                 }
             }, {
+                field: 'problem',
+                title: 'Problem',
+            }, {
                 field: 'alamat',
                 title: 'Alamat',
-
             }, {
                 field: 'Actions',
                 title: 'Actions',
@@ -91,19 +92,19 @@ var KTDatatableLocalSortDemo = function () {
                                         Choose an action:\
                                     </li>\
                                     <li class="navi-item">\
-                                        <a href='${HOST_URL + 'pages/report/ikr/update.php?id=' + row.ikr_id}' class="navi-link">\
+                                        <a href='${HOST_URL + 'pages/service_report/update.php?id=' + row.srv_id}' class="navi-link">\
                                             <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>\
                                             <span class="navi-text">Edit</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteTemplate('${row.ikr_id}', 'controllers/report/ikr/delete.php')"class="navi-link">\
+                                        <a onclick="confirmDeleteTemplate('${row.srv_id}', 'controllers/report/service/delete.php')"class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
                                             <span class="navi-text">Hapus</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a class="navi-link btn-detail" href="${HOST_URL + 'pages/ikr/detail.php?id=' + row.ikr_id}">\
+                                        <a class="navi-link btn-detail" href="${HOST_URL + 'pages/service_report/detail.php?id=' + row.srv_id}">\
                                             <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>\
                                             <span class="navi-text">Detail</span>\
                                         </a>\
