@@ -23,8 +23,7 @@ if (isset($_POST['login'])) {
             $stmt->execute([':username' => $username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // if ($user && password_verify($password, $user['password'])) {
-            if ($user && $password == $user['password']) {
+            if ($user && password_verify($password, $user['password'])) {
                 $table = $user['role'] == "admin" ? "admin" : "technician";
                 $sql = "SELECT * FROM $table WHERE username = :username LIMIT 1";
                 $stmt = $pdo->prepare($sql);

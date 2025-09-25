@@ -237,6 +237,9 @@ require_once __DIR__ . '/config.php';
 <?php if ($_SESSION['menu'] == "customer"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/customer.js"></script>
 <?php endif; ?>
+<?php if ($_SESSION['menu'] == "user"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/user.js"></script>
+<?php endif; ?>
 <?php if ($_SESSION['menu'] == "registrasi"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/registrasi.js"></script>
 <?php endif; ?>
@@ -802,6 +805,27 @@ require_once __DIR__ . '/config.php';
         }
         $("#detailModal").modal("show");
     });
+    $(document).ready(function() {
+        $('#name').on('input', function() {
+            let nama = $(this).val().trim();
+
+            // ambil maksimal 8 karakter pertama nama
+            let base = nama.toLowerCase()
+                .replace(/[^a-z0-9\s]/g, '') // buang karakter aneh
+                .replace(/\s+/g, '') // hapus spasi
+                .slice(0, 8); // <-- batasi 8 huruf
+
+            // random 2 digit (lebih singkat)
+            let rand = Math.floor(Math.random() * 90) + 10;
+
+            // gabungkan
+            let username = base ? base + rand : '';
+
+            $('#username-disabled').val(username);
+            $('#username').val(username);
+        });
+    });
+
 
     function confirmDelete(scheduleId) {
         Swal.fire({

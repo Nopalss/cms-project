@@ -1,6 +1,6 @@
 <?php
 
-function checkLogin($pdo, $username, $password, $useHash = false)
+function checkLogin($pdo, $username, $password, $useHash = true)
 {
     $sql = "SELECT * FROM users WHERE username = :username LIMIT 1";
     $stmt = $pdo->prepare($sql);
