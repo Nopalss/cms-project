@@ -129,7 +129,7 @@ $dismantle_count = $pdo->query("
                 <!-- end card -->
 
                 <!-- begin:: card schedule -->
-                <div class="col-lg-9 mt-10">
+                <div class="col-xl-9 mt-10">
                     <div class="card shadow">
                         <div class="card-header pb-1 ">
                             <h3 class="card-title mb-2">
@@ -141,7 +141,7 @@ $dismantle_count = $pdo->query("
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 mt-10 mb-7">
+                <div class="col-xl-3 mt-10 mb-7">
                     <div class="card shadow">
                         <div class="card-header pb-1 ">
                             <h3 class="card-title mb-2">

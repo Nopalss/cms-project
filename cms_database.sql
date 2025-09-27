@@ -14,27 +14,228 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- Data exporting was unselected.
+
+-- Dumping database structure for cms_database
+CREATE DATABASE IF NOT EXISTS `cms_database` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `cms_database`;
+
+-- Dumping structure for table cms_database.admin
+CREATE TABLE IF NOT EXISTS `admin` (
+  `admin_id` varchar(100) NOT NULL DEFAULT 'AUTO_INCREMENT',
+  `name` varchar(200) NOT NULL,
+  `phone` varchar(200) NOT NULL,
+  `username` varchar(200) NOT NULL,
+  PRIMARY KEY (`admin_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
--- Data exporting was unselected.
+-- Dumping structure for table cms_database.customers
+CREATE TABLE IF NOT EXISTS `customers` (
+  `netpay_id` varchar(100) NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `location` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `paket_internet` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `is_active` enum('Active','Inactive') DEFAULT 'Inactive',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`netpay_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
--- Data exporting was unselected.
+-- Dumping structure for table cms_database.dismantle_reports
+CREATE TABLE IF NOT EXISTS `dismantle_reports` (
+  `dismantle_id` varchar(100) NOT NULL DEFAULT 'AUTO_INCREMENT',
+  `schedule_id` varchar(100) NOT NULL DEFAULT '',
+  `netpay_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `tanggal` date NOT NULL,
+  `jam` time NOT NULL,
+  `alasan` text NOT NULL,
+  `action` text NOT NULL,
+  `part_removed` text,
+  `kondisi_perangkat` text,
+  `pic` varchar(100) NOT NULL,
+  `keterangan` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`dismantle_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
--- Data exporting was unselected.
+-- Dumping structure for table cms_database.ikr
+CREATE TABLE IF NOT EXISTS `ikr` (
+  `ikr_id` varchar(50) NOT NULL,
+  `netpay_id` varchar(50) DEFAULT NULL,
+  `group_ikr` varchar(50) DEFAULT NULL,
+  `ikr_an` varchar(100) DEFAULT NULL,
+  `alamat` text,
+  `rt` varchar(10) DEFAULT NULL,
+  `rw` varchar(10) DEFAULT NULL,
+  `desa` varchar(50) DEFAULT NULL,
+  `kec` varchar(50) DEFAULT NULL,
+  `kab` varchar(50) DEFAULT NULL,
+  `telp` varchar(20) DEFAULT NULL,
+  `sn` varchar(100) DEFAULT NULL,
+  `paket` varchar(50) DEFAULT NULL,
+  `type_ont` varchar(50) DEFAULT NULL,
+  `redaman` varchar(20) DEFAULT NULL,
+  `odp_no` varchar(50) DEFAULT NULL,
+  `odc_no` varchar(50) DEFAULT NULL,
+  `jc_no` varchar(50) DEFAULT NULL,
+  `mac_sebelum` varchar(50) DEFAULT NULL,
+  `mac_sesudah` varchar(50) DEFAULT NULL,
+  `odp` varchar(50) DEFAULT NULL,
+  `odc` varchar(50) DEFAULT NULL,
+  `enclosure` varchar(50) DEFAULT NULL,
+  `paket_no` varchar(50) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `schedule_id` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`ikr_id`),
+  UNIQUE KEY `unique_ikr_id` (`ikr_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
--- Data exporting was unselected.
+-- Dumping structure for table cms_database.issues_report
+CREATE TABLE IF NOT EXISTS `issues_report` (
+  `issue_id` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `schedule_id` varchar(200) NOT NULL DEFAULT '',
+  `reported_by` varchar(200) NOT NULL DEFAULT '',
+  `issue_type` enum('Absence','Equipment','Customer not available','Other') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `description` text,
+  `created_at` timestamp NULL DEFAULT (now()),
+  `status` enum('Pending','Approved','Rejected') DEFAULT 'Pending',
+  PRIMARY KEY (`issue_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 
+-- Dumping structure for table cms_database.queue_scheduling
+CREATE TABLE IF NOT EXISTS `queue_scheduling` (
+  `queue_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `type_queue` enum('Install','Maintenance','Dismantle') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `request_id` varchar(100) DEFAULT NULL,
+  `status` enum('Accepted','Rejected','Pending') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'Pending',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`queue_id`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 -- Data exporting was unselected.
+
+-- Dumping structure for table cms_database.register
+CREATE TABLE IF NOT EXISTS `register` (
+  `registrasi_id` varchar(100) NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `location` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `paket_internet` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `is_verified` enum('Verified','Unverified') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT 'Unverified',
+  `request_schedule` varchar(100) DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`registrasi_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table cms_database.request_dismantle
+CREATE TABLE IF NOT EXISTS `request_dismantle` (
+  `rd_id` varchar(100) NOT NULL,
+  `netpay_id` varchar(100) DEFAULT NULL,
+  `type_dismantle` enum('Pindah Alamat','Biaya Mahal','Jarang Digunakan','Pelayanan Buruk','Gangguan Berkepanjangan','Ganti Provider','Lainnya') NOT NULL,
+  `deskripsi_dismantle` text,
+  `request_by` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`rd_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table cms_database.request_ikr
+CREATE TABLE IF NOT EXISTS `request_ikr` (
+  `rikr_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `netpay_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `registrasi_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `jadwal_pemasangan` varchar(100) DEFAULT NULL,
+  `catatan` text,
+  `request_by` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`rikr_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table cms_database.request_maintenance
+CREATE TABLE IF NOT EXISTS `request_maintenance` (
+  `rm_id` varchar(100) NOT NULL,
+  `netpay_id` varchar(100) DEFAULT NULL,
+  `type_issue` enum('Signal Lemah','Modem Rusak','Kabel Bermasalah','Gangguan Internet','Upgrade Paket','Lainnya') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `deskripsi_issue` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  `request_by` varchar(100) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`rm_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table cms_database.schedules
+CREATE TABLE IF NOT EXISTS `schedules` (
+  `schedule_id` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `tech_id` varchar(100) NOT NULL DEFAULT '0',
+  `netpay_id` varchar(100) DEFAULT NULL,
+  `date` date NOT NULL DEFAULT (0),
+  `time` time NOT NULL DEFAULT (0),
+  `job_type` enum('Instalasi','Maintenance','Dismantle') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `status` enum('Pending','Rescheduled','Cancelled','Done') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL DEFAULT 'Pending',
+  `queue_id` varchar(100) DEFAULT NULL,
+  `catatan` text,
+  PRIMARY KEY (`schedule_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table cms_database.service_reports
+CREATE TABLE IF NOT EXISTS `service_reports` (
+  `srv_id` varchar(100) NOT NULL,
+  `tanggal` date NOT NULL,
+  `jam` varchar(50) NOT NULL DEFAULT '0',
+  `netpay_id` varchar(100) NOT NULL,
+  `problem` text NOT NULL,
+  `action` text NOT NULL,
+  `part` varchar(255) NOT NULL,
+  `red_bef` varchar(50) NOT NULL,
+  `red_aft` varchar(50) NOT NULL,
+  `pic` varchar(100) NOT NULL,
+  `keterangan` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `schedule_id` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`srv_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table cms_database.technician
+CREATE TABLE IF NOT EXISTS `technician` (
+  `tech_id` varchar(100) NOT NULL DEFAULT 'AUTO_INCREMENT',
+  `name` varchar(200) NOT NULL,
+  `phone` varchar(200) NOT NULL,
+  `username` varchar(200) NOT NULL,
+  PRIMARY KEY (`tech_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- Data exporting was unselected.
+
+-- Dumping structure for table cms_database.users
+CREATE TABLE IF NOT EXISTS `users` (
+  `username` varchar(200) NOT NULL,
+  `password` varchar(200) NOT NULL,
+  `role` enum('admin','teknisi') NOT NULL,
+  PRIMARY KEY (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Data exporting was unselected.
 

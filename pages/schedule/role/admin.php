@@ -28,9 +28,8 @@ $issues_report = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="dropdown dropdown-inline mr-2">
                 <button type="button" class="btn btn-light-warning font-weight-bolder" id="btn-issues" data-toggle="modal" data-target="#exampleModalScrollable">
                     <i class="flaticon2-warning"></i>Issues Report
-                    <?php if (count($issues_report) > 0): ?>
-                        <small class="ml-3 label label-danger mr-2"><?= count($issues_report) ?></small>
-                    <?php endif; ?>
+                    <small id="issueNow" class="ml-3 label label-danger mr-2" style="display:none;"></small>
+
                 </button>
                 <!-- Modal issues report -->
                 <div class="modal fade" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">

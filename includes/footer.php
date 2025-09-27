@@ -204,12 +204,111 @@ require_once __DIR__ . '/config.php';
     <script src="<?= BASE_URL ?>assets/js/tables/request_ikr.js"></script>
     <script src="<?= BASE_URL ?>assets/js/request/ikr.js"></script>
 <?php endif; ?>
+
 <?php if ($_SESSION['menu'] == "queue"): ?>
     <script src="<?= BASE_URL ?>assets/js/tables/queue.js"></script>
+    <script>
+        // Schedule
+        // count scheduleNow
+        function scheduleNowCount() {
+            $.ajax({
+                url: "<?= BASE_URL ?>api/get_scheduleNow_count.php",
+                method: "GET",
+                dataType: "json",
+                success: function(result) {
+                    if (result.status === "success") {
+                        // update badge total
+                        if (result.total > 0) {
+                            $("#scheduleNow").text(result.total).show();
+                        } else {
+                            $("#scheduleNow").hide();
+                        }
+
+                        // list kategori yang mau ditampilkan
+                        const categories = {
+                            data: "#table-scheduleNowAll",
+                            install: "#table-scheduleNowInstall",
+                            maintenance: "#table-scheduleNowMaintenance",
+                            dismantle: "#table-scheduleNowDismantle"
+                        };
+
+                        // looping setiap kategori
+                        Object.keys(categories).forEach((key) => {
+                            const target = $(categories[key]); // definisikan dulu di luar if
+                            target.empty();
+
+                            if (result[key] && result[key].length > 0) {
+                                result[key].forEach((item) => {
+                                    target.append(`
+                                    <tr>
+                                        <td class="align-middle text-center">${item.queue_id}</td>
+                                        <td class="align-middle text-center">${item.type_queue}</td>
+                                        <td class="align-middle text-center">${item.request_id}</td>
+                                        <td class="align-middle text-center">
+                                            <span class="badge badge-pill badge-info">${item.status}</span>
+                                        </td>
+                                        <td class="align-middle text-center">${item.created_at}</td>
+                                        <td class="align-middle text-center">
+                                            <form action="${HOST_URL}pages/schedule/create.php" method="post">
+                                                <span>
+                                                    <input type="hidden" name="type_queue" value="${item.type_queue}">
+                                                    <button type="submit" name="id" class="btn btn-primary border-0 btn-detail-rikr" value="${item.queue_id}">
+                                                        <span class="navi-icon"><i class="flaticon-calendar-with-a-clock-time-tools"></i></span>
+                                                        <span class="navi-text">Schedule Now</span>
+                                                    </button>
+                                                </span>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                `);
+                                });
+                            } else {
+                                target.append(`
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <p class="text-muted font-weight-bold mb-0">Tidak ada antrian</p>
+                                        </td>
+                                    </tr>
+                                `);
+                            }
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", error);
+                }
+            });
+        }
+        // load pertama kali
+        scheduleNowCount();
+        setInterval(scheduleNowCount, 10000);
+    </script>
 <?php endif; ?>
+
 <?php if ($_SESSION['menu'] == "schedule"): ?>
     <script src="<?= BASE_URL ?>assets/js/tables/schedules.js"></script>
     <script src="assets/js/pages/features/cards/tools.js"></script>
+    <script>
+        function issueCount() {
+            $.ajax({
+                url: "<?= BASE_URL ?>api/get_issue_count.php",
+                method: "GET",
+                dataType: "json",
+                success: function(result) {
+                    if (result.status === "success") {
+                        // update badge total
+                        if (result.total > 0) {
+                            $("#issueNow").text(result.total).show();
+                        } else {
+                            $("#issueNow").hide();
+                        }
+                    }
+                }
+            })
+        }
+        issueCount();
+        setInterval(issueCount, 10000);
+    </script>
 <?php endif; ?>
 <?php if ($_SESSION['menu'] == "ikr"): ?>
     <script src="<?= BASE_URL ?>assets/js/tables/ikr.js"></script>
@@ -405,83 +504,6 @@ require_once __DIR__ . '/config.php';
         console.log($(this).data());
         $("#detailModalRd").modal("show");
     });
-
-    // Schedule
-    // count scheduleNow
-    function scheduleNowCount() {
-        $.ajax({
-            url: "<?= BASE_URL ?>api/get_scheduleNow_count.php",
-            method: "GET",
-            dataType: "json",
-            success: function(result) {
-                if (result.status === "success") {
-                    // update badge total
-                    if (result.total > 0) {
-                        $("#scheduleNow").text(result.total).show();
-                    } else {
-                        $("#scheduleNow").hide();
-                    }
-
-                    // list kategori yang mau ditampilkan
-                    const categories = {
-                        data: "#table-scheduleNowAll",
-                        install: "#table-scheduleNowInstall",
-                        maintenance: "#table-scheduleNowMaintenance",
-                        dismantle: "#table-scheduleNowDismantle"
-                    };
-
-                    // looping setiap kategori
-                    Object.keys(categories).forEach((key) => {
-                        const target = $(categories[key]); // definisikan dulu di luar if
-                        target.empty();
-
-                        if (result[key] && result[key].length > 0) {
-                            result[key].forEach((item) => {
-                                target.append(`
-                                    <tr>
-                                        <td class="align-middle text-center">${item.queue_id}</td>
-                                        <td class="align-middle text-center">${item.type_queue}</td>
-                                        <td class="align-middle text-center">${item.request_id}</td>
-                                        <td class="align-middle text-center">
-                                            <span class="badge badge-pill badge-info">${item.status}</span>
-                                        </td>
-                                        <td class="align-middle text-center">${item.created_at}</td>
-                                        <td class="align-middle text-center">
-                                            <form action="${HOST_URL}pages/schedule/create.php" method="post">
-                                                <span>
-                                                    <input type="hidden" name="type_queue" value="${item.type_queue}">
-                                                    <button type="submit" name="id" class="btn btn-primary border-0 btn-detail-rikr" value="${item.queue_id}">
-                                                        <span class="navi-icon"><i class="flaticon-calendar-with-a-clock-time-tools"></i></span>
-                                                        <span class="navi-text">Schedule Now</span>
-                                                    </button>
-                                                </span>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                `);
-                            });
-                        } else {
-                            target.append(`
-                                    <tr>
-                                        <td colspan="6" class="text-center">
-                                            <p class="text-muted font-weight-bold mb-0">Tidak ada antrian</p>
-                                        </td>
-                                    </tr>
-                                `);
-                        }
-                    });
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("AJAX Error:", error);
-            }
-        });
-    }
-
-    // load pertama kali
-    scheduleNowCount();
-    setInterval(scheduleNowCount, 10000);
-
 
     // get tanggal 
     $("#date, #tech_id").on("change", getJadwalTeknisi);

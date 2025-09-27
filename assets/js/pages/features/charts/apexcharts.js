@@ -89,7 +89,7 @@ var KTApexChartsDemo = function () {
 					chart: {
 						width: '100%',
 						type: 'pie',
-						height: '100%'
+						height: 314
 					},
 					labels: res.labels,
 					legend: {
