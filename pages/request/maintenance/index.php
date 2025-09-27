@@ -42,6 +42,11 @@ require __DIR__ . '/../../../includes/navbar.php';
                     </div>
                     <div class="card-toolbar">
                         <!--begin::Button-->
+                        <a href="<?= BASE_URL ?>pages/request/maintenance/export_excel.php" class="btn btn-light-success mr-5 font-weight-bolder">
+                            <span class="svg-icon svg-icon-md text-center"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
+                                <i class="far fa-file-excel"></i>
+                            </span>Import Excel
+                        </a>
                         <a href="<?= BASE_URL ?>pages/request/maintenance/create.php" class="btn btn-primary font-weight-bolder">
                             <span class="svg-icon svg-icon-md"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
                                     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">

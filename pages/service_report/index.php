@@ -58,6 +58,12 @@ require __DIR__ . '/../../includes/navbar.php';
                         </h3>
                     </div>
                     <div class="card-toolbar">
+                        <!--begin::Button-->
+                        <a href="<?= BASE_URL ?>pages/service_report/export_excel.php" class="btn btn-light-success font-weight-bolder">
+                            <span class="svg-icon svg-icon-md text-center"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
+                                <i class="far fa-file-excel"></i>
+                            </span>Import Excel
+                        </a>
                         <!--begin::Dropdown-->
                         <div class="dropdown dropdown-inline mr-2">
                             <!--begin::Dropdown Menu-->

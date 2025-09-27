@@ -12,7 +12,14 @@ try {
 
     $sql = "SELECT * FROM service_reports WHERE 1=1";
 
+
     $params = [];
+
+    $params = [];
+    if ($_SESSION['role'] == 'teknisi') {
+        $sql .= ' AND pic = :pic';
+        $params[":pic"] = $_SESSION['id_karyawan'];
+    }
 
     if (!empty($search)) {
         $sql .= " AND (

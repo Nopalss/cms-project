@@ -42,7 +42,12 @@ require __DIR__ . '/../../includes/navbar.php';
                         </h3>
                     </div>
                     <div class="card-toolbar">
-                        <button type="button" class="btn btn-light-success font-weight-bolder" id="btn-issues" data-toggle="modal" data-target="#exampleModalScrollable">
+                        <a href="<?= BASE_URL ?>pages/queue/export_excel.php" class="btn btn-light-success mr-5 font-weight-bolder">
+                            <span class="svg-icon svg-icon-md text-center"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
+                                <i class="far fa-file-excel"></i>
+                            </span>Import Excel
+                        </a>
+                        <button type="button" class="btn btn-success font-weight-bolder" id="btn-issues" data-toggle="modal" data-target="#exampleModalScrollable">
                             <i class="flaticon2-warning"></i>Schedule Now
                             <small id="scheduleNow" class="ml-3 label label-danger mr-2" style="display:none;"></small>
                         </button>

@@ -59,6 +59,12 @@ require __DIR__ . '/../../includes/navbar.php';
                         </h3>
                     </div>
                     <div class="card-toolbar">
+                        <a href="<?= BASE_URL ?>pages/ikr/export_excel.php" class="btn btn-light-success mr-5 font-weight-bolder">
+                            <span class="svg-icon svg-icon-md text-center"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
+                                <i class="far fa-file-excel"></i>
+                            </span>Import Excel
+                        </a>
+
                     </div>
                 </div>
                 <div class="card-body">

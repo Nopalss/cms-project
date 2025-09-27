@@ -57,7 +57,11 @@ require __DIR__ . '/../../includes/navbar.php';
                     <div class="card-toolbar">
                         <!--begin::Dropdown-->
                         <div class="dropdown dropdown-inline mr-2">
-
+                            <a href="<?= BASE_URL ?>pages/dismantle/export_excel.php" class="btn btn-light-success mr-5 font-weight-bolder">
+                                <span class="svg-icon svg-icon-md text-center"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
+                                    <i class="far fa-file-excel"></i>
+                                </span>Import Excel
+                            </a>
 
 
                             <!--begin::Dropdown Menu-->

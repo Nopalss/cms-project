@@ -10,9 +10,15 @@ try {
     $dateObj = DateTime::createFromFormat('m/d/Y', $dateInput);
     $date    = $dateObj ? $dateObj->format('Y-m-d') : null;
 
+
+
     $sql = "SELECT * FROM ikr WHERE 1=1";
 
     $params = [];
+    if ($_SESSION['role'] == 'teknisi') {
+        $sql .= ' AND pic = :pic';
+        $params[":pic"] = $_SESSION['id_karyawan'];
+    }
 
     if (!empty($search)) {
         $sql .= " AND (
@@ -53,7 +59,7 @@ try {
         $params[':created_at'] = "%$date%";
     }
     if (!empty($status)) {
-        $sql .= " AND q.status = :status";
+        $sql .= " AND status = :status";
         $params[':status'] = $status;
     }
 

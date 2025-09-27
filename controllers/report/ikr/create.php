@@ -29,6 +29,7 @@ if (isset($_POST['submit'])) {
     $enclosure   = $_POST['enclosure'] ?? '';
     $paket_no    = $_POST['paket_no'] ?? '';
     $schedule_id = $_POST['schedule_id'] ?? '';
+    $pic = $_SESSION['id_karyawan'];
     $check = $pdo->prepare("SELECT COUNT(*) FROM ikr WHERE ikr_id = :ikr_id");
     $check->execute([':ikr_id' => $ikr_id]);
     if ($check->fetchColumn() > 0) {
@@ -69,7 +70,8 @@ if (isset($_POST['submit'])) {
         'odc',
         'enclosure',
         'paket_no',
-        'schedule_id'
+        'schedule_id',
+        'pic'
     );
     function sanitize($data)
     {
@@ -153,10 +155,10 @@ if (isset($_POST['submit'])) {
         // Insert ke tabel ikr (schedule_id ditambahin)
         $stmt = $pdo->prepare("INSERT INTO ikr (
             ikr_id, netpay_id, group_ikr, ikr_an, alamat, rt, rw, desa, kec, kab, telp, sn, paket,
-            type_ont, redaman, odp_no, odc_no, jc_no, mac_sebelum, mac_sesudah, odp, odc, enclosure, paket_no, schedule_id
+            type_ont, redaman, odp_no, odc_no, jc_no, mac_sebelum, mac_sesudah, odp, odc, enclosure, paket_no, schedule_id, pic
         ) VALUES (
             :ikr_id, :netpay_id, :group_ikr, :ikr_an, :alamat, :rt, :rw, :desa, :kec, :kab, :telp, :sn, :paket,
-            :type_ont, :redaman, :odp_no, :odc_no, :jc_no, :mac_sebelum, :mac_sesudah, :odp, :odc, :enclosure, :paket_no, :schedule_id
+            :type_ont, :redaman, :odp_no, :odc_no, :jc_no, :mac_sebelum, :mac_sesudah, :odp, :odc, :enclosure, :paket_no, :schedule_id, :pic
         )");
         $stmt->execute($inputs);
 
