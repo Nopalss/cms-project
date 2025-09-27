@@ -19,22 +19,7 @@ require __DIR__ . '/../../includes/navbar.php';
                 <div class="d-flex align-items-baseline flex-wrap mr-5">
                     <!--begin::Page Title-->
                     <h5 class="text-dark font-weight-bold my-1 mr-5">
-                        Queue Schedule </h5>
-
-                    <!--end::Page Title-->
-
-                    <!--begin::Breadcrumb-->
-                    <!-- <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
-                        <li class="breadcrumb-item">
-                            <a href="" class="text-muted">
-                                General </a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <a href="" class="text-muted">
-                                Empty Page </a>
-                        </li>
-                    </ul> -->
-                    <!-- end::Breadcrumb -->
+                        Schedule Queue </h5>
                 </div>
                 <!--end::Page Heading-->
             </div>
@@ -53,7 +38,7 @@ require __DIR__ . '/../../includes/navbar.php';
                 <div class="card-header flex-wrap border-0 pt-6 pb-0">
                     <div class="card-title">
                         <h3 class="card-label">
-                            Data Queue Schedule
+                            Data Schedule Queue
                         </h3>
                     </div>
                     <div class="card-toolbar">
@@ -61,54 +46,6 @@ require __DIR__ . '/../../includes/navbar.php';
                             <i class="flaticon2-warning"></i>Schedule Now
                             <small id="scheduleNow" class="ml-3 label label-danger mr-2" style="display:none;"></small>
                         </button>
-                        <!--begin::Dropdown-->
-                        <div class="dropdown dropdown-inline mr-2">
-
-                            <!--begin::Dropdown Menu-->
-                            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                <!--begin::Navigation-->
-                                <ul class="navi flex-column navi-hover py-2">
-                                    <li class="navi-header font-weight-bolder text-uppercase font-size-sm text-primary pb-2">
-                                        Choose an option:
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-print"></i></span>
-                                            <span class="navi-text">Print</span>
-                                        </a>
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-copy"></i></span>
-                                            <span class="navi-text">Copy</span>
-                                        </a>
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-file-excel-o"></i></span>
-                                            <span class="navi-text">Excel</span>
-                                        </a>
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-file-text-o"></i></span>
-                                            <span class="navi-text">CSV</span>
-                                        </a>
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-file-pdf-o"></i></span>
-                                            <span class="navi-text">PDF</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                                <!--end::Navigation-->
-                            </div>
-                            <!--end::Dropdown Menu-->
-                        </div>
-                        <!--end::Dropdown-->
-
-
                         <!--end::Button-->
                     </div>
                 </div>

@@ -8,10 +8,32 @@ require __DIR__ . '/../../includes/navbar.php';
 try {
     date_default_timezone_set('Asia/Jakarta');
     $id = isset($_GET['id']) ? $_GET['id'] : null;
+    if (!$id) {
+        $_SESSION['alert'] = [
+            'icon' => 'warning',
+            'title' => 'ID Tidak Valid',
+            'text' => 'Service Report ID tidak ditemukan.',
+            'button' => "Kembali",
+            'style' => "warning"
+        ];
+        header("Location: " . BASE_URL . "pages/service_report/");
+        exit;
+    }
     $sql = "SELECT srv.*, c.* FROM service_reports srv JOIN customers c ON srv.netpay_id = c.netpay_id WHERE srv.srv_id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([":id" => $id]);
     $customer = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$customer) {
+        $_SESSION['alert'] = [
+            'icon' => 'warning',
+            'title' => 'Data Tidak Ada',
+            'text' => 'Service Report dengan ID ini tidak ditemukan.',
+            'button' => "Kembali",
+            'style' => "warning"
+        ];
+        header("Location: " . BASE_URL . "pages/service_report/");
+        exit;
+    }
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -76,7 +98,7 @@ try {
                             </div>
                             <div class="form-group">
                                 <label>PIC</label>
-                                <input type="text" class="form-control" name="pic" value="<?= $customer['pic'] ?>" />
+                                <input type="text" class="form-control" name="pic" readonly value="<?= $customer['pic'] ?>" />
                             </div>
                             <div class="form-group">
                                 <label>Keterangan</label>
@@ -85,7 +107,7 @@ try {
                         </div>
                         <div class="card-footer text-right">
                             <a href="<?= BASE_URL ?>pages/service_report/" class="btn btn-light-danger font-weight-bold">Cancel</a>
-                            <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Create</button>
+                            <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Update</button>
                         </div>
                     </div>
                 </div>

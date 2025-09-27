@@ -4,14 +4,12 @@ $_SESSION['menu'] = 'request maintenance';
 require __DIR__ . '/../../../includes/header.php';
 require __DIR__ . '/../../../includes/aside.php';
 require __DIR__ . '/../../../includes/navbar.php';
-
 ?>
-
 
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Subheader-->
     <div class="subheader py-2 py-lg-6  subheader-solid " id="kt_subheader">
-        <div class=" container-fluid  d-flex align-items-center justify-conten bt-between flex-wrap flex-sm-nowrap">
+        <div class=" container-fluid  d-flex align-items-center flex-wrap flex-sm-nowrap">
             <!--begin::Info-->
             <div class="d-flex align-items-center flex-wrap mr-1">
 
@@ -20,21 +18,7 @@ require __DIR__ . '/../../../includes/navbar.php';
                     <!--begin::Page Title-->
                     <h5 class="text-dark font-weight-bold my-1 mr-5">
                         Request Maintenance </h5>
-
                     <!--end::Page Title-->
-
-                    <!--begin::Breadcrumb-->
-                    <!-- <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
-                        <li class="breadcrumb-item">
-                            <a href="" class="text-muted">
-                                General </a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <a href="" class="text-muted">
-                                Empty Page </a>
-                        </li>
-                    </ul> -->
-                    <!-- end::Breadcrumb -->
                 </div>
                 <!--end::Page Heading-->
             </div>
@@ -57,53 +41,6 @@ require __DIR__ . '/../../../includes/navbar.php';
                         </h3>
                     </div>
                     <div class="card-toolbar">
-                        <!--begin::Dropdown-->
-                        <div class="dropdown dropdown-inline mr-2">
-
-                            <!--begin::Dropdown Menu-->
-                            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                <!--begin::Navigation-->
-                                <ul class="navi flex-column navi-hover py-2">
-                                    <li class="navi-header font-weight-bolder text-uppercase font-size-sm text-primary pb-2">
-                                        Choose an option:
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-print"></i></span>
-                                            <span class="navi-text">Print</span>
-                                        </a>
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-copy"></i></span>
-                                            <span class="navi-text">Copy</span>
-                                        </a>
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-file-excel-o"></i></span>
-                                            <span class="navi-text">Excel</span>
-                                        </a>
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-file-text-o"></i></span>
-                                            <span class="navi-text">CSV</span>
-                                        </a>
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-file-pdf-o"></i></span>
-                                            <span class="navi-text">PDF</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                                <!--end::Navigation-->
-                            </div>
-                            <!--end::Dropdown Menu-->
-                        </div>
-                        <!--end::Dropdown-->
-
                         <!--begin::Button-->
                         <a href="<?= BASE_URL ?>pages/request/maintenance/create.php" class="btn btn-primary font-weight-bolder">
                             <span class="svg-icon svg-icon-md"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">

@@ -19,7 +19,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $paket_internet = isset($_POST['paket_internet']) ? sanitize($_POST['paket_internet']) : null;
     $is_active      = isset($_POST['is_active']) ? sanitize($_POST['is_active']) : null;
     $location       = isset($_POST['location']) ? sanitize($_POST['location']) : null;
-
+    if (!preg_match('/^08[0-9]{8,11}$/', $phone)) {
+        $_SESSION['alert'] = [
+            'icon'   => 'error',
+            'title'  => 'Oops!',
+            'text'   => 'Format nomor HP tidak valid. Gunakan format 08xxxxxxxxxx',
+            'button' => 'Coba Lagi',
+            'style'  => 'danger'
+        ];
+        header("Location: " . BASE_URL . "pages/customers/detail.php?id=" . $netpay_id);
+        exit;
+    }
     // Validasi field wajib
     $requiredFields = [
         'netpay_id'      => $netpay_id,
@@ -63,17 +73,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':is_active'      => $is_active,
             ':location'       => $location
         ]);
-
-        $_SESSION['alert'] = [
-            'icon'   => 'success',
-            'title'  => 'Berhasil!',
-            'text'   => 'Data customer berhasil diperbarui.',
-            'button' => 'Oke',
-            'style'  => 'success'
-        ];
+        if ($stmt->rowCount() > 0) {
+            $_SESSION['alert'] = [
+                'icon'   => 'success',
+                'title'  => 'Berhasil!',
+                'text'   => 'Data customer berhasil diperbarui.',
+                'button' => 'Oke',
+                'style'  => 'success'
+            ];
+        } else {
+            $_SESSION['alert'] = [
+                'icon'   => 'info',
+                'title'  => 'Tidak ada perubahan',
+                'text'   => 'Data tetap sama, tidak ada yang diupdate.',
+                'button' => 'Oke',
+                'style'  => 'info'
+            ];
+        }
     } catch (PDOException $e) {
+        error_log("DB Error: " . $e->getMessage());
         $_SESSION['alert'] = [
-            'icon'   => 'danger',
+            'icon'   => 'error',
             'title'  => 'Error!',
             'text'   => 'Gagal update data. Error: ' . $e->getMessage(),
             'button' => 'Coba Lagi',

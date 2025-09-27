@@ -45,7 +45,7 @@ if (isset($_POST['submit'])) {
     // Pastikan semua data terisi
     if (!$name || !$phone || !$paket_internet || !$request_schedule || !$location || !validatePhone($phone) || !$is_verified || !$rikr_id || !$netpay_kode  || !$netpay_id || !$catatan ||  $jadwal_pemasangan != $request_schedule) {
         $_SESSION['alert'] = [
-            'icon' => 'danger',
+            'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
             'text' => 'Request gagal. Pastikan semua data sudah diisi dengan benar.',
             'button' => "Coba Lagi",
@@ -130,7 +130,7 @@ if (isset($_POST['submit'])) {
     } catch (PDOException $e) {
         // echo $e;
         $_SESSION['alert'] = [
-            'icon' => 'danger',
+            'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
             'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
             'button' => "Coba Lagi",
@@ -141,7 +141,7 @@ if (isset($_POST['submit'])) {
     }
 } else {
     $_SESSION['alert'] = [
-        'icon' => 'danger',
+        'icon' => 'error',
         'title' => 'Oops! Ada yang Salah',
         'text' => 'Gagal melakukan request, silakan coba lagi',
         'button' => "Coba Lagi",

@@ -13,7 +13,7 @@ var KTDatatableLocalSortDemo = function () {
                 type: 'remote',
                 source: {
                     read: {
-                        url: HOST_URL + 'api/schedules.php',
+                        url: HOST_URL + 'api/dismantle_report.php',
                     },
                 },
                 pageSize: 10,
@@ -43,64 +43,23 @@ var KTDatatableLocalSortDemo = function () {
             },
             // columns definition
             columns: [{
-                field: 'schedule_id',
-                title: 'Schedule Id',
+                field: 'dismantle_id',
+                title: 'Dismantle Id',
             }, {
                 field: 'netpay_id',
-                title: 'Netpay ID',
+                title: 'Netpay Id',
             }, {
-                field: 'technician_name',
-                title: 'Teknisi',
+                field: 'jam',
+                title: 'Jam',
             }, {
-                field: 'date',
-                title: 'Date',
+                field: 'tanggal',
+                title: 'Tanggal',
                 template: function (row) {
-                    const date = new Date(row.date);
+                    const date = new Date(row.created_at);
                     const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
                     const formattedDate = date.toLocaleDateString('id-ID', options);
                     return formattedDate;
                 }
-            }, {
-                field: 'time',
-                title: 'Time',
-            }, {
-                field: 'location',
-                title: 'Location',
-            }, {
-                field: 'job_type',
-                title: 'Job Type',
-                autoHide: false,
-            }, {
-                field: 'status',
-                title: 'Status',
-                autoHide: false,
-                // callback function support for column rendering
-                template: function (row) {
-                    var status = {
-                        'Pending': {
-                            'title': 'Pending',
-                            'state': 'info'
-                        },
-                        'On Progress': {
-                            'title': 'On Progress',
-                            'state': 'primary'
-                        },
-                        'Rescheduled': {
-                            'title': 'Rescheduled',
-                            'state': 'warning'
-                        },
-                        'Cancelled': {
-                            'title': 'Cancelled',
-                            'state': 'danger'
-                        },
-                        'Done': {
-                            'title': 'Done',
-                            'state': 'success'
-                        },
-                    };
-                    return '<span class="label label-' + status[row.status].state + ' label-dot mr-2"></span><span class="font-weight-bold text-' + status[row.status].state + '">' +
-                        status[row.status].title + '</span>';
-                },
             }, {
                 field: 'Actions',
                 title: 'Actions',
@@ -109,24 +68,6 @@ var KTDatatableLocalSortDemo = function () {
                 overflow: 'visible',
                 autoHide: false,
                 template: function (row) {
-                    var status = {
-                        'Pending': {
-                            'title': 'Pending',
-                            'state': 'info'
-                        },
-                        'Rescheduled': {
-                            'title': 'Rescheduled',
-                            'state': 'warning'
-                        },
-                        'Cancelled': {
-                            'title': 'Cancelled',
-                            'state': 'danger'
-                        },
-                        'Done': {
-                            'title': 'Done',
-                            'state': 'success'
-                        }
-                    };
                     return `\
                         <div class="dropdown dropdown-inline">\
                             <a href="javascript:;" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" data-toggle="dropdown">\
@@ -144,23 +85,20 @@ var KTDatatableLocalSortDemo = function () {
                                     <li class="navi-header font-weight-bolder text-uppercase font-size-xs text-primary pb-2">\
                                         Choose an action:\
                                     </li>\
-                                    <li class="navi-item cursor-pointer">\
-                                        <form action="${HOST_URL}pages/schedule/update.php" method="post">\
-                                            <input type="hidden" name="job_type" value="${row.job_type}">\
-                                                <button type="submit" name="id" class="btn  border-0 navi-link btn-detail-rikr" value="${row.schedule_id}">\
-                                                <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>\
-                                                <span class="navi-text">Edit</span>\
-                                            </button>\
-                                        </form>\
+                                    <li class="navi-item">\
+                                        <a href='${HOST_URL + 'pages/dismantle/update.php?id=' + row.dismantle_id}' class="navi-link">\
+                                            <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>\
+                                            <span class="navi-text">Edit</span>\
+                                        </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteTemplate('${row.schedule_id}', 'controllers/registrasi/delete.php')" class="navi-link">\
+                                        <a onclick="confirmDeleteTemplate('${row.dismantle_id}', 'controllers/report/dismantle/delete.php')"class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
                                             <span class="navi-text">Hapus</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a class="navi-link btn-detail" data-id="${row.schedule_id}" data-netpay="${row.netpay_id}" data-tech="${row.technician_name}" data-date="${row.date}" data-job="${row.job_type}" data-state="${status[row.status].state}" data-status="${row.status}" data-location="${row.location}">\
+                                        <a class="navi-link btn-detail" href="${HOST_URL + 'pages/dismantle/detail.php?id=' + row.dismantle_id}">\
                                             <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>\
                                             <span class="navi-text">Detail</span>\
                                         </a>\
@@ -174,23 +112,6 @@ var KTDatatableLocalSortDemo = function () {
             }],
         });
 
-        function confirmDelete(scheduleId) {
-            Swal.fire({
-                title: 'Yakin mau hapus?',
-                text: "Data schedule akan dihapus permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect ke delete.php dengan parameter ID
-                    window.location.href = "<?= BASE_URL ?>controllers/schedules/delete.php?id=" + scheduleId;
-                }
-            });
-        }
 
         $('#kt_datatable_search_status').on('change', function () {
             datatable.search($(this).val().toLowerCase(), 'status');

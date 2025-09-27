@@ -10,6 +10,18 @@ if (isset($_POST['submit'])) {
         return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
     }
 
+    function isDateValidTomorrow($dateInput)
+    {
+        // Pastikan format Y-m-d
+        $d = DateTime::createFromFormat('Y-m-d', $dateInput);
+        if (!$d || $d->format('Y-m-d') !== $dateInput) {
+            return false; // Format salah
+        }
+
+        $tomorrow = new DateTime('tomorrow');
+        return $d >= $tomorrow;
+    }
+
     function validatePhone($phone)
     {
         // Hilangkan spasi, strip, atau karakter non-digit
@@ -28,6 +40,7 @@ if (isset($_POST['submit'])) {
     }
 
     // Ambil & sanitasi data POST
+    $jam  = isset($_POST['jam']) ? sanitize($_POST['jam']) : null;
     $registrasi_id = isset($_POST['registrasi_id']) ? sanitize($_POST['registrasi_id']) : null;
     $name          = isset($_POST['name']) ? sanitize($_POST['name']) : null;
     $phone         = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
@@ -37,9 +50,9 @@ if (isset($_POST['submit'])) {
     $is_verified      = isset($_POST['is_verified']) ? sanitize($_POST['is_verified']) : null;
 
     // Pastikan semua data terisi
-    if (!$registrasi_id || !$name || !$phone || !$paket_internet || !$request_schedule || !$location || !$is_verified || !validatePhone($phone)) {
+    if (!$registrasi_id || !$name || !$phone || !$jam || !$paket_internet || !$request_schedule || !$location || !$is_verified || !validatePhone($phone) || !isDateValidTomorrow($request_schedule)) {
         $_SESSION['alert'] = [
-            'icon' => 'danger',
+            'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
             'text' => 'Update gagal. Pastikan semua data sudah diisi dengan benar.',
             'button' => "Coba Lagi",
@@ -66,7 +79,7 @@ if (isset($_POST['submit'])) {
             ':name' => $name,
             ':phone' => $phone,
             ':paket_internet' => $paket_internet,
-            ':request_schedule' => $request_schedule,
+            ':request_schedule' => $request_schedule . "T" . $jam,
             ':location' => $location,
             ':is_verified' => $is_verified
         ]);
@@ -81,7 +94,7 @@ if (isset($_POST['submit'])) {
         exit;
     } catch (PDOException $e) {
         $_SESSION['alert'] = [
-            'icon' => 'danger',
+            'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
             'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
             'button' => "Coba Lagi",
@@ -92,7 +105,7 @@ if (isset($_POST['submit'])) {
     }
 } else {
     $_SESSION['alert'] = [
-        'icon' => 'danger',
+        'icon' => 'error',
         'title' => 'Oops! Ada yang Salah',
         'text' => 'Gagal melakukan update, silakan coba lagi',
         'button' => "Coba Lagi",

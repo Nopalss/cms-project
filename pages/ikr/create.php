@@ -7,6 +7,18 @@ require __DIR__ . '/../../includes/aside.php';
 require __DIR__ . '/../../includes/navbar.php';
 try {
     $id = isset($_POST['id']) ? $_POST['id'] : null;
+    $id = $_POST['id'] ?? null;
+    if (!$id) {
+        $_SESSION['alert'] = [
+            'icon' => 'warning',
+            'title' => 'Oops!',
+            'text' => 'Schedule ID tidak valid.',
+            'button' => 'Oke',
+            'style' => 'warning'
+        ];
+        header("Location: " . BASE_URL . "pages/ikr/");
+        exit;
+    }
     $sql = "SELECT s.schedule_id ,s.netpay_id, c.* FROM schedules s JOIN customers c ON s.netpay_id = c.netpay_id WHERE s.schedule_id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([":id" => $id]);
@@ -28,7 +40,7 @@ try {
                         <div class="card-header pt-5">
                             <div class="card-title">
                                 <h3 class="card-label">
-                                    Create Report IKR
+                                    Create IKR Report
                                 </h3>
                             </div>
                         </div>

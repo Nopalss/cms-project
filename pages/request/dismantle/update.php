@@ -7,7 +7,7 @@ require __DIR__ . '/../../../includes/aside.php';
 require __DIR__ . '/../../../includes/navbar.php';
 try {
     $rd_id = isset($_GET['id']) ? $_GET['id'] : null;
-    $sql = "SELECT netpay_id, name FROM customers";
+    $sql = "SELECT netpay_id, name FROM customers WHERE is_active ='Active'";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);

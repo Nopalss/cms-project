@@ -58,8 +58,7 @@ require_once __DIR__ . '/config.php';
                     <?= $_SESSION['role'] ?>
                 </div>
                 <div class="navi mt-2">
-
-                    <a href="<?= BASE_URL . "includes/signout.php" ?>" class="btn btn-sm btn-light-primary font-weight-bolder py-2 px-5">Sign Out</a>
+                    <a onclick="logoutConfirm()" class="btn btn-sm btn-light-primary font-weight-bolder py-2 px-5">Sign Out</a>
                 </div>
             </div>
         </div>
@@ -99,29 +98,7 @@ require_once __DIR__ . '/config.php';
             <!--end:Item-->
 
             <!--begin::Item-->
-            <a href="custom/apps/userprofile-1/overview.html" class="navi-item">
-                <div class="navi-link">
-                    <div class="symbol symbol-40 bg-light mr-3">
-                        <div class="symbol-label">
-                            <span class="svg-icon svg-icon-md svg-icon-primary"><!--begin::Svg Icon | path:assets/media/svg/icons/Communication/Mail-opened.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
-                                    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                                        <rect x="0" y="0" width="24" height="24" />
-                                        <path d="M6,2 L18,2 C18.5522847,2 19,2.44771525 19,3 L19,12 C19,12.5522847 18.5522847,13 18,13 L6,13 C5.44771525,13 5,12.5522847 5,12 L5,3 C5,2.44771525 5.44771525,2 6,2 Z M7.5,5 C7.22385763,5 7,5.22385763 7,5.5 C7,5.77614237 7.22385763,6 7.5,6 L13.5,6 C13.7761424,6 14,5.77614237 14,5.5 C14,5.22385763 13.7761424,5 13.5,5 L7.5,5 Z M7.5,7 C7.22385763,7 7,7.22385763 7,7.5 C7,7.77614237 7.22385763,8 7.5,8 L10.5,8 C10.7761424,8 11,7.77614237 11,7.5 C11,7.22385763 10.7761424,7 10.5,7 L7.5,7 Z" fill="#000000" opacity="0.3" />
-                                        <path d="M3.79274528,6.57253826 L12,12.5 L20.2072547,6.57253826 C20.4311176,6.4108595 20.7436609,6.46126971 20.9053396,6.68513259 C20.9668779,6.77033951 21,6.87277228 21,6.97787787 L21,17 C21,18.1045695 20.1045695,19 19,19 L5,19 C3.8954305,19 3,18.1045695 3,17 L3,6.97787787 C3,6.70173549 3.22385763,6.47787787 3.5,6.47787787 C3.60510559,6.47787787 3.70753836,6.51099993 3.79274528,6.57253826 Z" fill="#000000" />
-                                    </g>
-                                </svg><!--end::Svg Icon--></span>
-                        </div>
-                    </div>
-                    <div class="navi-text">
-                        <div class="font-weight-bold">
-                            My Tasks
-                        </div>
-                        <div class="text-muted">
-                            latest tasks and schedule
-                        </div>
-                    </div>
-                </div>
-            </a>
+
             <!--end:Item-->
         </div>
         <!--end::Nav-->
@@ -141,6 +118,7 @@ require_once __DIR__ . '/config.php';
             title: "<?= $_SESSION['alert']['title'] ?>",
             text: "<?= $_SESSION['alert']['text'] ?>",
             confirmButtonText: "<?= $_SESSION['alert']['button'] ?> ",
+            heightAuto: false,
             customClass: {
                 confirmButton: "btn font-weight-bold btn-<?= $_SESSION['alert']['style'] ?>",
                 icon: "m-auto"
@@ -218,49 +196,71 @@ require_once __DIR__ . '/config.php';
 <script src="<?= BASE_URL ?>assets/plugins/custom/prismjs/prismjs.bundle.js"></script>
 <script src="<?= BASE_URL ?>assets/js/scripts.bundle.js"></script>
 <!--end::Global Theme Bundle-->
+<?php if ($_SESSION['menu'] == "registrasi"): ?>
+    <script src="<?= BASE_URL ?>assets/js/tables/registrasi.js"></script>
+    <script src="<?= BASE_URL ?>assets/js/registrasi/index.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "request ikr"): ?>
+    <script src="<?= BASE_URL ?>assets/js/tables/request_ikr.js"></script>
+    <script src="<?= BASE_URL ?>assets/js/request/ikr.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "queue"): ?>
+    <script src="<?= BASE_URL ?>assets/js/tables/queue.js"></script>
+<?php endif; ?>
 <?php if ($_SESSION['menu'] == "schedule"): ?>
-    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/schedules.js"></script>
+    <script src="<?= BASE_URL ?>assets/js/tables/schedules.js"></script>
     <script src="assets/js/pages/features/cards/tools.js"></script>
 <?php endif; ?>
+<?php if ($_SESSION['menu'] == "ikr"): ?>
+    <script src="<?= BASE_URL ?>assets/js/tables/ikr.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "request maintenance"): ?>
+    <script src="<?= BASE_URL ?>assets/js/tables/request_maintenance.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "request dismantle"): ?>
+    <script src="<?= BASE_URL ?>assets/js/tables/request_dismantle.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "service"): ?>
+    <script src="<?= BASE_URL ?>assets/js/tables/service.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "dismantle"): ?>
+    <script src="<?= BASE_URL ?>assets/js/tables/dismantle.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "customer"): ?>
+    <script src="<?= BASE_URL ?>assets/js/tables/customer.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "user"): ?>
+    <script src="<?= BASE_URL ?>assets/js/tables/user.js"></script>
+<?php endif; ?>
+
 <?php if ($_SESSION['menu'] == "issue report"): ?>
     <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/issues-report.js"></script>
 <?php endif; ?>
-<?php if ($_SESSION['menu'] == "ikr"): ?>
-    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/ikr.js"></script>
-<?php endif; ?>
-<?php if ($_SESSION['menu'] == "service"): ?>
-    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/service.js"></script>
-<?php endif; ?>
-<?php if ($_SESSION['menu'] == "dismantle"): ?>
-    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/dismantle.js"></script>
-<?php endif; ?>
-<?php if ($_SESSION['menu'] == "customer"): ?>
-    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/customer.js"></script>
-<?php endif; ?>
-<?php if ($_SESSION['menu'] == "user"): ?>
-    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/user.js"></script>
-<?php endif; ?>
-<?php if ($_SESSION['menu'] == "registrasi"): ?>
-    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/registrasi.js"></script>
-<?php endif; ?>
-<?php if ($_SESSION['menu'] == "request ikr"): ?>
-    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/request_ikr.js"></script>
-<?php endif; ?>
-<?php if ($_SESSION['menu'] == "request maintenance"): ?>
-    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/request_maintenance.js"></script>
-<?php endif; ?>
-<?php if ($_SESSION['menu'] == "request dismantle"): ?>
-    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/request_dismantle.js"></script>
-<?php endif; ?>
-<?php if ($_SESSION['menu'] == "queue"): ?>
-    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/queue.js"></script>
-<?php endif; ?>
+
+
 
 <script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-timepicker.js"></script>
 <!--end::Page Scripts-->
 <!--begin::Page Scripts(used by this page)-->
 <script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-datepicker.js"></script>
+<script src="<?= BASE_URL ?>assets/js/pages/features/charts/apexcharts.js"></script>
+
 <script>
+    function logoutConfirm() {
+        Swal.fire({
+            title: 'Logout?',
+            text: 'Anda yakin ingin keluar dari aplikasi?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Logout',
+            cancelButtonText: 'Batal',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "<?= BASE_URL . "includes/signout.php" ?>";
+            }
+        });
+    }
     //  delete template
     function confirmDeleteTemplate(id, url, title = "Yakin mau hapus?", text = "Data akan dihapus permanen!") {
         Swal.fire({
@@ -317,180 +317,6 @@ require_once __DIR__ . '/config.php';
                         form.submit();
                     }
                 });
-            }
-        });
-    }
-
-
-    // registrasi
-    $(document).on("click", ".btn-detail-registrasi", function() {
-        $("#detail_registrasiId").text($(this).data("id"));
-        $("#detail_name").text($(this).data("name"));
-        $("#detail_location").text($(this).data("location"));
-        $("#detail_phone").text($(this).data("phone"));
-        $("#detail_paketInternet").text($(this).data("paket") + ' mbps');
-        const color = {
-            "Verified": 'success',
-            "Unverified": 'danger'
-        }
-        $("#detail_isVerified").text($(this).data("verified")).addClass(`badge badge-pill text-weight-bold badge-${color[$(this).data("verified")]}`);
-        const datetime = $(this).data("schedule");
-        const date = new Date(datetime.replace(" ", "T"));
-
-        // Bagian tanggal → pakai locale Indonesia
-        const tanggal = date.toLocaleDateString("id-ID", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric"
-        });
-
-        // Bagian jam → pakai locale Inggris (pemisah :)
-        const waktu = date.toLocaleTimeString("en-GB", {
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-        $("#detail_requestSchedule").text(`${tanggal}`);
-        $("#detail_requestJam").text(`${waktu}`);
-
-        $("#detailModalRegistrasi").modal("show");
-    });
-
-    function confirmDeleteRegistrasi(registrasiId) {
-        Swal.fire({
-            title: 'Yakin mau hapus?',
-            text: "Data Registrasi akan dihapus permanen!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = HOST_URL + "controllers/registrasi/delete.php?id=" + registrasiId;
-            }
-        });
-    }
-
-
-    // request ikr
-    $(document).ready(function() {
-
-        $('#registrasi_id').on('change', function() {
-            let id = $(this).val();
-            if (id) {
-                $.ajax({
-                    url: '<?= BASE_URL ?>api/get_register.php',
-                    type: 'GET',
-                    data: {
-                        id: id
-                    },
-                    dataType: 'json',
-                    success: function(data) {
-                        if (Object.keys(data).length > 0) {
-                            $('#name').val(data.name);
-                            $('#registrasi_id2').val(data.registrasi_id);
-                            $('#phone').val(data.phone);
-                            $('#paket_internet').val(data.paket_internet).selectpicker('refresh');;
-                            $('#is_verified').val(data.is_verified).selectpicker('refresh');;
-                            $('#location').val(data.location);
-                            let schedule = data.request_schedule ? data.request_schedule.replace(' ', 'T').substring(0, 16) : '';
-                            $('#request_schedule').val(schedule);
-                            $('#jadwal_pemasangan').val(schedule);
-                        } else {
-                            // reset kalau tidak ada
-                            $('#name, #phone, #paket_internet, #location, #request_schedule').val('');
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("AJAX Error: " + status + " - " + error);
-                    }
-                });
-            } else {
-                $('#name, #phone, #paket_internet, #location, #request_schedule').val('');
-            }
-        });
-        $('#jadwal_pemasangan, #request_schedule').on('change', function() {
-            let date = $(this).val();
-            $('#request_schedule').val(date);
-            $('#jadwal_pemasangan').val(date);
-        })
-    });
-    // modal detail rikr
-    $(document).on("click", ".btn-detail-rikr", function() {
-        $("#detail_rikrId").text($(this).data("rikr-id"));
-        $("#detail_netpayId").text($(this).data("netpay-id"));
-        $("#detail_registrasiId").text($(this).data("registrasi-id"));
-        $("#detail_status").text($(this).data("status")).addClass(`font-weight-bold text-${$(this).data("state")}`);
-        const datetime = $(this).data("jadwal");
-        const date = new Date(datetime.replace(" ", "T"));
-        // Tanggal → format Indonesia
-        const tanggal = date.toLocaleDateString("id-ID", {
-            weekday: "long",
-            day: "numeric",
-            month: "long",
-            year: "numeric"
-        });
-
-        // Jam → format 24 jam dengan pemisah :
-        const waktu = date.toLocaleTimeString("en-GB", {
-            hour: "2-digit",
-            minute: "2-digit",
-        });
-
-        $("#detail_jadwal").text(tanggal);
-        $("#detail_jam").text(`${waktu} WIB`);
-        $("#detail_catatan").text($(this).data("catatan"));
-        $("#detail_requestBy").text($(this).data("request-by"));
-        console.log($(this).data());
-        $("#detailModalRIKR").modal("show");
-    });
-
-    // notifikasi untuk menambahkan rikr
-    function updateUnverifiedCount() {
-        $.ajax({
-            url: "<?= BASE_URL ?>api/get_unverified_register.php",
-            method: "GET",
-            dataType: "json",
-            success: function(result) {
-                if (result.status === "success") {
-                    if (result.total > 0) {
-                        $("#unverifiedCount")
-                            .text(result.total)
-                            .show();
-                    } else {
-                        $("#unverifiedCount").hide();
-                    }
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("AJAX Error:", error);
-            }
-        });
-    }
-
-    // load pertama kali
-    updateUnverifiedCount();
-
-    // ulangi tiap 10 detik
-    setInterval(updateUnverifiedCount, 10000);
-
-
-    // deledet rikr
-    function confirmDeleteRIKR(rikrId) {
-        Swal.fire({
-            title: 'Yakin mau hapus?',
-            text: "Data akan dihapus permanen!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Ya, hapus!',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.href = HOST_URL + "controllers/request/ikr/delete.php?id=" + rikrId;
             }
         });
     }

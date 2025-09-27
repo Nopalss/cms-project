@@ -51,7 +51,12 @@ try {
         $daerah_id = substr($row['netpay_id'], 0, 2);
         $netpay_id = substr($row['netpay_id'], 2);
         if (!$row) {
-            $_SESSION['error'] = "Data Registrasi Tidak Ditemukan";
+            $_SESSION['alert'] = [
+                'icon' => 'error',
+                'title' => 'Oops! Ada yang Salah, Id Tidak Ditemukan',
+                'button' => "Coba Lagi",
+                'style' => "danger"
+            ];
             header("Location: " . BASE_URL . "pages/request/ikr/");
             exit;
         }
@@ -187,7 +192,7 @@ try {
                             </div>
                         </div>
                         <div class="card-footer text-right">
-                            <a href="<?= BASE_URL ?>pages/schedule/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
+                            <a href="<?= BASE_URL ?>pages/request/ikr/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
                             <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Update</button>
                         </div>
                     </div>

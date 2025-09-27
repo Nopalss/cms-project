@@ -3,7 +3,6 @@
 require_once __DIR__ . "/../../../includes/config.php";
 
 
-var_dump($_POST);
 if (isset($_POST['submit'])) {
     // Fungsi sanitize untuk cegah HTML Injection
     function sanitize($data)
@@ -17,9 +16,23 @@ if (isset($_POST['submit'])) {
     $deskripsi_issue   = isset($_POST['deskripsi_issue']) ? sanitize($_POST['deskripsi_issue']) : null;
     $request_by   = $_SESSION['username'];
 
+    $check = $pdo->prepare("SELECT 1 FROM customers WHERE netpay_id = :id AND is_active = 'Active'");
+    $check->execute([':id' => $netpay_id]);
+    if (!$check->fetch()) {
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Oops!',
+            'text' => 'Customer tidak ditemukan atau tidak aktif.',
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
+        header("Location: " . BASE_URL . "pages/request/maintenance/");
+        exit;
+    }
+
     if (!$rm_id || !$netpay_id || !$type_issue || !$deskripsi_issue) {
         $_SESSION['alert'] = [
-            'icon' => 'danger',
+            'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
             'text' => 'Request gagal. Pastikan semua data sudah diisi dengan benar.',
             'button' => "Coba Lagi",
@@ -69,7 +82,7 @@ if (isset($_POST['submit'])) {
     } catch (PDOException $e) {
         $pdo->rollBack();
         $_SESSION['alert'] = [
-            'icon' => 'danger',
+            'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
             'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
             'button' => "Coba Lagi",
@@ -80,7 +93,7 @@ if (isset($_POST['submit'])) {
     }
 } else {
     $_SESSION['alert'] = [
-        'icon' => 'danger',
+        'icon' => 'error',
         'title' => 'Oops! Ada yang Salah',
         'text' => 'Gagal melakukan request, silakan coba lagi',
         'button' => "Coba Lagi",

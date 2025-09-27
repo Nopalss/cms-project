@@ -10,10 +10,11 @@ if ($id && $type_queue) {
 
     try {
         $requestTables = [
-            "Install"    => ["table" => "request_ikr", "id" => "rikr_id"],
-            "Maintenance" => ["table" => "request_maintenance", "id" => "rm_id"],
-            "Dismantle"  => ["table" => "request_dismantle", "id" => "rd_id"],
+            "Install"    => ["table" => "request_ikr", "id" => "rikr_id", "catatan" => "catatan"],
+            "Maintenance"  => ["table" => "request_maintenance", "id" => "rm_id", "catatan" => "deskripsi_issue"],
+            "Dismantle"    => ["table" => "request_dismantle", "id" => "rd_id", "catatan" => "deskripsi_dismantle"],
         ];
+
         function formatDate($datetime, $type = 'date')
         {
             $dt = new DateTime($datetime);
@@ -29,8 +30,9 @@ if ($id && $type_queue) {
         if (isset($requestTables[$type_queue])) {
             $table = $requestTables[$type_queue]['table'];
             $idCol = $requestTables[$type_queue]['id'];
+            $catKey = $requestTables[$type_queue]['catatan'];
 
-            $sql = "SELECT q.*, r.*, c.* 
+            $sql = "SELECT q.*, r.*, c.*, r.$catKey as catatan 
             FROM queue_scheduling q
             JOIN $table r ON q.request_id = r.$idCol
             JOIN customers c ON r.netpay_id = c.netpay_id
@@ -157,9 +159,13 @@ if ($id && $type_queue) {
                                     <label for="exampleTextarea">Alamat</label>
                                     <textarea class="form-control" id="exampleTextarea" readonly name="location" rows="3"><?= $row['location'] ?></textarea>
                                 </div>
+                                <div class="form-group mb-1">
+                                    <label for="exampleTextarea">Catatan</label>
+                                    <textarea class="form-control" id="exampleTextarea" name="catatan" rows="3"><?= $row['catatan'] ?></textarea>
+                                </div>
                             </div>
                             <div class="card-footer text-right">
-                                <button type="reset" class="btn btn-light-danger font-weight-bold">Cancel</button>
+                                <a href="<?= BASE_URL ?>pages/schedule/" class="btn btn-light-danger font-weight-bold">Cancel</a>
                                 <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Create</button>
                             </div>
                         </form>

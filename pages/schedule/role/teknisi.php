@@ -1,5 +1,5 @@
 <?php
-$tech_id = 1;
+$tech_id =  $_SESSION['id_karyawan'];
 // Mengambil data scehdule berdasarkan id teknisi
 $sql = "SELECT s.*, c.location, c.phone FROM schedules s
         JOIN customers c ON s.netpay_id = c.netpay_id

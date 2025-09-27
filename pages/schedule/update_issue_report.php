@@ -48,7 +48,7 @@ $issues = ['Absence', 'Equipment', 'Customer not available', 'Other'];
                             <div>
                                 <div class="input-group">
                                     <input type="text" class="form-control"
-                                        value="<?= htmlspecialchars($issueReport['issue_id']) ?>" disabled />
+                                        value="<?= htmlspecialchars($issueReport['schedule_id']) ?>" disabled />
                                 </div>
                             </div>
                         </div>

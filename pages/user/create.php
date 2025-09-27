@@ -57,7 +57,7 @@ require __DIR__ . '/../../includes/navbar.php';
                                 </div>
                                 <div class="form-group">
                                     <label for="password">Password</label>
-                                    <input id="password" type="password" class="form-control" min='5' name="password" required>
+                                    <input id="password" type="password" class="form-control" minlength="5" name="password" required>
                                 </div>
                                 <div class="card-footer text-right">
                                     <a href="<?= BASE_URL ?>pages/user/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>

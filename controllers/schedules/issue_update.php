@@ -61,7 +61,7 @@ if (isset($_POST['submit'])) {
         exit;
     } catch (PDOException $e) {
         $_SESSION['alert'] = [
-            'icon' => 'danger',
+            'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
             'text' => 'Gagal memperbarui Issue Report. Error: ' . $e->getMessage(),
             'button' => "Coba Lagi",
@@ -72,7 +72,7 @@ if (isset($_POST['submit'])) {
     }
 } else {
     $_SESSION['alert'] = [
-        'icon' => 'warning',
+        'icon' => 'error',
         'title' => 'Oops!',
         'text' => 'Akses tidak valid.',
         'button' => "Oke",

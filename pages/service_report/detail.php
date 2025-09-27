@@ -5,7 +5,19 @@ require __DIR__ . '/../../includes/header.php';
 require __DIR__ . '/../../includes/aside.php';
 require __DIR__ . '/../../includes/navbar.php';
 
-$id = $_GET['id'];
+$id = $_GET['id'] ?? null;
+if (!$id) {
+    $_SESSION['alert'] = [
+        'icon' => 'warning',
+        'title' => 'ID Tidak Valid',
+        'text' => 'Service Report ID tidak ditemukan.',
+        'button' => "Kembali",
+        'style' => "warning"
+    ];
+    header("Location: " . BASE_URL . "pages/service_report/");
+    exit;
+}
+
 try {
     $sql = "SELECT srv.*, c.*
             FROM service_reports srv

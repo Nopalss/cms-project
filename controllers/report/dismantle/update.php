@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($requiredFields as $field => $value) {
         if (empty($value)) {
             $_SESSION['alert'] = [
-                'icon'   => 'danger',
+                'icon'   => 'error',
                 'title'  => 'Oops!',
                 'text'   => "Field <b>$field</b> tidak boleh kosong.",
                 'button' => 'Coba Lagi',
@@ -87,10 +87,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
     } catch (PDOException $e) {
         $pdo->rollBack();
+        error_log("Update dismantle error: " . $e->getMessage());
         $_SESSION['alert'] = [
-            'icon'   => 'danger',
+            'icon'   => 'error',
             'title'  => 'Error!',
-            'text'   => 'Gagal update data. Error: ' . $e->getMessage(),
+            'text'   => 'Gagal update data. Silakan coba lagi.',
             'button' => 'Coba Lagi',
             'style'  => 'danger'
         ];

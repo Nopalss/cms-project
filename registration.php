@@ -1,12 +1,20 @@
 <?php
 require_once __DIR__ . '/includes/config.php';
-
+$jamKerja = [
+    "08:00",
+    "09:00",
+    "10:00",
+    "11:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00"
+];
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <!-- <base href="../../../../"> -->
     <meta charset="utf-8" />
     <title>CMS Jabbar | Registration</title>
     <meta name="description" content="Login page example" />
@@ -77,7 +85,16 @@ require_once __DIR__ . '/includes/config.php';
                             </div>
                             <div class="form-group">
                                 <label for="exampleTextarea">Kapan Anda ingin jadwal pemasangan?</label>
-                                <input type="datetime-local" min="<?= date('Y-m-d\T08:00', strtotime('+1 day')); ?>" required name="request_schedule" class="form-control">
+                                <input type="date" min="<?= date('Y-m-d', strtotime('+1 day')); ?>" required name="request_schedule" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="paket_internet">Jam</label>
+                                <select class="form-control selectpicker" id="paket_internet" required name="jam" data-size=" 7">
+                                    <option value="">Select</option>
+                                    <?php foreach ($jamKerja as $j): ?>
+                                        <option value="<?= $j ?>"><?= $j ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="exampleTextarea">Alamat</label>
@@ -184,12 +201,7 @@ require_once __DIR__ . '/includes/config.php';
     <script src="assets/plugins/global/plugins.bundle.js"></script>
     <script src="assets/plugins/custom/prismjs/prismjs.bundle.js"></script>
     <script src="assets/js/scripts.bundle.js"></script>
-    <!--end::Global Theme Bundle-->
 
-
-    <!--begin::Page Scripts(used by this page)-->
-    <!-- <script src="assets/js/pages/custom/login/login-general.js"></script> -->
-    <!--end::Page Scripts-->
 </body>
 <!--end::Body-->
 

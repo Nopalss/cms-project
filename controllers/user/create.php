@@ -15,13 +15,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone    = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
     $passwordRaw = isset($_POST['password']) ? trim($_POST['password']) : null; // 
     $role     = isset($_POST['role']) ? sanitize($_POST['role']) : null;
-
+    $check = $pdo->prepare("SELECT 1 FROM users WHERE username = :username");
+    $check->execute([':username' => $username]);
+    if ($check->fetchColumn()) {
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Oops!',
+            'text' => 'Username sudah digunakan.',
+            'button' => 'Coba Lagi',
+            'style' => 'danger'
+        ];
+        header("Location: " . BASE_URL . "pages/user/create.php");
+        exit;
+    }
     // --- Validasi field wajib ---
     $required = compact('username', 'name', 'phone', 'passwordRaw', 'role');
     foreach ($required as $field => $value) {
         if (empty($value)) {
             $_SESSION['alert'] = [
-                'icon'   => 'danger',
+                'icon'   => 'error',
                 'title'  => 'Oops!',
                 'text'   => "Field <b>$field</b> tidak boleh kosong.",
                 'button' => 'Coba Lagi',
@@ -32,9 +44,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if (!preg_match('/^[0-9]+$/', $phone)) {
+    if (!preg_match('/^(08[0-9]{8,11}|62[0-9]{9,12})$/', $phone)) {
         $_SESSION['alert'] = [
-            'icon'   => 'danger',
+            'icon'   => 'error',
             'title'  => 'Oops!',
             'text'   => "Nomor telepon harus berupa angka.",
             'button' => 'Coba Lagi',
@@ -97,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
     } catch (PDOException $e) {
         $_SESSION['alert'] = [
-            'icon'   => 'danger',
+            'icon'   => 'error',
             'title'  => 'Error!',
             'text'   => 'Gagal menyimpan data. Error: ' . $e->getMessage(),
             'button' => 'Coba Lagi',

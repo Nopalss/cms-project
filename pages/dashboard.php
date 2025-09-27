@@ -22,6 +22,29 @@ $schedules = [
         "technician" => "Agus",
     ]
 ];
+
+$queue_count = $pdo->query("SELECT COUNT(*) AS total FROM queue_scheduling WHERE status = 'Pending'")->fetch(PDO::FETCH_ASSOC);
+$ikr_count = $pdo->query("
+    SELECT COUNT(*) AS total
+    FROM schedules
+    WHERE job_type = 'Instalasi'
+      AND status NOT IN ('Cancelled','Done')
+      AND DATE(`date`) = CURDATE()
+")->fetch(PDO::FETCH_ASSOC);
+$service_count = $pdo->query("
+    SELECT COUNT(*) AS total
+    FROM schedules
+    WHERE job_type = 'Maintenance'
+      AND status NOT IN ('Cancelled','Done')
+      AND DATE(`date`) = CURDATE()
+")->fetch(PDO::FETCH_ASSOC);
+$dismantle_count = $pdo->query("
+    SELECT COUNT(*) AS total
+    FROM schedules
+    WHERE job_type = 'Dismantle'
+      AND status NOT IN ('Cancelled','Done')
+      AND DATE(`date`) = CURDATE()
+")->fetch(PDO::FETCH_ASSOC);
 ?>
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Subheader-->
@@ -35,21 +58,6 @@ $schedules = [
                     <!--begin::Page Title-->
                     <h5 class="text-dark font-weight-bold my-1 mr-5">
                         Dashboard </h5>
-
-                    <!--end::Page Title-->
-
-                    <!--begin::Breadcrumb-->
-                    <!-- <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
-                        <li class="breadcrumb-item">
-                            <a href="" class="text-muted">
-                                General </a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <a href="" class="text-muted">
-                                Empty Page </a>
-                        </li>
-                    </ul> -->
-                    <!-- end::Breadcrumb -->
                 </div>
                 <!--end::Page Heading-->
             </div>
@@ -63,6 +71,17 @@ $schedules = [
         <!--begin::Container-->
         <div class=" container ">
             <div class="row d-flex align-items-stretch">
+                <div class="col-sm-6 col-lg-3 mb-4">
+                    <div class="bg-white  m-2 p-2 d-flex rounded shadow-sm h-100 align-items-center">
+                        <div class=" w-25 p-3 text-center rounded font-weight-bold d-flex justify-content-center align-items-center mr-5">
+                            <i class="flaticon2-hourglass-1 text-primary icon-2x"></i>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <p class="text-muted mb-2">Queue Schedules</p>
+                            <h3><?= $queue_count['total'] ?></h3>
+                        </div>
+                    </div>
+                </div>
                 <!-- card -->
                 <div class="col-sm-6 col-lg-3 mb-4">
                     <div class="bg-white m-2 p-2 d-flex rounded shadow-sm h-100 align-items-center">
@@ -76,32 +95,22 @@ $schedules = [
                                 </svg><!--end::Svg Icon--></span>
                         </div>
                         <div class="d-flex flex-column">
-                            <p class="text-muted mb-2">Installations Completed</p>
-                            <h3>32</h3>
+                            <p class="text-muted mb-2">Active Installations</p>
+                            <h3><?= $ikr_count['total'] ?></h3>
                         </div>
                     </div>
                 </div>
 
                 <!-- end card -->
-                <div class="col-sm-6 col-lg-3 mb-4">
-                    <div class="bg-white  m-2 p-2 d-flex rounded shadow-sm h-100 align-items-center">
-                        <div class=" w-25 p-3 text-center rounded font-weight-bold d-flex justify-content-center align-items-center mr-5">
-                            <i class="flaticon2-calendar text-primary icon-2x"></i>
-                        </div>
-                        <div class="d-flex flex-column">
-                            <p class="text-muted mb-2">Active Schedules</p>
-                            <h3>32</h3>
-                        </div>
-                    </div>
-                </div>
+
                 <div class="col-sm-6 col-lg-3 mb-4">
                     <div class="bg-white m-2 p-2 d-flex rounded shadow-sm h-100 align-items-center">
                         <div class=" w-25 p-3 text-center rounded font-weight-bold d-flex justify-content-center align-items-center mr-5">
-                            <i class="fas fa-exclamation-triangle icon-2x text-danger"></i>
+                            <i class="fas fa-tools icon-2x text-warning"></i>
                         </div>
                         <div class="d-flex flex-column">
-                            <p class="text-muted mb-2">Reports </p>
-                            <h3>32</h3>
+                            <p class="text-muted mb-2">Active Maintenance </p>
+                            <h3><?= $service_count['total'] ?></h3>
                         </div>
                     </div>
                 </div>
@@ -109,78 +118,43 @@ $schedules = [
                 <div class="col-sm-6 col-lg-3 mb-4">
                     <div class="bg-white  m-2 p-2 d-flex rounded shadow-sm h-100 align-items-center">
                         <div class=" w-25 p-3 text-center rounded font-weight-bold d-flex justify-content-center align-items-center mr-5">
-                            <i class="fas fa-wrench icon-2x text-warning"></i>
+                            <i class="fas fa-trash-restore icon-2x text-danger"></i>
                         </div>
                         <div class="d-flex flex-column">
-                            <p class="text-muted mb-2">Technician </p>
-                            <h3>32</h3>
+                            <p class="text-muted mb-2">Active Dismantle</p>
+                            <h3><?= $dismantle_count['total'] ?></h3>
                         </div>
                     </div>
                 </div>
                 <!-- end card -->
 
                 <!-- begin:: card schedule -->
-                <div class="col-sm-6 mt-5">
+                <div class="col-lg-9 mt-10">
                     <div class="card shadow">
                         <div class="card-header pb-1 ">
                             <h3 class="card-title mb-2">
-                                <a href="<?= BASE_URL ?>/pages/schedule" class="card-label text-dark">Today’s Schedule</a>
+                                <a class="card-label text-dark">Monthly Reports <?= date('Y') ?></a>
                             </h3>
                         </div>
                         <div class="card-body pt-2">
-                            <table class="table ">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Time</th>
-                                        <th scope="col">Task</th>
-                                        <th scope="col">Technician</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($schedules as $s): ?>
-                                        <tr>
-                                            <td><?= $s['jam'] ?></td>
-                                            <td><?= $s['task'] ?></td>
-                                            <td><?= $s['technician'] ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                            <div id="chart_2"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 mt-10 mb-7">
+                    <div class="card shadow">
+                        <div class="card-header pb-1 ">
+                            <h3 class="card-title mb-2">
+                                <a class="card-label text-dark">Reports <?= date('F') ?></a>
+                            </h3>
+                        </div>
+                        <div class="card-body pt-2">
+                            <div id="chart_3"></div>
                         </div>
                     </div>
                 </div>
                 <!-- end: card schedule -->
                 <!-- begin:: card report -->
-                <div class="col-sm-6 mt-5">
-                    <div class="card shadow">
-                        <div class="card-header pb-1 ">
-                            <h3 class="card-title mb-2">
-                                <a href="<?= BASE_URL ?>/pages/schedule" class="card-label text-dark">Today’s Schedule</a>
-                            </h3>
-                        </div>
-                        <div class="card-body pt-2">
-                            <table class="table ">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Time</th>
-                                        <th scope="col">Task</th>
-                                        <th scope="col">Technician</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($schedules as $s): ?>
-                                        <tr>
-                                            <td><?= $s['jam'] ?></td>
-                                            <td><?= $s['task'] ?></td>
-                                            <td><?= $s['technician'] ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                </div>
             </div>
         </div>
         <!--end::Container-->

@@ -21,7 +21,7 @@ if (!$username || !$password || !$id) {
 $user = checkLogin($pdo, $username, $password);
 if (!$user) {
     $_SESSION['alert'] = [
-        'icon' => 'danger',
+        'icon' => 'error',
         'title' => 'Oops!',
         'text' => 'Password salah.',
         'button' => "Coba Lagi",
@@ -79,7 +79,7 @@ try {
 } catch (PDOException $e) {
     $pdo->rollBack();
     $_SESSION['alert'] = [
-        'icon' => 'danger',
+        'icon' => 'error',
         'title' => 'Oops! Ada yang Salah',
         'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
         'button' => "Coba Lagi",

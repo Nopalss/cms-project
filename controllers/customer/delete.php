@@ -14,14 +14,14 @@ if (!$username || !$password || !$id) {
         'button' => "Coba Lagi",
         'style' => "warning"
     ];
-    header("Location: " . BASE_URL . "pages/dismantle/");
+    header("Location: " . BASE_URL . "pages/customers/");
     exit;
 }
 
 $user = checkLogin($pdo, $username, $password);
 if (!$user) {
     $_SESSION['alert'] = [
-        'icon' => 'danger',
+        'icon' => 'error',
         'title' => 'Oops!',
         'text' => 'Password salah.',
         'button' => "Coba Lagi",
@@ -72,9 +72,10 @@ try {
         'style' => "warning"
     ];
 } catch (PDOException $e) {
+    error_log("DB Error: " . $e->getMessage());
     $pdo->rollBack();
     $_SESSION['alert'] = [
-        'icon' => 'danger',
+        'icon' => 'error',
         'title' => 'Oops! Ada yang Salah',
         'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
         'button' => "Coba Lagi",

@@ -13,7 +13,7 @@ var KTDatatableLocalSortDemo = function () {
                 type: 'remote',
                 source: {
                     read: {
-                        url: HOST_URL + 'api/queue.php',
+                        url: HOST_URL + 'api/schedules.php',
                     },
                 },
                 pageSize: 10,
@@ -43,46 +43,63 @@ var KTDatatableLocalSortDemo = function () {
             },
             // columns definition
             columns: [{
-                field: 'queue_id',
-                title: 'Queue Id',
+                field: 'schedule_id',
+                title: 'Schedule Id',
             }, {
-                field: 'type_queue',
-                title: 'Type Queue',
-            },
-            {
-                field: 'request_id',
-                title: 'Request Id',
-            },
-            {
+                field: 'netpay_id',
+                title: 'Netpay ID',
+            }, {
+                field: 'technician_name',
+                title: 'Teknisi',
+            }, {
+                field: 'date',
+                title: 'Date',
+                template: function (row) {
+                    const date = new Date(row.date);
+                    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
+                    const formattedDate = date.toLocaleDateString('id-ID', options);
+                    return formattedDate;
+                }
+            }, {
+                field: 'time',
+                title: 'Time',
+            }, {
+                field: 'location',
+                title: 'Location',
+            }, {
+                field: 'job_type',
+                title: 'Job Type',
+                autoHide: false,
+            }, {
                 field: 'status',
                 title: 'Status',
                 autoHide: false,
                 // callback function support for column rendering
                 template: function (row) {
                     var status = {
-                        'Accepted': {
-                            'title': 'Accepted',
-                            'state': 'success'
-                        },
-                        'Rejected': {
-                            'title': 'Rejected',
-                            'state': 'danger'
-                        },
                         'Pending': {
                             'title': 'Pending',
                             'state': 'info'
                         },
-                        'Not Queued': {
-                            'title': 'Not Queued',
-                            'state': 'muted'
+                        'On Progress': {
+                            'title': 'On Progress',
+                            'state': 'primary'
                         },
-
+                        'Rescheduled': {
+                            'title': 'Rescheduled',
+                            'state': 'warning'
+                        },
+                        'Cancelled': {
+                            'title': 'Cancelled',
+                            'state': 'danger'
+                        },
+                        'Done': {
+                            'title': 'Done',
+                            'state': 'success'
+                        },
                     };
-                    var current = row.status ? row.status : 'Not Queued';
-
-                    return '<span class="label label-' + status[current].state + ' label-dot mr-2"></span>' +
-                        '<span class="font-weight-bold text-' + status[current].state + '">' +
-                        status[current].title + '</span>';
+                    return '<span class="label label-' + status[row.status].state + ' label-dot mr-2"></span><span class="font-weight-bold text-' + status[row.status].state + '">' +
+                        status[row.status].title + '</span>';
                 },
             }, {
                 field: 'Actions',
@@ -93,23 +110,22 @@ var KTDatatableLocalSortDemo = function () {
                 autoHide: false,
                 template: function (row) {
                     var status = {
-                        'Accepted': {
-                            'title': 'Accepted',
-                            'state': 'success'
-                        },
-                        'Rejected': {
-                            'title': 'Rejected',
-                            'state': 'danger'
-                        },
                         'Pending': {
                             'title': 'Pending',
                             'state': 'info'
                         },
-                        'Not Queued': {
-                            'title': 'Not Queued',
-                            'state': 'muted'
+                        'Rescheduled': {
+                            'title': 'Rescheduled',
+                            'state': 'warning'
                         },
-
+                        'Cancelled': {
+                            'title': 'Cancelled',
+                            'state': 'danger'
+                        },
+                        'Done': {
+                            'title': 'Done',
+                            'state': 'success'
+                        }
                     };
                     return `\
                         <div class="dropdown dropdown-inline">\
@@ -128,33 +144,26 @@ var KTDatatableLocalSortDemo = function () {
                                     <li class="navi-header font-weight-bolder text-uppercase font-size-xs text-primary pb-2">\
                                         Choose an action:\
                                     </li>\
-                                    ${row.status === "Pending"
-                            ? `<li class="navi-item cursor-pointer">
-                                    <form action="${HOST_URL}pages/schedule/create.php" method="post">
-                                        <input type="hidden" name="type_queue" value="${row.type_queue}">
-                                        <button type="submit" name="id" class="btn  border-0 navi-link" value="${row.queue_id}">
-                                            <span class="navi-icon"><i class="flaticon-calendar-with-a-clock-time-tools text-primary"></i></span>
-                                            <span class="navi-text"> Schedule Now</span>
-                                        </button>
-                                    </form>
-                                    </li>` : ""
-                        }
-                                    
                                     <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteRIKR('${row.queue_id}')" class="navi-link">\
+                                        <form action="${HOST_URL}pages/schedule/update.php" method="post">\
+                                            <input type="hidden" name="job_type" value="${row.job_type}">\
+                                                <button type="submit" name="id" class="btn  border-0 navi-link btn-detail-rikr" value="${row.schedule_id}">\
+                                                <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>\
+                                                <span class="navi-text">Edit</span>\
+                                            </button>\
+                                        </form>\
+                                    </li>\
+                                    <li class="navi-item cursor-pointer">\
+                                        <a onclick="confirmDeleteTemplate('${row.schedule_id}', 'controllers/schedules/delete.php')" class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
                                             <span class="navi-text">Hapus</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <form action="${HOST_URL}pages/queue/detail.php" method="post">\
-                                            <input type="hidden" name="type_queue" value="${row.type_queue}" >\
-                                            <button type="submit" class="btn border-0 navi-link" name="id" value="${row.queue_id}">\
-                                            <span class="navi-icon"><i class="flaticon-eye text-info"></i></span>\
-                                            <span class="navi-text"> Detail</span>\
-                                            </button>\
-                                        </form>\
-                                    
+                                        <a class="navi-link btn-detail" data-id="${row.schedule_id}" data-netpay="${row.netpay_id}" data-tech="${row.technician_name}" data-date="${row.date}" data-job="${row.job_type}" data-state="${status[row.status].state}" data-status="${row.status}" data-location="${row.location}">\
+                                            <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>\
+                                            <span class="navi-text">Detail</span>\
+                                        </a>\
                                     </li>\
                                 </ul>\
                             </div>\
@@ -165,13 +174,12 @@ var KTDatatableLocalSortDemo = function () {
             }],
         });
 
-
         $('#kt_datatable_search_status').on('change', function () {
             datatable.search($(this).val().toLowerCase(), 'status');
         });
 
         $('#kt_datatable_search_type').on('change', function () {
-            datatable.search($(this).val().toLowerCase(), 'type');
+            datatable.search($(this).val().toLowerCase(), 'job_type');
         });
         $('#kt_datatable_search_tech').on('change', function () {
             datatable.search($(this).val().toLowerCase(), 'tech_id');

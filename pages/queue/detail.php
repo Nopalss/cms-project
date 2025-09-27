@@ -185,7 +185,7 @@ if ($id && $type_queue) {
                                         </tr>
                                         <tr>
                                             <th>Catatan</th>
-                                            <td><?= $row['catatan'] ?></td>
+                                            <td class="text-wrap"><?= $row['catatan'] ?></td>
                                         </tr>
                                     </table>
                                 </div>
@@ -298,7 +298,7 @@ if ($id && $type_queue) {
                                     </tr>
                                     <tr>
                                         <th>Location</th>
-                                        <td><?= $row['location'] ?></td>
+                                        <td class="text-wrap"><?= $row['location'] ?></td>
                                     </tr>
                                 </table>
                             </div>

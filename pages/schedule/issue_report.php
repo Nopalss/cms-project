@@ -67,7 +67,7 @@ $issues = ['Absence', 'Equipment', 'Customer not available', 'Other'];
 
                         <a href="<?= BASE_URL ?>pages/schedule/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
                         <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#passwordModal">
-                            Create
+                            Submit Issue
                         </button>
 
                         <!-- Modal Password -->
@@ -86,7 +86,7 @@ $issues = ['Absence', 'Equipment', 'Customer not available', 'Other'];
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-light-primary" data-dismiss="modal">Close</button>
                                         <!-- Tombol submit sebenarnya -->
-                                        <button type="submit" name="submit" class="btn btn-primary">Create</button>
+                                        <button type="submit" name="submit" class="btn btn-primary">Submit Issue</button>
                                     </div>
                                 </div>
                             </div>

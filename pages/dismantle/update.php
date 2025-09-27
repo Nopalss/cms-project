@@ -8,6 +8,17 @@ require __DIR__ . '/../../includes/navbar.php';
 try {
     date_default_timezone_set('Asia/Jakarta');
     $id = isset($_GET['id']) ? $_GET['id'] : null;
+    if (!$id) {
+        $_SESSION['alert'] = [
+            'icon' => 'warning',
+            'title' => 'Oops!',
+            'text' => 'ID dismantle tidak valid.',
+            'button' => 'Oke',
+            'style' => 'warning'
+        ];
+        header("Location: " . BASE_URL . "pages/dismantle/");
+        exit;
+    }
     $sql = "SELECT dr.*, c.* FROM dismantle_reports dr JOIN customers c ON dr.netpay_id = c.netpay_id WHERE dr.dismantle_id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([":id" => $id]);
@@ -71,7 +82,7 @@ try {
                             </div>
                             <div class="form-group">
                                 <label>PIC</label>
-                                <input type="text" class="form-control" name="pic" value="<?= $customer['pic'] ?>" />
+                                <input type="text" class="form-control" name="pic" readonly value="<?= $customer['pic'] ?>" />
                             </div>
                             <div class="form-group">
                                 <label>Keterangan</label>
@@ -79,7 +90,7 @@ try {
                             </div>
                         </div>
                         <div class="card-footer text-right">
-                            <a href="<?= BASE_URL ?>pages/service_report/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
+                            <a href="<?= BASE_URL ?>pages/dismantle/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
                             <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Update</button>
                         </div>
                     </div>

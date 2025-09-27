@@ -10,9 +10,9 @@ $id = $_POST['id'] ?? $_GET['id'] ?? null;
 $job_type = $_POST['job_type'] ?? $_GET['job_type'] ?? null;
 
 $requestTables = [
-    "Instalasi"    => ["table" => "request_ikr", "id" => "rikr_id", "catatan" => "catatan"],
-    "Maintenance"  => ["table" => "request_maintenance", "id" => "rm_id", "catatan" => "deskripsi_issue"],
-    "Dismantle"    => ["table" => "request_dismantle", "id" => "rd_id", "catatan" => "deskripsi_dismantle"],
+    "Instalasi"    => ["table" => "request_ikr", "id" => "rikr_id"],
+    "Maintenance"  => ["table" => "request_maintenance", "id" => "rm_id"],
+    "Dismantle"    => ["table" => "request_dismantle", "id" => "rd_id"]
 ];
 
 try {
@@ -26,10 +26,9 @@ try {
     if (isset($requestTables[$job_type])) {
         $table  = $requestTables[$job_type]['table'];
         $idCol  = $requestTables[$job_type]['id'];
-        $catKey = $requestTables[$job_type]['catatan'];
 
         // gunakan LEFT JOIN supaya ketiadaan child-row tidak menghilangkan schedule
-        $sql = "SELECT s.*, c.*, r.$catKey AS catatan, q.request_id,
+        $sql = "SELECT s.*, c.*, q.request_id,
                        EXISTS (
                            SELECT 1
                            FROM issues_report ir
@@ -96,7 +95,7 @@ try {
     ];
 } catch (Exception $e) {
     $_SESSION['alert'] = [
-        'icon' => 'danger',
+        'icon' => 'error',
         'title' => 'Oops! Ada yang Salah',
         'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
         'button' => "Coba Lagi",
@@ -154,7 +153,7 @@ try {
                                     </tr>
                                     <tr>
                                         <th class="text-wrapped">Catatan</th>
-                                        <td><?= htmlspecialchars($row['catatan'] ?? ($row[$requestTables[$job_type]['catatan']] ?? '-')) ?></td>
+                                        <td><?= htmlspecialchars($row['catatan']) ?></td>
                                     </tr>
                                 </table>
                             </div>

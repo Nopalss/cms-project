@@ -5,7 +5,19 @@ require __DIR__ . '/../../includes/header.php';
 require __DIR__ . '/../../includes/aside.php';
 require __DIR__ . '/../../includes/navbar.php';
 
-$id = $_GET['id'];
+$id = $_GET['id'] ?? null;
+if (!$id) {
+    $_SESSION['alert'] = [
+        'icon' => 'warning',
+        'title' => 'Data tidak ditemukan',
+        'text' => 'Parameter ID tidak valid.',
+        'button' => 'Oke',
+        'style' => 'warning'
+    ];
+    header("Location: " . BASE_URL . "pages/ikr/");
+    exit;
+}
+
 try {
     $sql = "SELECT ikr.*, c.*
             FROM ikr
@@ -15,6 +27,17 @@ try {
     $stmt->bindParam(':ikr_id', $id, PDO::PARAM_STR);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        $_SESSION['alert'] = [
+            'icon' => 'warning',
+            'title' => 'Data tidak ditemukan',
+            'text' => "IKR dengan ID $id tidak ada di database.",
+            'button' => 'Oke',
+            'style' => 'warning'
+        ];
+        header("Location: " . BASE_URL . "pages/ikr/");
+        exit;
+    }
     $dt = new DateTime($row['created_at']);
     $tanggal = $dt->format('d F Y');
 } catch (PDOException $e) {
@@ -34,7 +57,9 @@ try {
         <div class="container-fluid d-flex align-items-center justify-content-between flex-wrap flex-sm-nowrap">
             <div class="d-flex align-items-center flex-wrap mr-1">
                 <div class="d-flex align-items-baseline flex-wrap mr-5">
-                    <h5 class="text-dark font-weight-bold my-1 mr-5">Report IKR</h5>
+                    <a href="<?= BASE_URL ?>pages/ikr/">
+                        <h5 class="text-dark font-weight-bold my-1 mr-5"> IKR Reports</h5>
+                    </a>
                     <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
                         <li class="breadcrumb-item"><a href="" class="text-muted">Detail Report IKR</a></li>
                         <li class="breadcrumb-item"><a href="" class="text-muted"><?= $id ?></a></li>

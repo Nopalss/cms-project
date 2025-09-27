@@ -7,7 +7,7 @@ require __DIR__ . '/../../../includes/aside.php';
 require __DIR__ . '/../../../includes/navbar.php';
 try {
     $rm_id = isset($_GET['id']) ? $_GET['id'] : null;
-    $sql = "SELECT netpay_id, name FROM customers";
+    $sql = "SELECT netpay_id, name FROM customers WHERE is_active ='Active'";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -18,7 +18,15 @@ try {
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     $type_issue = ['Signal Lemah', 'Modem Rusak', 'Kabel Bermasalah', 'Gangguan Internet', 'Upgrade Paket', 'Lainnya'];
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    $_SESSION['alert'] = [
+        'icon' => 'error',
+        'title' => 'Oops! Ada yang Salah',
+        'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
+    header("Location: " . BASE_URL . "pages/request/maintenance/");
+    exit;
 }
 ?>
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">

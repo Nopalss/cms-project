@@ -26,12 +26,16 @@ if ($id && $job_type) {
                     return $dt->format('H:i');
             }
         }
+        if (!isset($requestTables[$job_type])) {
+            header("Location: " . BASE_URL . "pages/schedule/");
+            exit;
+        }
 
         if (isset($requestTables[$job_type])) {
             $table = $requestTables[$job_type]['table'];
             $idCol = $requestTables[$job_type]['id'];
 
-            $sql = "SELECT s.*, s.status as status_schedule, q.*, r.*, c.* 
+            $sql = "SELECT s.*, s.catatan as deskripsi, s.status as status_schedule, q.*, r.*, c.* 
             FROM schedules s
             JOIN queue_scheduling q ON s.queue_id = q.queue_id
             JOIN $table r ON q.request_id = r.$idCol
@@ -44,7 +48,7 @@ if ($id && $job_type) {
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$row) {
                 $_SESSION['alert'] = [
-                    'icon' => 'danger',
+                    'icon' => 'error',
                     'title' => 'Data tidak ditemukan',
                     'text' => 'Schedule dengan ID ' . htmlspecialchars($id) . ' tidak tersedia.',
                     'button' => 'Kembali',
@@ -192,10 +196,15 @@ if ($id && $job_type) {
                                     <label for="exampleTextarea">Alamat</label>
                                     <textarea class="form-control" id="exampleTextarea" readonly name="location" rows="3"><?= $row['location'] ?></textarea>
                                 </div>
+                                <div class="form-group mb-1">
+                                    <label for="exampleTextarea">Catatan</label>
+                                    <textarea class="form-control" id="exampleTextarea" name="catatan" rows="3"><?= $row['deskripsi'] ?></textarea>
+                                </div>
                             </div>
                             <div class="card-footer text-right">
-                                <button type="reset" class="btn btn-light-danger font-weight-bold">Cancel</button>
-                                <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Create</button>
+                                <a href="<?= BASE_URL ?>pages/schedule/" class="btn btn-light-danger font-weight-bold">Cancel</a>
+
+                                <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Update</button>
                             </div>
                         </form>
                     </div>

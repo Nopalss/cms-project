@@ -7,10 +7,33 @@ require __DIR__ . '/../../includes/aside.php';
 require __DIR__ . '/../../includes/navbar.php';
 try {
     $ikr_id = isset($_GET['id']) ? $_GET['id'] : null;
+    $ikr_id = $_GET['id'] ?? null;
+    if (!$ikr_id) {
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Oops!',
+            'text' => 'IKR ID tidak ditemukan.',
+            'button' => 'Kembali',
+            'style' => 'danger'
+        ];
+        header("Location: " . BASE_URL . "pages/ikr/");
+        exit;
+    }
     $sql = "SELECT ikr.* , c.* FROM ikr JOIN customers c ON ikr.netpay_id = c.netpay_id WHERE ikr.ikr_id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([":id" => $ikr_id]);
     $customer = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$customer) {
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Oops!',
+            'text' => 'Data IKR tidak ditemukan.',
+            'button' => 'Kembali',
+            'style' => 'danger'
+        ];
+        header("Location: " . BASE_URL . "pages/ikr/");
+        exit;
+    }
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -27,7 +50,7 @@ try {
                         <div class="card-header pt-5">
                             <div class="card-title">
                                 <h3 class="card-label">
-                                    Create Report IKR
+                                    Update IKR Report
                                 </h3>
                             </div>
                         </div>
@@ -53,13 +76,13 @@ try {
                             <!-- IKR AN -->
                             <div class=" form-group">
                                 <label for="ikr_an">IKR AN</label>
-                                <input type="text" class="form-control" id="ikr_an" name="ikr_an" value="<?= $customer['name'] ?>" value="<?= $customer['name'] ?>" required>
+                                <input type="text" class="form-control" id="ikr_an" name="ikr_an" value="<?= $customer['ikr_an'] ?>" required>
                             </div>
 
                             <!-- Alamat -->
                             <div class=" form-group">
                                 <label for="alamat">Alamat</label>
-                                <input type="text" class="form-control" id="alamat" name="alamat" value="<?= $customer['location'] ?>" value="<?= $customer['alamat'] ?>" required>
+                                <input type="text" class="form-control" id="alamat" name="alamat" value="<?= $customer['alamat'] ?>" required>
                             </div>
 
                             <!-- RT & RW dalam row -->
@@ -167,7 +190,7 @@ try {
                         </div>
                         <div class=" card-footer text-right">
                             <a href="<?= BASE_URL ?>pages/ikr/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
-                            <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Create</button>
+                            <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Update</button>
                         </div>
                     </div>
                 </div>

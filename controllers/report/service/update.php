@@ -24,6 +24,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $red_aft    = sanitize($_POST['red_aft'] ?? '');
     $pic        = sanitize($_POST['pic'] ?? '');
     $keterangan = sanitize($_POST['keterangan'] ?? '');
+    $check = $pdo->prepare("SELECT COUNT(*) FROM service_reports WHERE srv_id = :srv_id");
+    $check->execute([':srv_id' => $srv_id]);
+    if ($check->fetchColumn() == 0) {
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Oops!',
+            'text' => 'Service Report tidak ditemukan.',
+            'button' => 'Coba Lagi',
+            'style' => 'danger'
+        ];
+        header("Location: " . BASE_URL . "pages/service_report/");
+        exit;
+    }
 
     // Cek field wajib
     $requiredFields = [
@@ -43,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($requiredFields as $field => $value) {
         if (empty($value)) {
             $_SESSION['alert'] = [
-                'icon'   => 'danger',
+                'icon'   => 'error',
                 'title'  => 'Oops!',
                 'text'   => "Field <b>$field</b> tidak boleh kosong.",
                 'button' => 'Coba Lagi',
@@ -88,17 +101,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $pdo->commit();
 
-        $_SESSION['alert'] = [
-            'icon'   => 'success',
-            'title'  => 'Berhasil!',
-            'text'   => 'Service Report berhasil diperbarui.',
-            'button' => 'Oke',
-            'style'  => 'success'
-        ];
+        if ($stmt->rowCount() > 0) {
+            $_SESSION['alert'] = [
+                'icon'   => 'success',
+                'title'  => 'Berhasil!',
+                'text'   => 'Service Report berhasil diperbarui.',
+                'button' => 'Oke',
+                'style'  => 'success'
+            ];
+        } else {
+            $_SESSION['alert'] = [
+                'icon'   => 'info',
+                'title'  => 'Tidak Ada Perubahan',
+                'text'   => 'Data tetap sama, tidak ada yang diperbarui.',
+                'button' => 'Oke',
+                'style'  => 'info'
+            ];
+        }
     } catch (PDOException $e) {
         $pdo->rollBack();
         $_SESSION['alert'] = [
-            'icon'   => 'danger',
+            'icon'   => 'error',
             'title'  => 'Error!',
             'text'   => 'Terjadi kesalahan saat memperbarui data. Error: ' . $e->getMessage(),
             'button' => 'Coba Lagi',

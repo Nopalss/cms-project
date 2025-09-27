@@ -6,7 +6,7 @@ require __DIR__ . '/../../../includes/header.php';
 require __DIR__ . '/../../../includes/aside.php';
 require __DIR__ . '/../../../includes/navbar.php';
 try {
-    $registrasi_id = isset($_GET['id']) ? $_GET['id'] : null;
+    $registrasi_id = isset($_GET['id']) ? htmlspecialchars($_GET['id'], ENT_QUOTES, 'UTF-8') : null;
     $paketInternet = [
         "5"   => "5 mbps - 150rb/bln",
         "10"  => "10 mbps - 300rb/bln",
@@ -44,7 +44,15 @@ try {
         }
     }
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    $_SESSION['alert'] = [
+        'icon' => 'error',
+        'title' => 'Oops! Ada yang Salah',
+        'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
+    header("Location: " . BASE_URL . "pages/request/ikr/");
+    exit;
 }
 if (!isset($row)) {
     $row = [
@@ -90,8 +98,8 @@ if (!isset($row)) {
                                             </select>
 
                                         <?php else: ?>
-                                            <input type="text" class="form-control" value="<?= $row['registrasi_id'] ?>" disabled="disabled" />
-                                            <input type="hidden" name="registrasi_id" value="<?= $row['registrasi_id'] ?>" />
+                                            <input type="text" class="form-control" value="<?= $row['registrasi_id'] ?>" required disabled="disabled" />
+                                            <input type="hidden" name="registrasi_id" value="<?= $row['registrasi_id'] ?>" required />
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -153,8 +161,8 @@ if (!isset($row)) {
                             <div class="form-group">
                                 <label class="text-right">Request IKR ID</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" value="<?= $rikr_id ?>" disabled="disabled" />
-                                    <input type="hidden" class="form-control" name="rikr_id" value="<?= $rikr_id ?>" />
+                                    <input type="text" class="form-control" value="<?= $rikr_id ?>" required disabled="disabled" />
+                                    <input type="hidden" class="form-control" name="rikr_id" value="<?= $rikr_id ?>" required />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -169,8 +177,8 @@ if (!isset($row)) {
                                             <?php endforeach; ?>
                                         </select>
                                     </div>
-                                    <input type="text" class="form-control" value="<?= $netpay_id ?>" disabled="disabled" />
-                                    <input type="hidden" class="form-control" name="netpay_id" value="<?= $netpay_id ?>" />
+                                    <input type="text" class="form-control" value="<?= $netpay_id ?>" required disabled="disabled" />
+                                    <input type="hidden" class="form-control" name="netpay_id" required value="<?= $netpay_id ?>" />
                                 </div>
                             </div>
 
@@ -178,7 +186,7 @@ if (!isset($row)) {
                                 <label class="text-right">Registrasi Id</label>
 
                                 <div class="input-group">
-                                    <input type="text" class="form-control" id="registrasi_id2" value="<?= $row['registrasi_id'] ?>" disabled="disabled" />
+                                    <input type="text" class="form-control" id="registrasi_id2" required value="<?= $row['registrasi_id'] ?>" disabled="disabled" />
                                 </div>
                             </div>
                             <div class="form-group">

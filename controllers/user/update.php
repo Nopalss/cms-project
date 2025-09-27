@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . '/../../includes/config.php';
 date_default_timezone_set('Asia/Jakarta');
 
@@ -10,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // --- Ambil data POST ---
-    $username   = isset($_POST['username']) ? sanitize($_POST['username']) : null; // primary key
+    $username  = isset($_POST['username']) ? sanitize($_POST['username']) : null; // primary key
     $name       = isset($_POST['name']) ? sanitize($_POST['name']) : null;
     $phone      = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
     $passwordRaw = isset($_POST['password']) ? trim($_POST['password']) : null;
@@ -32,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if (!preg_match('/^[0-9]+$/', $phone)) {
+    if (!preg_match('/^(08\d{8,11}|62\d{8,11})$/', $phone)) {
         $_SESSION['alert'] = [
             'icon'   => 'danger',
             'title'  => 'Oops!',

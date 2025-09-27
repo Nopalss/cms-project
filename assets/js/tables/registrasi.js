@@ -13,7 +13,7 @@ var KTDatatableLocalSortDemo = function () {
                 type: 'remote',
                 source: {
                     read: {
-                        url: HOST_URL + 'api/ikr.php',
+                        url: HOST_URL + 'api/registrasi.php',
                     },
                 },
                 pageSize: 10,
@@ -43,28 +43,39 @@ var KTDatatableLocalSortDemo = function () {
             },
             // columns definition
             columns: [{
-                field: 'ikr_id',
-                title: 'IKR Id',
+                field: 'registrasi_id',
+                title: 'Registrasi Id',
             }, {
-                field: 'netpay_id',
-                title: 'Netpay Id',
-            }, {
-                field: 'ikr_an',
+                field: 'name',
                 title: 'Name',
-
-            }, {
-                field: 'created_at',
-                title: 'Date',
+            },
+            {
+                field: 'paket_internet',
+                title: 'Paket',
                 template: function (row) {
-                    const date = new Date(row.created_at);
-                    const options = { year: 'numeric', month: 'numeric', day: 'numeric' };
-                    const formattedDate = date.toLocaleDateString('id-ID', options);
-                    return formattedDate;
-                }
-            }, {
-                field: 'alamat',
-                title: 'Alamat',
 
+                    return `<span>${row.paket_internet} mbps</span>`;
+                },
+            }, {
+                field: 'is_verified',
+                title: 'Status',
+                autoHide: false,
+                // callback function support for column rendering
+                template: function (row) {
+                    var status = {
+                        'Verified': {
+                            'title': 'Verified',
+                            'state': 'success'
+                        },
+                        'Unverified': {
+                            'title': 'Unverified',
+                            'state': 'danger'
+                        },
+
+                    };
+                    return '<span class="label label-' + status[row.is_verified].state + ' label-dot mr-2"></span><span class="font-weight-bold text-' + status[row.is_verified].state + '">' +
+                        status[row.is_verified].title + '</span>';
+                },
             }, {
                 field: 'Actions',
                 title: 'Actions',
@@ -73,6 +84,24 @@ var KTDatatableLocalSortDemo = function () {
                 overflow: 'visible',
                 autoHide: false,
                 template: function (row) {
+                    var status = {
+                        'Pending': {
+                            'title': 'Pending',
+                            'state': 'info'
+                        },
+                        'Rescheduled': {
+                            'title': 'Rescheduled',
+                            'state': 'warning'
+                        },
+                        'Cancelled': {
+                            'title': 'Cancelled',
+                            'state': 'danger'
+                        },
+                        'Done': {
+                            'title': 'Done',
+                            'state': 'success'
+                        }
+                    };
                     return `\
                         <div class="dropdown dropdown-inline">\
                             <a href="javascript:;" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" data-toggle="dropdown">\
@@ -90,61 +119,45 @@ var KTDatatableLocalSortDemo = function () {
                                     <li class="navi-header font-weight-bolder text-uppercase font-size-xs text-primary pb-2">\
                                         Choose an action:\
                                     </li>\
-                                    <li class="navi-item">\
-                                        <a href='${HOST_URL + 'pages/report/ikr/update.php?id=' + row.ikr_id}' class="navi-link">\
-                                            <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>\
-                                            <span class="navi-text">Edit</span>\
-                                        </a>\
-                                    </li>\
-                                    <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteTemplate('${row.ikr_id}', 'controllers/report/ikr/delete.php')"class="navi-link">\
-                                            <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
-                                            <span class="navi-text">Hapus</span>\
-                                        </a>\
-                                    </li>\
-                                    <li class="navi-item cursor-pointer">\
-                                        <a class="navi-link btn-detail" href="${HOST_URL + 'pages/ikr/detail.php?id=' + row.ikr_id}">\
-                                            <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>\
-                                            <span class="navi-text">Detail</span>\
-                                        </a>\
-                                    </li>\
-                                </ul>\
-                            </div>\
-                        </div>\
-                       
-                    `;
+                                   ${row.is_verified === "Unverified"
+                            ? `<li class="navi-item cursor-pointer">
+                                            <a href="${HOST_URL + 'pages/request/ikr/create.php?id=' + row.registrasi_id}" class="navi-link">
+                                                <span class="navi-icon"><i class="flaticon2-check-mark text-success"></i></span>
+                                                <span class="navi-text">Verified</span>
+                                            </a>
+                                        </li>
+                                        <li class="navi-item cursor-pointer">
+                                            <a href='${HOST_URL + 'pages/registrasi/update.php?id=' + row.registrasi_id}' class="navi-link">
+                                                <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>
+                                                <span class="navi-text">Edit</span>
+                                            </a>
+                                        </li >`
+                            : ""}
+<li class="navi-item cursor-pointer">\
+    <a onclick="confirmDeleteTemplate('${row.registrasi_id}', 'controllers/registrasi/delete.php')" class="navi-link">\
+        <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
+        <span class="navi-text">Hapus</span>\
+    </a>\
+</li>\
+<li class="navi-item cursor-pointer">\
+    <a class="navi-link btn-detail-registrasi" data-id="${row.registrasi_id}" data-name="${row.name}" data-location="${row.location}" data-phone="${row.phone}" data-paket="${row.paket_internet}" data-verified="${row.is_verified}" data-schedule="${row.request_schedule}">\
+        <span class="navi-icon"><i class="flaticon-eye text-info"></i></span>\
+        <span class="navi-text"> Detail</span>\
+    </a>\
+</li>\
+                                </ul >\
+                            </div >\
+                        </div >\
+
+`;
                 },
             }],
         });
-
-        function confirmDelete(scheduleId) {
-            Swal.fire({
-                title: 'Yakin mau hapus?',
-                text: "Data schedule akan dihapus permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect ke delete.php dengan parameter ID
-                    window.location.href = "<?= BASE_URL ?>controllers/schedules/delete.php?id=" + scheduleId;
-                }
-            });
-        }
 
         $('#kt_datatable_search_status').on('change', function () {
             datatable.search($(this).val().toLowerCase(), 'status');
         });
 
-        $('#kt_datatable_search_type').on('change', function () {
-            datatable.search($(this).val().toLowerCase(), 'job_type');
-        });
-        $('#kt_datatable_search_tech').on('change', function () {
-            datatable.search($(this).val().toLowerCase(), 'tech_id');
-        });
         $('#kt_datepicker_3').datepicker({
             format: 'mm/dd/yyyy',
             autoclose: true,
@@ -157,8 +170,6 @@ var KTDatatableLocalSortDemo = function () {
             }
         });
 
-
-
         $('#kt_datatable_search_status, #kt_datatable_search_type, #kt_datatable_search_tech').selectpicker();
     };
 
@@ -169,6 +180,8 @@ var KTDatatableLocalSortDemo = function () {
         },
     };
 }();
+
+
 
 jQuery(document).ready(function () {
     KTDatatableLocalSortDemo.init();

@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($requiredFields as $field => $value) {
         if (empty($value)) {
             $_SESSION['alert'] = [
-                'icon'   => 'danger',
+                'icon'   => 'error',
                 'title'  => 'Oops!',
                 'text'   => "Field <b>$field</b> tidak boleh kosong.",
                 'button' => 'Coba Lagi',
@@ -57,6 +57,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
+        $checkSrv = $pdo->prepare("SELECT COUNT(*) FROM service_reports WHERE srv_id = :srv_id");
+        $checkSrv->execute([':srv_id' => $srv_id]);
+        if ($checkSrv->fetchColumn() > 0) {
+            $_SESSION['alert'] = [
+                'icon' => 'error',
+                'title' => 'Duplikat!',
+                'text' => 'Service Report ID sudah digunakan.',
+                'button' => 'Coba Lagi',
+                'style' => 'danger'
+            ];
+            header("Location: " . BASE_URL . "pages/service_reports/");
+            exit;
+        }
+
         $pdo->beginTransaction();
 
         // Query insert
@@ -78,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':red_aft'    => $red_aft,
             ':pic'        => $pic,
             ':keterangan' => $keterangan,
-            'schedule_id' => $schedule_id
+            ':schedule_id' => $schedule_id
         ]);
         // Update schedules
         $sql = "UPDATE schedules SET status = 'Done' WHERE schedule_id = :schedule_id";
@@ -96,10 +110,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
     } catch (PDOException $e) {
         $pdo->rollBack();
+        error_log("DB Error (service_reports): " . $e->getMessage());
         $_SESSION['alert'] = [
-            'icon'   => 'danger',
+            'icon'   => 'error',
             'title'  => 'Error!',
-            'text'   => 'Terjadi kesalahan saat menyimpan data. Error: ' . $e->getMessage(),
+            'text'   => 'Terjadi kesalahan saat menyimpan data.',
             'button' => 'Coba Lagi',
             'style'  => 'danger'
         ];

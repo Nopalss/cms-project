@@ -6,13 +6,21 @@ require __DIR__ . '/../../../includes/header.php';
 require __DIR__ . '/../../../includes/aside.php';
 require __DIR__ . '/../../../includes/navbar.php';
 try {
-    $sql = "SELECT netpay_id, name FROM customers";
+    $sql = "SELECT netpay_id, name FROM customers WHERE is_active ='Active'";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $rm_id = "RM" . date("YmdHs");
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    $_SESSION['alert'] = [
+        'icon' => 'error',
+        'title' => 'Oops! Ada yang Salah',
+        'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
+    header("Location: " . BASE_URL . "pages/request/maintenance/");
+    exit;
 }
 ?>
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
@@ -54,7 +62,6 @@ try {
                                 <select class="form-control selectpicker" id="type_issue" required name="type_issue">
                                     <option value="">Select</option>
                                     <option value="Signal Lemah">Signal Lemah</option>
-                                    <option value="Modem Rusak">Modem Rusak</option>
                                     <option value="Modem Rusak">Modem Rusak</option>
                                     <option value="Gangguan Internet">Gangguan Internet</option>
                                     <option value="Upgrade Paket">Upgrade Paket</option>

@@ -14,11 +14,22 @@ try {
         "50"  => "50 mbps - 850rb/bln",
         "100" => "100 mbps - 1jt/bln"
     ];
+    $jamKerja = [
+        "08:00",
+        "09:00",
+        "10:00",
+        "11:00",
+        "13:00",
+        "14:00",
+        "15:00",
+        "16:00"
+    ];
     $sql = "SELECT * FROM register WHERE registrasi_id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':id', $id, PDO::PARAM_STR);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    list($date, $time) = explode('T', $row['request_schedule']);
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -83,7 +94,17 @@ try {
                         </div>
                         <div class="form-group">
                             <label for="exampleTextarea">Kapan Anda ingin jadwal pemasangan?</label>
-                            <input type="datetime-local" min="<?= date('Y-m-d\T08:00', strtotime('+1 day')); ?>" value="<?= $row['request_schedule'] ?>" required name="request_schedule" class="form-control">
+                            <input type="date" min="<?= date('Y-m-d', strtotime('+1 day')); ?>" required name="request_schedule" value="<?= $date ?>" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="paket_internet">Jam</label>
+                            <select class="form-control selectpicker" id="paket_internet" required name="jam" data-size=" 7">
+                                <option value="">Select</option>
+                                <?php foreach ($jamKerja as $j): ?>
+                                    <?php $selected = $j == $time ? 'selected' : ''; ?>
+                                    <option value="<?= $j ?>" <?= $selected ?>><?= $j ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="exampleTextarea">Alamat</label>
@@ -91,8 +112,8 @@ try {
                         </div>
                     </div>
                     <div class="card-footer text-right">
-                        <a href="<?= BASE_URL ?>pages/schedule/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
-                        <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Create</button>
+                        <a href="<?= BASE_URL ?>pages/registrasi/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
+                        <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Update</button>
                     </div>
                 </form>
             </div>

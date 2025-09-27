@@ -17,12 +17,12 @@ if (isset($_POST['submit'])) {
     $date = isset($_POST['date']) ? sanitize($_POST['date']) : null;
     $time      = isset($_POST['time']) ? sanitize($_POST['time']) : null;
     $job_type  = isset($_POST['job_type']) ? sanitize($_POST['job_type']) : null;
-    // Konversi format tanggal (dari MM/DD/YYYY → YYYY-MM-DD)
+    $catatan  = isset($_POST['catatan']) ? sanitize($_POST['catatan']) : null;
 
     // Pastikan semua data terisi
-    if (!$schedule_id || !$queue_id || !$netpay_id || !$tech_id || !$date || !$time || !$job_type) {
+    if (!$schedule_id || !$queue_id || !$netpay_id || !$tech_id || !$date || !$time || !$job_type || !$catatan) {
         $_SESSION['alert'] = [
-            'icon' => 'danger',
+            'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
             'text' => 'Schedule gagal. Pastikan semua data sudah diisi dengan benar.',
             'button' => "Coba Lagi",
@@ -34,8 +34,8 @@ if (isset($_POST['submit'])) {
 
     try {
         // Query insert dengan prepared statement
-        $sql = "INSERT INTO schedules (schedule_id, netpay_id ,tech_id, `date`, `time`, job_type, queue_id) 
-                VALUES (:schedule_id, :netpay_id, :tech_id, :date, :time, :job_type, :queue_id)";
+        $sql = "INSERT INTO schedules (schedule_id, netpay_id ,tech_id, `date`, `time`, job_type, queue_id, catatan) 
+                VALUES (:schedule_id, :netpay_id, :tech_id, :date, :time, :job_type, :queue_id, :catatan)";
         $stmt = $pdo->prepare($sql);
         $scheduleSuccess = $stmt->execute([
             ':schedule_id' => $schedule_id,
@@ -44,7 +44,8 @@ if (isset($_POST['submit'])) {
             ':date'        => $date,
             ':time'         => $time,
             ':job_type'    => $job_type,
-            ':queue_id'     => $queue_id
+            ':queue_id'     => $queue_id,
+            ':catatan'     => $catatan
         ]);
         if ($scheduleSuccess) {
             $sql = "UPDATE queue_scheduling 
@@ -65,13 +66,23 @@ if (isset($_POST['submit'])) {
             }
         }
     } catch (PDOException $e) {
-        echo $e;
-        // $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi";
-        // header("Location: " . BASE_URL . "pages/schedule/");
-        // exit;
+        error_log("DB Error: " . $e->getMessage()); // simpan ke error log server
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Oops!',
+            'text' => 'Gagal menyimpan data, silakan coba lagi.',
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
     }
 } else {
-    $_SESSION['error'] = "Gagal menyimpan data, silakan coba lagi";
+    $_SESSION['alert'] = [
+        'icon' => 'error',
+        'title' => 'Oops!',
+        'text' => 'Gagal mengakses halaman!',
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
     header("Location: " . BASE_URL . "pages/schedule/");
     exit;
 }

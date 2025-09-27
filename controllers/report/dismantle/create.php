@@ -98,10 +98,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
     } catch (PDOException $e) {
         $pdo->rollBack();
+        error_log("DB Error dismantle: " . $e->getMessage());
         $_SESSION['alert'] = [
             'icon'   => 'danger',
             'title'  => 'Error!',
-            'text'   => 'Terjadi kesalahan saat menyimpan data. Error: ' . $e->getMessage(),
+            'text'   => 'Terjadi kesalahan saat menyimpan data. Silakan coba lagi.',
             'button' => 'Coba Lagi',
             'style'  => 'danger'
         ];

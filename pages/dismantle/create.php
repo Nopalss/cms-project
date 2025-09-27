@@ -8,10 +8,33 @@ require __DIR__ . '/../../includes/navbar.php';
 try {
     date_default_timezone_set('Asia/Jakarta');
     $id = isset($_POST['id']) ? $_POST['id'] : null;
+    if (!$id) {
+        $_SESSION['alert'] = [
+            'icon' => 'warning',
+            'title' => 'ID Tida ada',
+            'text' => 'Schedule ID tidak ditemukan.',
+            'button' => 'Kembali',
+            'style' => 'warning'
+        ];
+        header("Location: " . BASE_URL . "pages/dismantle/");
+        exit;
+    }
+
     $sql = "SELECT s.schedule_id, s.tech_id ,s.netpay_id, c.* FROM schedules s JOIN customers c ON s.netpay_id = c.netpay_id WHERE s.schedule_id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([":id" => $id]);
     $customer = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$customer) {
+        $_SESSION['alert'] = [
+            'icon' => 'warning',
+            'title' => 'Data Tidak Ditemukan',
+            'text' => 'Schedule dengan ID ini tidak ditemukan.',
+            'button' => 'Kembali',
+            'style' => 'warning'
+        ];
+        header("Location: " . BASE_URL . "pages/dismantle/");
+        exit;
+    }
     $dismantle_id = "DR" . date("YmdHis");
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
@@ -73,7 +96,7 @@ try {
                             </div>
                             <div class="form-group">
                                 <label>PIC</label>
-                                <input type="text" class="form-control" name="pic" value="<?= $customer['tech_id'] ?>" />
+                                <input type="text" class="form-control" name="pic" readonly value="<?= $customer['tech_id'] ?>" />
                             </div>
                             <div class="form-group">
                                 <label>Keterangan</label>
@@ -81,7 +104,7 @@ try {
                             </div>
                         </div>
                         <div class="card-footer text-right">
-                            <a href="<?= BASE_URL ?>pages/service_report/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
+                            <a href="<?= BASE_URL ?>pages/dismantle/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
                             <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Create</button>
                         </div>
                     </div>

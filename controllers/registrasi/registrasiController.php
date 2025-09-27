@@ -8,6 +8,17 @@ if (isset($_POST['submit'])) {
     {
         return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
     }
+    function isDateValidTomorrow($dateInput)
+    {
+        // Pastikan format Y-m-d
+        $d = DateTime::createFromFormat('Y-m-d', $dateInput);
+        if (!$d || $d->format('Y-m-d') !== $dateInput) {
+            return false; // Format salah
+        }
+
+        $tomorrow = new DateTime('tomorrow');
+        return $d >= $tomorrow;
+    }
 
     function validatePhone($phone)
     {
@@ -32,13 +43,14 @@ if (isset($_POST['submit'])) {
     $phone = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
     $paket_internet    = isset($_POST['paket_internet']) ? sanitize($_POST['paket_internet']) : null;
     $request_schedule  = isset($_POST['request_schedule']) ? sanitize($_POST['request_schedule']) : null;
+    $jam  = isset($_POST['jam']) ? sanitize($_POST['jam']) : null;
     $location  = isset($_POST['location']) ? sanitize($_POST['location']) : null;
     // Konversi format tanggal (dari MM/DD/YYYY → YYYY-MM-DD)
 
     // Pastikan semua data terisi
-    if (!$name || !$phone || !$paket_internet || !$request_schedule || !$location || !validatePhone($phone)) {
+    if (!$name || !$phone || !$paket_internet || !$request_schedule || !$location || !$jam || !validatePhone($phone) || !isDateValidTomorrow($request_schedule)) {
         $_SESSION['alert'] = [
-            'icon' => 'danger',
+            'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
             'text' => 'Pendaftaran gagal. Pastikan semua data sudah diisi dengan benar.',
             'button' => "Coba Lagi",
@@ -61,7 +73,7 @@ if (isset($_POST['submit'])) {
             ':name' => $name,
             ':phone' => $phone,
             ':paket_internet' => $paket_internet,
-            ':request_schedule' => $request_schedule,
+            ':request_schedule' => $request_schedule . "T" . $jam,
             ':location' => $location
         ]);
         $_SESSION['alert'] = [
@@ -76,7 +88,7 @@ if (isset($_POST['submit'])) {
     } catch (PDOException $e) {
         // echo $e;
         $_SESSION['alert'] = [
-            'icon' => 'danger',
+            'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
             'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
             'button' => "Coba Lagi",
@@ -87,9 +99,8 @@ if (isset($_POST['submit'])) {
     }
 } else {
     $_SESSION['alert'] = [
-        'icon' => 'danger',
+        'icon' => 'error',
         'title' => 'Oops! Ada yang Salah',
-        'text' => 'Gagal melakukan registrasi, silakan coba lagi',
         'button' => "Coba Lagi",
         'style' => "danger"
     ];

@@ -70,8 +70,8 @@ $roles = [
                                 </div>
                                 <div class="form-group">
                                     <label for="username">Username</label>
-                                    <input id="username-disabled" type="text" class="form-control" disabled="disabled" value="<?= $row['username'] ?>" required>
-                                    <input id="username" type="hidden" class="form-control" name="username" value="<?= $row['username'] ?>" required>
+                                    <input type="text" class="form-control" disabled="disabled" value="<?= $row['username'] ?>" required>
+                                    <input type="hidden" class="form-control" name="username" value="<?= $row['username'] ?>" required>
                                 </div>
                                 <div class="form-group">
                                     <label for="password">Password</label>

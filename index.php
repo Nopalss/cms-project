@@ -29,8 +29,7 @@ require __DIR__ . "/controllers/LoginController.php";
     <link href="assets/css/themes/layout/brand/dark.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/themes/layout/aside/dark.css" rel="stylesheet" type="text/css" /> <!--end::Layout Themes-->
 
-    <link rel="shortcut icon" href="assets/media/logos/logo.png" />
-
+    <link rel="shortcut icon" href="assets/media/favicon.ico" />
 </head>
 <!--end::Head-->
 
@@ -90,25 +89,7 @@ require __DIR__ . "/controllers/LoginController.php";
                     <!--end::Login forgot password form-->
                 </div>
             </div>
-            <!-- sweetalert -->
-            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-            <?php if (isset($_SESSION['alert'])): ?>
-                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                <script>
-                    Swal.fire({
-                        icon: "<?= $_SESSION['alert']['icon'] ?>",
-                        title: "<?= $_SESSION['alert']['title'] ?>",
-                        text: "<?= $_SESSION['alert']['text'] ?>",
-                        confirmButtonText: "<?= $_SESSION['alert']['button'] ?>",
-                        customClass: {
-                            confirmButton: "btn font-weight-bold btn-<?= $_SESSION['alert']['style'] ?>",
-                            icon: "m-auto"
-                        }
-                    });
-                </script>
-                <?php unset($_SESSION['alert']); ?>
-            <?php endif; ?>
         </div>
         <!--end::Login-->
     </div>
@@ -188,5 +169,25 @@ require __DIR__ . "/controllers/LoginController.php";
     <!--end::Page Scripts-->
 </body>
 <!--end::Body-->
+<!-- sweetalert -->
+
+
+<?php if (isset($_SESSION['alert'])): ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        Swal.fire({
+            icon: "<?= $_SESSION['alert']['icon'] ?>",
+            title: "<?= $_SESSION['alert']['title'] ?>",
+            text: "<?= $_SESSION['alert']['text'] ?>",
+            confirmButtonText: "<?= $_SESSION['alert']['button'] ?>",
+            heightAuto: false,
+            customClass: {
+                confirmButton: "btn font-weight-bold btn-<?= $_SESSION['alert']['style'] ?>",
+                icon: "m-auto"
+            }
+        });
+    </script>
+    <?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
 
 </html>

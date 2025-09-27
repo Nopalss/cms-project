@@ -19,11 +19,12 @@ if (isset($_POST['submit'])) {
     $time        = isset($_POST['time']) ? sanitize($_POST['time']) : null;
     $job_type    = isset($_POST['job_type']) ? sanitize($_POST['job_type']) : null;
     $status      = isset($_POST['status']) ? sanitize($_POST['status']) : null;
+    $catatan      = trim($_POST['catatan']);
 
     // Validasi dasar
-    if (!$schedule_id || !$netpay_id || !$tech_id || !$date || !$time || !$job_type || !$status) {
+    if (!$schedule_id || !$netpay_id || !$tech_id || !$date || !$time || !$job_type || !$status || !$catatan) {
         $_SESSION['alert'] = [
-            'icon' => 'danger',
+            'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
             'text' => 'Schedule gagal. Pastikan semua data sudah diisi dengan benar.',
             'button' => "Coba Lagi",
@@ -41,13 +42,14 @@ if (isset($_POST['submit'])) {
 
         // Update schedules
         $sqlSchedule = "UPDATE schedules 
-                        SET netpay_id = :netpay_id, 
-                            tech_id   = :tech_id, 
-                            date      = :date, 
-                            time      = :time, 
-                            job_type  = :job_type, 
-                            status    = :status
-                        WHERE schedule_id = :schedule_id";
+                            SET netpay_id = :netpay_id, 
+                                tech_id   = :tech_id, 
+                                date      = :date, 
+                                time      = :time, 
+                                job_type  = :job_type, 
+                                status    = :status,
+                                catatan    = :catatan
+                            WHERE schedule_id = :schedule_id";
         $stmt = $pdo->prepare($sqlSchedule);
         $stmt->execute([
             ':netpay_id'     => $netpay_id,
@@ -56,14 +58,16 @@ if (isset($_POST['submit'])) {
             ':time'          => $time,
             ':job_type'      => $job_type,
             ':status'        => $statusToUpdate,
+            ':catatan'   => $catatan,
             ':schedule_id'   => $schedule_id
         ]);
+
 
         // Update issues_report jika ada issue_id
         if (!empty($issue_id)) {
             $sqlIssue = "UPDATE issues_report 
-                         SET status = 'Approved' 
-                         WHERE issue_id = :issue_id";
+                             SET status = 'Approved' 
+                             WHERE issue_id = :issue_id";
             $stmtIssue = $pdo->prepare($sqlIssue);
             $stmtIssue->execute([':issue_id' => $issue_id]);
         }
@@ -81,10 +85,10 @@ if (isset($_POST['submit'])) {
         exit;
     } catch (PDOException $e) {
         $pdo->rollBack();
+        echo $e;
         error_log($e->getMessage()); // simpan log error, jangan tampilkan ke user
-
         $_SESSION['alert'] = [
-            'icon' => 'danger',
+            'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
             'text' => 'Silakan coba lagi nanti.',
             'button' => "Coba Lagi",
@@ -95,7 +99,7 @@ if (isset($_POST['submit'])) {
     }
 } else {
     $_SESSION['alert'] = [
-        'icon' => 'danger',
+        'icon' => 'error',
         'title' => 'Oops! Ada yang Salah',
         'text' => 'Gagal melakukan update, silakan coba lagi',
         'button' => "Coba Lagi",

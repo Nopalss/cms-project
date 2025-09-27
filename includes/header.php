@@ -35,5 +35,5 @@ require __DIR__ . '/auth.php';
     <link href="<?= BASE_URL ?>assets/css/themes/layout/brand/dark.css" rel="stylesheet" type="text/css" />
     <link href="<?= BASE_URL ?>assets/css/themes/layout/aside/dark.css" rel="stylesheet" type="text/css" /> <!--end::Layout Themes-->
 
-    <link rel="shortcut icon" href="<?= BASE_URL ?>assets/media/logos/logo.png" />
+    <link rel="shortcut icon" href="<?= BASE_URL ?>assets/media/favicon.ico" />
 </head>

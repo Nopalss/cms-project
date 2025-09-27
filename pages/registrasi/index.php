@@ -7,11 +7,10 @@ require __DIR__ . '/../../includes/navbar.php';
 
 ?>
 
-
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Subheader-->
     <div class="subheader py-2 py-lg-6  subheader-solid " id="kt_subheader">
-        <div class=" container-fluid  d-flex align-items-center justify-conten bt-between flex-wrap flex-sm-nowrap">
+        <div class=" container-fluid  d-flex align-items-center flex-wrap flex-sm-nowrap">
             <!--begin::Info-->
             <div class="d-flex align-items-center flex-wrap mr-1">
 
@@ -20,21 +19,6 @@ require __DIR__ . '/../../includes/navbar.php';
                     <!--begin::Page Title-->
                     <h5 class="text-dark font-weight-bold my-1 mr-5">
                         Registrasi </h5>
-
-                    <!--end::Page Title-->
-
-                    <!--begin::Breadcrumb-->
-                    <!-- <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
-                        <li class="breadcrumb-item">
-                            <a href="" class="text-muted">
-                                General </a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <a href="" class="text-muted">
-                                Empty Page </a>
-                        </li>
-                    </ul> -->
-                    <!-- end::Breadcrumb -->
                 </div>
                 <!--end::Page Heading-->
             </div>
@@ -57,51 +41,7 @@ require __DIR__ . '/../../includes/navbar.php';
                         </h3>
                     </div>
                     <div class="card-toolbar">
-                        <!--begin::Dropdown-->
-                        <div class="dropdown dropdown-inline mr-2">
 
-                            <!--begin::Dropdown Menu-->
-                            <div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">
-                                <!--begin::Navigation-->
-                                <ul class="navi flex-column navi-hover py-2">
-                                    <li class="navi-header font-weight-bolder text-uppercase font-size-sm text-primary pb-2">
-                                        Choose an option:
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-print"></i></span>
-                                            <span class="navi-text">Print</span>
-                                        </a>
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-copy"></i></span>
-                                            <span class="navi-text">Copy</span>
-                                        </a>
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-file-excel-o"></i></span>
-                                            <span class="navi-text">Excel</span>
-                                        </a>
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-file-text-o"></i></span>
-                                            <span class="navi-text">CSV</span>
-                                        </a>
-                                    </li>
-                                    <li class="navi-item">
-                                        <a href="#" class="navi-link">
-                                            <span class="navi-icon"><i class="la la-file-pdf-o"></i></span>
-                                            <span class="navi-text">PDF</span>
-                                        </a>
-                                    </li>
-                                </ul>
-                                <!--end::Navigation-->
-                            </div>
-                            <!--end::Dropdown Menu-->
-                        </div>
                         <!--end::Dropdown-->
 
                         <!--begin::Button-->
@@ -158,9 +98,6 @@ require __DIR__ . '/../../includes/navbar.php';
                             </div>
                         </div>
                     </div>
-                    <!--end::Search Form-->
-                    <!--end: Search Form-->
-
                     <!--begin: Datatable-->
                     <div class="datatable datatable-bordered datatable-head-custom" id="kt_datatable"></div>
                     <!--end: Datatable-->
@@ -170,62 +107,63 @@ require __DIR__ . '/../../includes/navbar.php';
         </div>
         <!-- end::Container -->
     </div>
-    <!-- end::entry -->
-    <!-- modal detail registrasi-->
-    <div class="modal fade" id="detailModalRegistrasi" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered modal-md" role="document">
-            <div class="modal-content shadow-lg border-0 rounded-lg">
-                <div class="modal-header">
-                    <h4 class="modal-title"><i class="la la-info-circle text-info"></i> Detail Registrasi</h4>
-                    <button type="button" class="close text-danger" data-dismiss="modal">&times;</button>
+</div>
+<!-- end::entry -->
+<!-- modal detail registrasi-->
+<div class="modal fade" id="detailModalRegistrasi" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content shadow-lg border-0 rounded-lg">
+            <div class="modal-header">
+                <h4 class="modal-title"><i class="la la-info-circle text-info"></i> Detail Registrasi</h4>
+                <button type="button" class="close text-danger" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Registrasi ID</div>
+                    <div class="col-8" id="detail_registrasiId"></div>
                 </div>
-                <div class="modal-body">
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">Registrasi ID</div>
-                        <div class="col-8" id="detail_registrasiId"></div>
-                    </div>
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">Name</div>
-                        <div class="col-8" id="detail_name"></div>
-                    </div>
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">phone</div>
-                        <div class="col-8" id="detail_phone"></div>
-                    </div>
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">Paket Internet</div>
-                        <div class="col-8">
-                            <div id="detail_paketInternet"></div>
-                        </div>
-                    </div>
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">Is Verified</div>
-                        <div class="col-8">
-                            <div id="detail_isVerified"></div>
-                        </div>
-                    </div>
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">Request Schedule</div>
-                        <div class="col-8" id="detail_requestSchedule"></div>
-                    </div>
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">Request Jam</div>
-                        <div class="col-8" id="detail_requestJam"></div>
-                    </div>
-                    <div class="row mb-2 pl-2">
-                        <div class="col-4 font-weight-bold">Location</div>
-                        <div class="col-8" id="detail_location"></div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Name</div>
+                    <div class="col-8" id="detail_name"></div>
+                </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">phone</div>
+                    <div class="col-8" id="detail_phone"></div>
+                </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Paket Internet</div>
+                    <div class="col-8">
+                        <div id="detail_paketInternet"></div>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button class="btn btn-primary" data-dismiss="modal">
-                        <i class="la la-times"></i> Tutup
-                    </button>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Is Verified</div>
+                    <div class="col-8">
+                        <div id="detail_isVerified"></div>
+                    </div>
                 </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Request Schedule</div>
+                    <div class="col-8" id="detail_requestSchedule"></div>
+                </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Request Jam</div>
+                    <div class="col-8" id="detail_requestJam"></div>
+                </div>
+                <div class="row mb-2 pl-2">
+                    <div class="col-4 font-weight-bold">Location</div>
+                    <div class="col-8" id="detail_location"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-dismiss="modal">
+                    <i class="la la-times"></i> Tutup
+                </button>
             </div>
         </div>
     </div>
+</div>
 
-    <?php
-    require __DIR__ . '/../../includes/footer.php';
-    ?>
+<?php
+require __DIR__ . '/../../includes/footer.php';
+?>

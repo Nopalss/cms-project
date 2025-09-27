@@ -5,7 +5,19 @@ require __DIR__ . '/../../includes/header.php';
 require __DIR__ . '/../../includes/aside.php';
 require __DIR__ . '/../../includes/navbar.php';
 
-$id = $_GET['id'];
+$id = $_GET['id'] ?? null;
+
+if (!$id) {
+    $_SESSION['alert'] = [
+        'icon' => 'warning',
+        'title' => 'Oops!',
+        'text' => 'ID Customer tidak valid.',
+        'button' => "Kembali",
+        'style' => "warning"
+    ];
+    header("Location: " . BASE_URL . "pages/customers/");
+    exit;
+}
 try {
     $sql = "SELECT *
             FROM customers
@@ -14,6 +26,17 @@ try {
     $stmt->bindParam(':netpay_id', $id, PDO::PARAM_STR);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        $_SESSION['alert'] = [
+            'icon' => 'warning',
+            'title' => 'Oops!',
+            'text' => 'Customer tidak ditemukan.',
+            'button' => "Kembali",
+            'style' => "warning"
+        ];
+        header("Location: " . BASE_URL . "pages/customers/");
+        exit;
+    }
     $paketInternet = [
         "5"   => "5 mbps - 150rb/bln",
         "10"  => "10 mbps - 300rb/bln",
@@ -82,7 +105,7 @@ try {
                                         <option value="">Select</option>
                                         <?php foreach ($paketInternet as $key => $value): ?>
                                             <?php $selected = ($key == $row['paket_internet']) ? 'selected' : ''; ?>
-                                            <option value='<?= $key ?>' <?= $selected ?>><?= $value ?></option>"
+                                            <option value='<?= $key ?>' <?= $selected ?>><?= $value ?></option>
                                         <?php endforeach; ?>
                                     </select>
                                 </div>
