@@ -48,7 +48,7 @@ require __DIR__ . '/../../includes/navbar.php';
                             </span>Import Excel
                         </a>
                         <!--begin::Button-->
-                        <a href="<?= BASE_URL ?>registration.php" class="btn btn-primary font-weight-bolder">
+                        <a href="<?= BASE_URL ?>pages/registrasi/create.php" class="btn btn-primary font-weight-bolder">
                             <span class="svg-icon svg-icon-md"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="24px" height="24px" viewBox="0 0 24 24" version="1.1">
                                     <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                                         <rect x="0" y="0" width="24" height="24" />

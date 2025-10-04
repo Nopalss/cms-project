@@ -1,5 +1,17 @@
 <?php
 require_once __DIR__ . '/includes/config.php';
+function create_token()
+{
+    return bin2hex(random_bytes(32));
+}
+
+$success = isset($_GET['success']);
+
+if (!$success) {
+    $_SESSION['form_token'] = create_token();
+    $token = $_SESSION['form_token'] ?? '';
+}
+
 $jamKerja = [
     "08:00",
     "09:00",
@@ -72,6 +84,7 @@ $jamKerja = [
                                     pattern="^08[0-9]{8,11}$"
                                     required>
                             </div>
+                            <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
                             <div class="form-group">
                                 <label for="paket_internet">Paket</label>
                                 <select class="form-control selectpicker" id="paket_internet" required name="paket_internet" data-size=" 7">

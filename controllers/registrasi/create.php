@@ -3,22 +3,6 @@ require_once __DIR__ . '/../../includes/config.php';
 
 if (isset($_POST['submit'])) {
     date_default_timezone_set('Asia/Jakarta');
-    $posted_token = $_POST['token'] ?? '';
-    $session_token = $_SESSION['form_token'] ?? '';
-    if (!hash_equals($session_token, $posted_token)) {
-        $_SESSION['alert'] = [
-            'icon' => 'error',
-            'title' => 'Oops!',
-            'text' => 'Token tidak valid atau sudah dipakai.',
-            'button' => 'OK',
-            'style' => 'danger'
-        ];
-        header("Location: " . BASE_URL . "registration.php");
-
-        exit;
-    }
-    // Token valid → hapus agar sekali pakai
-    unset($_SESSION['form_token']);
     // Fungsi sanitize untuk cegah HTML Injection
     function sanitize($data)
     {
@@ -71,26 +55,11 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "registration.php");
+        header("Location: " . BASE_URL . "pages/registrasi");
         exit;
     }
 
-    $sqlCheck = "SELECT COUNT(*) FROM register WHERE phone = :phone";
-    $stmtCheck = $pdo->prepare($sqlCheck);
-    $stmtCheck->execute([':phone' => $phone]);
-    $exists = $stmtCheck->fetchColumn();
 
-    if ($exists > 0) {
-        $_SESSION['alert'] = [
-            'icon' => 'warning',
-            'title' => 'Nomor Sudah Terdaftar',
-            'text' => 'Nomor HP ini sudah pernah registrasi.',
-            'button' => "Oke",
-            'style' => "warning"
-        ];
-        header("Location: " . BASE_URL . "registration.php");
-        exit;
-    }
     // Buat ID unik
     $registrasi_id = uniqid('REG');
     try {
@@ -114,7 +83,7 @@ if (isset($_POST['submit'])) {
             'button' => "Oke",
             'style' => "success"
         ];
-        header("Location: " . BASE_URL . "registration.php?success=1");
+        header("Location: " . BASE_URL . "pages/registrasi");
         exit;
     } catch (PDOException $e) {
         // echo $e;
@@ -125,7 +94,7 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "registration.php");
+        header("Location: " . BASE_URL . "pages/registrasi");
         exit;
     }
 } else {
@@ -135,6 +104,6 @@ if (isset($_POST['submit'])) {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "registration.php");
+    header("Location: " . BASE_URL . "pages/registrasi");
     exit;
 }
