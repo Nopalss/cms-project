@@ -1,4 +1,5 @@
 <?php
+
 require_once __DIR__ . '/../../includes/config.php';
 $id = isset($_POST['id']) ? $_POST['id'] : null;
 $type_queue = isset($_POST['type_queue']) ? $_POST['type_queue'] : null;
@@ -7,7 +8,6 @@ if ($id && $type_queue) {
     require __DIR__ . '/../../includes/header.php';
     require __DIR__ . '/../../includes/aside.php';
     require __DIR__ . '/../../includes/navbar.php';
-
     try {
         $requestTables = [
             "Install"    => ["table" => "request_ikr", "id" => "rikr_id", "catatan" => "catatan"],
@@ -52,7 +52,7 @@ if ($id && $type_queue) {
             'Accepted' => "success",
             'Rejected' => "danger",
         ];
-        $schedule_id = "S" . date("YmdHs");
+        $schedule_id = "S" . date("YmdHis");
         $sql = "SELECT * FROM technician";
         $stmt = $pdo->query($sql);
         $technicians = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -155,11 +155,15 @@ if ($id && $type_queue) {
                                     <input type="text" class="form-control" value="<?= $typeJob[$row['type_queue']] ?>" disabled='disabled'>
                                     <input type="hidden" name="job_type" value="<?= $typeJob[$row['type_queue']] ?>">
                                 </div>
-                                <div class="form-group mb-1">
+                                <div class="form-group ">
+                                    <label>Perumahan</label>
+                                    <input type="text" class="form-control" readonly name="perumahan" value="<?= $row['perumahan'] ?>">
+                                </div>
+                                <div class="form-group ">
                                     <label for="exampleTextarea">Alamat</label>
                                     <textarea class="form-control" id="exampleTextarea" readonly name="location" rows="3"><?= $row['location'] ?></textarea>
                                 </div>
-                                <div class="form-group mb-1">
+                                <div class="form-group ">
                                     <label for="exampleTextarea">Catatan</label>
                                     <textarea class="form-control" id="exampleTextarea" name="catatan" rows="3"><?= $row['catatan'] ?></textarea>
                                 </div>
@@ -409,11 +413,11 @@ if ($id && $type_queue) {
                                         <td><?= $row['netpay_id'] ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Name</th>
+                                        <th>Nama</th>
                                         <td><?= $row['name'] ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Phone</th>
+                                        <th>No Hp</th>
                                         <td><?= $row['phone'] ?></td>
                                     </tr>
                                     <tr>
@@ -423,6 +427,10 @@ if ($id && $type_queue) {
                                     <tr>
                                         <th>Is Active?</th>
                                         <td><?= $row['is_active'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Perumahan</th>
+                                        <td><?= $row['perumahan'] ?></td>
                                     </tr>
                                     <tr>
                                         <th>Location</th>

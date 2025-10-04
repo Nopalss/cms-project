@@ -1,6 +1,34 @@
 <?php
 require_once __DIR__ . "/../../includes/config.php";
+require_once __DIR__ . "/../../includes/check_password.php";
 
+$username = $_SESSION['username'] ?? null;
+$password = trim($_POST['password'] ?? '');
+
+if (!$username || !$password) {
+    $_SESSION['alert'] = [
+        'icon' => 'warning',
+        'title' => 'Oops!',
+        'text' => 'Data tidak lengkap.',
+        'button' => "Coba Lagi",
+        'style' => "warning"
+    ];
+    header("Location: " . BASE_URL . "pages/schedule");
+    exit;
+}
+
+$user = checkLogin($pdo, $username, $password);
+if (!$user) {
+    $_SESSION['alert'] = [
+        'icon' => 'error',
+        'title' => 'Oops!',
+        'text' => 'Password salah.',
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
+    header("Location: " . BASE_URL . "pages/schedule/");
+    exit;
+}
 try {
     $schedule_id = $_POST["scheduleId"] ?? null;
     $issue_id = $_POST["id"] ?? null;

@@ -420,6 +420,65 @@ require_once __DIR__ . '/config.php';
         });
     }
 
+    function confirmActiveTask(id, url, title = "Yakin mau mengerjakan task ini?", text = "") {
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Lanjut',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Munculin modal input password
+                Swal.fire({
+                    title: 'Masukkan Password',
+                    input: 'password',
+                    inputPlaceholder: 'Password Anda',
+                    inputAttributes: {
+                        maxlength: 50,
+                        autocapitalize: 'off',
+                        autocorrect: 'off'
+                    },
+                    showCancelButton: true,
+                    confirmButtonText: 'Mulai',
+                    cancelButtonText: 'Batal',
+                    preConfirm: (password) => {
+                        if (!password) {
+                            Swal.showValidationMessage('Password wajib diisi!');
+                            return false;
+                        }
+                        return password;
+                    }
+                }).then((res) => {
+                    if (res.isConfirmed) {
+                        // Kirim password ke backend (POST) biar bisa diverifikasi
+                        const form = document.createElement("form");
+                        form.method = "POST";
+                        form.action = `${HOST_URL}${url}`;
+
+                        const inputId = document.createElement("input");
+                        inputId.type = "hidden";
+                        inputId.name = "id";
+                        inputId.value = id;
+
+                        const inputPw = document.createElement("input");
+                        inputPw.type = "hidden";
+                        inputPw.name = "password";
+                        inputPw.value = res.value;
+
+                        form.appendChild(inputId);
+                        form.appendChild(inputPw);
+                        document.body.appendChild(form);
+                        form.submit();
+                    }
+                });
+            }
+        });
+    }
+
     // rm 
     // get customer
     function getCustomer() {
@@ -530,15 +589,35 @@ require_once __DIR__ . '/config.php';
                     $("#time").empty().append('<option value="">-- pilih Jam --</option>');
                     $("#timeline").empty();
                     let jam = <?= isset($row['time']) ? json_encode(substr($row['time'], 0, 5)) : 'null' ?>;
-                    console.log(jam);
+                    let jamPemasangan = <?= isset($jamPemasangan) ? json_encode($jamPemasangan) : 'null' ?>
                     // === isi select jam ===
                     if (res.jamKosong && res.jamKosong.length > 0) {
                         if (jam) {
                             $("#time").append(`<option value = "${jam}" selected>${jam}</option>`);
+                            res.jamKosong.forEach(function(time) {
+                                let selected = time == jamPemasangan ? 'selected' : '';
+                                $("#time").append(`<option value="${time}" ${selected} >${time}</option>`);
+                            });
+                        } else {
+                            let jamKosong = res.jamKosong;
+                            if (jamPemasangan && !jamKosong.includes(jamPemasangan)) {
+                                $("#time").append(`<option selected disabled data-content="<span class='text-danger font-weight-bold'>${jamPemasangan} <small class='text-danger font-weight-bold'>Teknisi Sudah Ada Jadwal</small></span>">${jamPemasangan}</option>`);
+                                res.jamKosong.forEach(function(time) {
+                                    $("#time").append(`<option value="${time}">${time}</option>`);
+                                });
+                                $('#time').selectpicker('refresh');
+                            } else if (jamPemasangan && jamKosong.includes(jamPemasangan)) {
+                                res.jamKosong.forEach(function(time) {
+                                    let selected = time == jamPemasangan ? 'selected' : '';
+                                    $("#time").append(`<option value="${time}" ${selected} >${time}</option>`);
+                                });
+                            } else {
+                                res.jamKosong.forEach(function(time) {
+                                    $("#time").append(`<option value="${time}">${time}</option>`);
+                                });
+
+                            }
                         }
-                        res.jamKosong.forEach(function(time) {
-                            $("#time").append(`<option value = "${time}">${time}</option>`);
-                        });
                     } else {
                         $("#time").append('<option value="">Tidak ada jam kosong</option>');
                     }
@@ -693,58 +772,98 @@ require_once __DIR__ . '/config.php';
     }
 
 
-    function confirmApproved(issueId, scheduleId, jobType) {
-        Swal.fire({
+    async function confirmApproved(issueId, scheduleId, jobType) {
+        const result = await Swal.fire({
             title: 'Apa yang harus dilakukan?',
             text: "Schedule ini bisa dibatalkan atau dijadwalkan ulang",
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Confirm',
-            confirmButtonColor: '#d33',
+            confirmButtonText: 'Approve',
+            confirmButtonColor: '#28a745',
             cancelButtonColor: '#ffc800',
             cancelButtonText: 'Reschedule',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.post(HOST_URL + "controllers/schedules/approve_report.php", {
-                    id: issueId,
-                    scheduleId: scheduleId
-                }).done(function(res) {
-                    Swal.fire('Sukses!', 'Schedule berhasil di-approve.', 'success')
-                        .then(() => {
-                            location.reload(); // atau window.location.href ke halaman lain
-                        });
-                }).fail(function() {
-                    Swal.fire('Error!', 'Terjadi kesalahan.', 'error');
-                });
-            } else if (result.dismiss === Swal.DismissReason.cancel) {
-                // redirect ke update.php dengan POST
-                let form = $('<form>', {
-                    method: 'POST',
-                    action: HOST_URL + "pages/schedule/update.php"
-                });
-
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: 'id',
-                    value: scheduleId
-                }).appendTo(form);
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: 'job_type',
-                    value: jobType
-                }).appendTo(form);
-                $('<input>').attr({
-                    type: 'hidden',
-                    name: 'issue_id',
-                    value: issueId
-                }).appendTo(form);
-
-                $(document.body).append(form);
-                form.submit();
-            }
         });
+
+        if (result.isConfirmed) {
+            // Tutup modal Bootstrap biar SweetAlert aktif
+            $("#exampleModalScrollable").modal("hide");
+
+            const res = await Swal.fire({
+                title: 'Masukkan Password',
+                input: 'password',
+                inputPlaceholder: 'Password Anda',
+                inputAttributes: {
+                    maxlength: 50,
+                    autocomplete: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Kirim',
+                cancelButtonText: 'Batal',
+                preConfirm: (password) => {
+                    if (!password) {
+                        Swal.showValidationMessage('Password wajib diisi!');
+                    }
+                    return password;
+                },
+                didOpen: () => {
+                    const input = Swal.getInput();
+                    if (input) input.focus();
+                }
+            });
+
+            if (res.isConfirmed) {
+                submitForm(`${HOST_URL}controllers/schedules/approve_report.php`, [{
+                        name: "id",
+                        value: issueId
+                    },
+                    {
+                        name: "scheduleId",
+                        value: scheduleId
+                    },
+                    {
+                        name: "password",
+                        value: res.value
+                    }
+                ]);
+            }
+
+        } else if (result.dismiss === Swal.DismissReason.cancel) {
+            submitForm(`${HOST_URL}pages/schedule/update.php`, [{
+                    name: "id",
+                    value: scheduleId
+                },
+                {
+                    name: "job_type",
+                    value: jobType
+                },
+                {
+                    name: "issue_id",
+                    value: issueId
+                }
+            ]);
+        }
     }
 
+    // Helper untuk bikin & submit form
+    function submitForm(action, fields) {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = action;
+
+        fields.forEach(({
+            name,
+            value
+        }) => {
+            const input = document.createElement("input");
+            input.type = "hidden";
+            input.name = name;
+            input.value = value;
+            form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+    }
 
 
     $(".btn-detail3").on("click", function() {

@@ -5,8 +5,24 @@ $_SESSION['menu'] = 'request ikr';
 require __DIR__ . '/../../../includes/header.php';
 require __DIR__ . '/../../../includes/aside.php';
 require __DIR__ . '/../../../includes/navbar.php';
+$jamKerja = [
+    "08:00",
+    "09:00",
+    "10:00",
+    "11:00",
+    "13:00",
+    "14:00",
+    "15:00",
+    "16:00"
+];
 try {
     $registrasi_id = isset($_GET['id']) ? htmlspecialchars($_GET['id'], ENT_QUOTES, 'UTF-8') : null;
+    $perumahan = [
+        "Puri Lestari"   => "Puri Lestari - 01",
+        "Gramapuri Persada"   => "Gramapuri Persada - 02",
+        "Telaga Harapan"   => "Telaga Harapan - 03",
+        "Telaga Murni"   => "Telaga Murni - 04"
+    ];
     $paketInternet = [
         "5"   => "5 mbps - 150rb/bln",
         "10"  => "10 mbps - 300rb/bln",
@@ -28,8 +44,20 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $ids = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $rikr_id = "RIKR" . date("YmdHs");
-    $netpay_id = date("YmdHs");
+    $rikr_id = "RIKR" . date("YmdHis");
+
+    $sql = "SELECT RIGHT(netpay_id, 5) FROM customers ORDER BY CAST(RIGHT(netpay_id, 5) AS UNSIGNED) DESC LIMIT 1";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $lastId = $stmt->fetchColumn();
+    // Kalau tabel kosong, mulai dari 1
+    if ($lastId === false) {
+        $netpay_id = "000001";
+    } else {
+        $netpay_id = str_pad($lastId + 1, 6, "0", STR_PAD_LEFT);
+    }
+
+
 
     if ($registrasi_id) {
         $sql = "SELECT * FROM register WHERE registrasi_id = :id";
@@ -61,7 +89,8 @@ if (!isset($row)) {
         'phone'            => '',
         'paket_internet'   => '',
         'is_verified'      => '',
-        'request_schedule' => '',
+        'date' => '',
+        'time' => '',
         'location'         => ''
     ];
 }
@@ -80,21 +109,25 @@ if (!isset($row)) {
                         <div class="card-header pt-5">
                             <div class="card-title">
                                 <h3 class="card-label">
-                                    Data Registrasi
+                                    Data Register Yang Menunggu Verifikasi
                                 </h3>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="form-group">
-                                <label class="text-right">Registrasi ID</label>
+                                <label class="text-right">Registrasi ID <small class="text-muted font-weight-bold">(Daftar yang belum melalui proses verifikasi)</small></label>
                                 <div>
                                     <div class="input-group">
                                         <?php if (empty($row['registrasi_id'])): ?>
                                             <select class="form-control selectpicker" id="registrasi_id" required name="registrasi_id" data-size=" 7">
-                                                <option value="">select</option>
-                                                <?php foreach ($ids as $i): ?>
-                                                    <option value="<?= $i['registrasi_id'] ?>"><?= $i['registrasi_id'] ?></option>
-                                                <?php endforeach; ?>
+                                                <?php if (count($ids)  <= 0): ?>
+                                                    <option value="">Daftar Verifikasi Kosong</option>
+                                                <?php else: ?>
+                                                    <option value="">---Select---</option>
+                                                    <?php foreach ($ids as $i): ?>
+                                                        <option value="<?= $i['registrasi_id'] ?>"><?= $i['registrasi_id'] ?></option>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
                                             </select>
 
                                         <?php else: ?>
@@ -105,11 +138,11 @@ if (!isset($row)) {
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="name">Name</label>
+                                <label for="name">Nama</label>
                                 <input id="name" type="text" class="form-control" name="name" value="<?= $row['name'] ?>" required>
                             </div>
                             <div class="form-group">
-                                <label for="phone">Phone</label>
+                                <label for="phone">No HP</label>
                                 <input id="phone" type="tel" class="form-control" name="phone" value="<?= $row['phone'] ?>" placeholder="08xxxxxxxxxx"
                                     pattern="^08[0-9]{8,11}$"
                                     required>
@@ -125,20 +158,25 @@ if (!isset($row)) {
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="is_verified">Is Verified?</label>
-                                <select class="form-control selectpicker" id="is_verified" required name="is_verified" data-size=" 7">
-                                    <option value="">Select</option>
-                                    <?php
-                                    $is_verified = ['Verified', 'Unverified'];
-                                    foreach ($is_verified as $i): ?>
-                                        <?php $selected = ($i == $row['is_verified']) ? 'selected' : ''; ?>
-                                        <option value='<?= $i ?>' <?= $selected ?>><?= $i ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <label for="is_verified">Status Verifikasi</label>
+                                <input type="text" readonly name="is_verified" class="form-control" value="Unverified">
                             </div>
                             <div class="form-group">
-                                <label for="exampleTextarea">Kapan Anda ingin jadwal pemasangan?</label>
-                                <input type="datetime-local" id="request_schedule" min="<?= date('Y-m-d\T08:00', strtotime('+1 day')); ?>" value="<?= $row['request_schedule'] ?>" required name="request_schedule" class="form-control">
+                                <label for="exampleTextarea">Kapan Anda ingin jadwal pemasangan? <small class="text-muted ml-3">(Permintaan Customer)</small></label>
+                                <input type="date" id="date" min="<?= date('Y-m-d'); ?>" required readonly value="<?= $row['date'] ?>" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Jam Kunjungan <small class="text-muted ml-3">(Permintaan Customer)</small></label>
+                                <input type="text" value="<?= $row['time'] ?>" readonly id="time" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="perumahan">Perumahan</label>
+                                <select class="form-control selectpicker" id="perumahan" required name="perumahan" data-size=" 7">
+                                    <option value="">Select</option>
+                                    <?php foreach ($perumahan as $key => $value): ?>
+                                        <option value='<?= $key ?>'><?= $value ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="exampleTextarea">Alamat</label>
@@ -153,7 +191,7 @@ if (!isset($row)) {
                         <div class="card-header pt-5">
                             <div class="card-title">
                                 <h3 class="card-label">
-                                    Create Request IKR
+                                    Ajukan Permintaan IKR
                                 </h3>
                             </div>
                         </div>
@@ -184,16 +222,23 @@ if (!isset($row)) {
 
                             <div class="form-group">
                                 <label class="text-right">Registrasi Id</label>
-
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="registrasi_id2" required value="<?= $row['registrasi_id'] ?>" disabled="disabled" />
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="text-right">Jadwal Pemasangan</label>
-                                <div class="input-group">
-                                    <input type="datetime-local" id="jadwal_pemasangan" min=" <?= date('Y-m-d\T08:00', strtotime('+1 day')); ?>" value="<?= $row['request_schedule'] ?>" required name="jadwal_pemasangan" class="form-control">
-                                </div>
+                                <label for="exampleTextarea">Tanggal pemasangan <small class="text-muted ml-3">(Jadwal yang sudah dikonfirmasi)</small></label>
+                                <input type="date" id="date_pemasangan" min="<?= date('Y-m-d'); ?>" required name="date_pemasangan" value="<?= $row['date'] ?>" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Jam pemasangan <small class="text-muted ml-3">(Jam yang sudah dikonfirmasi)</small></label>
+                                <select class="form-control selectpicker" required id="time_pemasangan" name="time_pemasangan" data-size=" 7">
+                                    <option value="">Select</option>
+                                    <?php foreach ($jamKerja as $j): ?>
+                                        <?php $selected = $j == $row['time'] ? 'selected' : ''; ?>
+                                        <option value="<?= $j ?>" <?= $selected ?>><?= $j ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
 
                             <div class="form-group mb-1">

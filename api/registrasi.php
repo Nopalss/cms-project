@@ -19,11 +19,9 @@ try {
                     OR phone LIKE :search
                     OR paket_internet LIKE :search
                     OR is_verified LIKE :search
-                    OR request_schedule LIKE :search
                 )";
         $params[':search'] = "%$search%";
     }
-
 
     if (!empty($status)) {
         $sql .= " AND is_verified = :is_verified";
@@ -31,8 +29,8 @@ try {
     }
 
     if (!empty($date)) {
-        $sql .= " AND request_schedule LIKE :request_schedule";
-        $params[':request_schedule'] = "%$date%";
+        $sql .= " AND created_at LIKE :created_at";
+        $params[':created_at'] = "%$date%";
     }
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);

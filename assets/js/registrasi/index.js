@@ -10,8 +10,9 @@ $(document).on("click", ".btn-detail-registrasi", function () {
         "Unverified": 'danger'
     }
     $("#detail_isVerified").text($(this).data("verified")).addClass(`badge badge-pill text-weight-bold badge-${color[$(this).data("verified")]}`);
-    const datetime = $(this).data("schedule");
-    const date = new Date(datetime.replace(" ", "T"));
+    const datetime = $(this).data("date");
+    $("#detail_requestSchedule").text($(this).data("date"));
+    const date = new Date(datetime);
 
     // Bagian tanggal → pakai locale Indonesia
     const tanggal = date.toLocaleDateString("id-ID", {
@@ -21,13 +22,7 @@ $(document).on("click", ".btn-detail-registrasi", function () {
         year: "numeric"
     });
 
-    // Bagian jam → pakai locale Inggris (pemisah :)
-    const waktu = date.toLocaleTimeString("en-GB", {
-        hour: "2-digit",
-        minute: "2-digit",
-    });
     $("#detail_requestSchedule").text(`${tanggal}`);
-    $("#detail_requestJam").text(`${waktu}`);
-
+    $("#detail_requestJam").text($(this).data("time"));
     $("#detailModalRegistrasi").modal("show");
 });

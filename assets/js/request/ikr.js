@@ -49,12 +49,13 @@ $(document).ready(function () {
                         $('#paket_internet').val(data.paket_internet).selectpicker('refresh');;
                         $('#is_verified').val(data.is_verified).selectpicker('refresh');;
                         $('#location').val(data.location);
-                        let schedule = data.request_schedule ? data.request_schedule.replace(' ', 'T').substring(0, 16) : '';
-                        $('#request_schedule').val(schedule);
-                        $('#jadwal_pemasangan').val(schedule);
+                        $('#time').val(data.time);
+                        $('#date').val(data.date);
+                        $('#date_pemasangan').val(data.date);
+                        $('#time_pemasangan').val(data.time).selectpicker('refresh');
                     } else {
                         // reset kalau tidak ada
-                        $('#name, #phone, #paket_internet, #location, #request_schedule').val('');
+                        $('#name, #phone, #paket_internet, #location, #date, #time, #date_pemasangan, #time_pemasangan').val('');
                     }
                 },
                 error: function (xhr, status, error) {
@@ -62,14 +63,14 @@ $(document).ready(function () {
                 }
             });
         } else {
-            $('#name, #phone, #paket_internet, #location, #request_schedule').val('');
+            $('#name, #phone, #paket_internet, #location, #date, #time, #date_pemasangan, #time_pemasangan').val('');
         }
     });
-    $('#jadwal_pemasangan, #request_schedule').on('change', function () {
-        let date = $(this).val();
-        $('#request_schedule').val(date);
-        $('#jadwal_pemasangan').val(date);
-    })
+    // $('#jadwal_pemasangan, #request_schedule').on('change', function () {
+    //     let date = $(this).val();
+    //     $('#request_schedule').val(date);
+    //     $('#jadwal_pemasangan').val(date);
+    // })
 });
 // modal detail rikr
 $(document).on("click", ".btn-detail-rikr", function () {

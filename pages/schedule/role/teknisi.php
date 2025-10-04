@@ -30,7 +30,7 @@ $badgeClasses = [
 ];
 $statusClasses = [
     'Pending' => "info",
-    'On Progress' => "primary",
+    'Actived' => "primary",
     'Rescheduled' => "warning",
     'Cancelled' => "danger",
     'Done' => "success"
@@ -48,23 +48,23 @@ $statusClasses = [
             </div>
             <div class="card-body pt-4">
                 <div class="table-responsive-sm">
-                    <table class="table text-sm">
+                    <table class="table text-sm" style="min-width: 400px;">
                         <thead>
                             <tr>
-                                <th scope="col">Schedule Id</th>
-                                <th scope="col">Job Type</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Action</th>
+                                <th scope="col" style="font-size: 11px;">Schedule Id</th>
+                                <th scope="col" style="font-size: 11px;">Job Type</th>
+                                <th scope="col" style="font-size: 11px;">Status</th>
+                                <th scope="col" style="font-size: 11px;">Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (count($schedules) > 0): ?>
                                 <?php foreach ($schedules as $s): ?>
                                     <tr>
-                                        <th scope="row"><?= $s['schedule_id'] ?></th>
-                                        <td><?= $s['job_type'] ?></td>
-                                        <td><span class="badge badge-pill text-sm badge-<?= $statusClasses[$s['status']] ?>"><?= $s['status'] ?></span></td>
-                                        <td>
+                                        <th scope="row" style="font-size: 11px;"><?= $s['schedule_id'] ?></th>
+                                        <td style="font-size: 11px;"><?= $s['job_type'] ?></td>
+                                        <td style="font-size: 11px;"><span class="badge badge-pill text-sm badge-<?= $statusClasses[$s['status']] ?>"><?= $s['status'] ?></span></td>
+                                        <td style="font-size: 11px;">
                                             <div class="dropdown dropdown-inline">
                                                 <a href="javascript:;" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" data-toggle="dropdown">
                                                     <span class="svg-icon svg-icon-md">
@@ -206,25 +206,25 @@ $statusClasses = [
             </div>
             <div class="card-body pt-0">
                 <div class="table-responsive">
-                    <table class="table text-sm" style="min-height:180px;">
+                    <table class="table text-sm" style="min-height:180px; min-width: 400px;">
                         <thead>
                             <tr>
-                                <th scope=" col">Issue Id</th>
-                                <th scope="col">Schedule Id</th>
-                                <th scope="col">Issue Type</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Action</th>
+                                <th scope=" col" style="font-size: 11px;">Issue Id</th>
+                                <th scope="col" style="font-size: 11px;">Schedule Id</th>
+                                <th scope="col" style="font-size: 11px;">Issue Type</th>
+                                <th scope="col" style="font-size: 11px;">Status</th>
+                                <th scope="col" style="font-size: 11px;">Action</th>
                             </tr>
                         </thead>
                         <?php if (count($issues_report) > 0): ?>
                             <tbody>
                                 <?php foreach ($issues_report as $i): ?>
                                     <tr>
-                                        <th scope="row"><?= $i['issue_id'] ?></th>
-                                        <td><?= $i['schedule_id'] ?></td>
-                                        <td><?= $i['issue_type'] ?></td>
-                                        <td class="text-sm"><span class="badge badge-pill badge-<?= $statusIssueClasses[$i['status']] ?>"><?= $i['status'] ?></span></td>
-                                        <td>
+                                        <th scope="row" style="font-size: 11px;"><?= $i['issue_id'] ?></th>
+                                        <td style="font-size: 11px;"><?= $i['schedule_id'] ?></td>
+                                        <td style="font-size: 11px;"><?= $i['issue_type'] ?></td>
+                                        <td style="font-size: 11px;"><span class="badge badge-pill badge-<?= $statusIssueClasses[$i['status']] ?>"><?= $i['status'] ?></span></td>
+                                        <td style="font-size: 11px;">
                                             <div class="dropdown dropdown-inline">
                                                 <a href="javascript:;" class="btn btn-sm btn-light btn-text-primary btn-icon mr-2" data-toggle="dropdown">
                                                     <span class="svg-icon svg-icon-md">

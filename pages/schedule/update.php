@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
+date_default_timezone_set('Asia/Jakarta');
 $id = isset($_POST['id']) ? $_POST['id'] : null;
 $issue_id = isset($_POST['issue_id']) ? $_POST['issue_id'] : null;
 $job_type = isset($_POST['job_type']) ? $_POST['job_type'] : null;
@@ -58,7 +59,7 @@ if ($id && $job_type) {
                 exit;
             }
         }
-        $tanggalSchedule   = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'date') : '';
+        $tanggalSchedule   = isset($row['date']) ? formatDate($row['date'], 'date') : '';
         $tanggalPemasangan = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'full') : '';
         $jamPemasangan     = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'time') : '';
         $cr                = formatDate($row['created_at'], 'full');

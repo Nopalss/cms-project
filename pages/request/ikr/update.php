@@ -7,6 +7,12 @@ require __DIR__ . '/../../../includes/aside.php';
 require __DIR__ . '/../../../includes/navbar.php';
 try {
     $rikr_id = isset($_GET['id']) ? $_GET['id'] : null;
+    $perumahan = [
+        "Puri Lestari"   => "Puri Lestari - 01",
+        "Gramapuri Persada"   => "Gramapuri Persada - 02",
+        "Telaga Harapan"   => "Telaga Harapan - 03",
+        "Telaga Murni"   => "Telaga Murni - 04"
+    ];
     $paketInternet = [
         "5"   => "5 mbps - 150rb/bln",
         "10"  => "10 mbps - 300rb/bln",
@@ -25,6 +31,16 @@ try {
         "28" => "Cibinong - 28",
     ];
 
+    $jamKerja = [
+        "08:00",
+        "09:00",
+        "10:00",
+        "11:00",
+        "13:00",
+        "14:00",
+        "15:00",
+        "16:00"
+    ];
     if ($rikr_id) {
         $sql = "SELECT 
                     r.rikr_id,
@@ -33,13 +49,16 @@ try {
                     r.jadwal_pemasangan,
                     r.catatan,
                     r.request_by,
-                    rg.name,
-                    rg.location,
-                    rg.phone,
-                    rg.paket_internet,
-                    rg.is_verified,
-                    rg.request_schedule
+                    c.name,
+                    c.location,
+                    c.phone,
+                    c.paket_internet,
+                    c.perumahan,
+                    rg.`date` as date_request,
+                    rg.`time` as time_request
                 FROM request_ikr r
+                JOIN customers c 
+                    ON r.netpay_id = c.netpay_id
                 JOIN register rg 
                     ON r.registrasi_id = rg.registrasi_id
                 WHERE r.rikr_id = :rikr_id";
@@ -48,6 +67,7 @@ try {
         $stmt->bindParam(':rikr_id', $rikr_id, PDO::PARAM_STR);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        list($date, $time) = explode("T", $row['jadwal_pemasangan']);
         $daerah_id = substr($row['netpay_id'], 0, 2);
         $netpay_id = substr($row['netpay_id'], 2);
         if (!$row) {
@@ -67,7 +87,6 @@ try {
 ?>
 
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
-
     <!--begin::Entry-->
     <div class=" d-flex flex-column-fluid">
         <!--begin::Container-->
@@ -79,7 +98,7 @@ try {
                         <div class="card-header pt-5">
                             <div class="card-title">
                                 <h3 class="card-label">
-                                    Data Register
+                                    Data Register Yang Menunggu Verifikasi
                                 </h3>
                             </div>
                         </div>
@@ -114,20 +133,26 @@ try {
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="is_verified">Is Verified?</label>
-                                <select class="form-control selectpicker" id="is_verified" required name="is_verified" data-size=" 7">
-                                    <option value="">Select</option>
-                                    <?php
-                                    $is_verified = ['Verified', 'Unverified'];
-                                    foreach ($is_verified as $i): ?>
-                                        <?php $selected = ($i == $row['is_verified']) ? 'selected' : ''; ?>
-                                        <option value='<?= $i ?>' <?= $selected ?>><?= $i ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <label for="is_verified">Status Verifikasi</label>
+                                <input type="text" readonly name="is_verified" class="form-control" value="Unverified">
                             </div>
                             <div class="form-group">
-                                <label for="exampleTextarea">Kapan Anda ingin jadwal pemasangan?</label>
-                                <input type="datetime-local" id="request_schedule" min="<?= date('Y-m-d\T08:00', strtotime('+1 day')); ?>" value="<?= $row['request_schedule'] ?>" required name="request_schedule" class="form-control">
+                                <label for="exampleTextarea">Kapan Anda ingin jadwal pemasangan? <small class="text-muted ml-3">(Permintaan Customer)</small></label>
+                                <input type="date" id="date" min="<?= date('Y-m-d'); ?>" required readonly value="<?= $row['date_request'] ?>" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Jam Kunjungan <small class="text-muted ml-3">(Permintaan Customer)</small></label>
+                                <input type="text" value="<?= $row['time_request'] ?>" readonly id="time" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="perumahan">Perumahan</label>
+                                <select class="form-control selectpicker" id="perumahan" required name="perumahan" data-size=" 7">
+                                    <option value="">Select</option>
+                                    <?php foreach ($perumahan as $key => $value): ?>
+                                        <?php $selected = ($key == $row['perumahan']) ? 'selected' : ''; ?>
+                                        <option value='<?= $key ?>' <?= $selected ?>><?= $value ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
                             <div class="form-group">
                                 <label for="exampleTextarea">Alamat</label>
@@ -142,7 +167,7 @@ try {
                         <div class="card-header pt-5">
                             <div class="card-title">
                                 <h3 class="card-label">
-                                    Update Request IKR
+                                    Update Permintaan IKR
                                 </h3>
                             </div>
                         </div>
@@ -174,18 +199,24 @@ try {
 
                             <div class="form-group">
                                 <label class="text-right">Registrasi Id</label>
-
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="registrasi_id2" value="<?= $row['registrasi_id'] ?>" disabled="disabled" />
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label class="text-right">Jadwal Pemasangan</label>
-                                <div class="input-group">
-                                    <input type="datetime-local" id="jadwal_pemasangan" min=" <?= date('Y-m-d\T08:00', strtotime('+1 day')); ?>" value="<?= $row['request_schedule'] ?>" required name="jadwal_pemasangan" class="form-control">
-                                </div>
+                                <label for="exampleTextarea">Tanggal Pemasangan<small class="text-muted ml-3"> (Jadwal yang sudah dikonfirmasi)</small></label>
+                                <input type="date" id="date_pemasangan" min="<?= date('Y-m-d'); ?>" required name="date_pemasangan" value="<?= $date ?>" class="form-control">
                             </div>
-
+                            <div class="form-group">
+                                <label>Jam pemasangan <small class="text-muted ml-3">(Jam yang sudah dikonfirmasi)</small></label>
+                                <select class="form-control selectpicker" required id="time_pemasangan" name="time_pemasangan" data-size=" 7">
+                                    <option value="">Select</option>
+                                    <?php foreach ($jamKerja as $j): ?>
+                                        <?php $selected = $j == $time ? 'selected' : ''; ?>
+                                        <option value="<?= $j ?>" <?= $selected ?>><?= $j ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
                             <div class="form-group mb-1">
                                 <label for="exampleTextarea">Catatan</label>
                                 <textarea class="form-control" id="exampleTextarea" required name="catatan" rows="3"><?= $row['catatan'] ?></textarea>

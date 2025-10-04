@@ -28,8 +28,8 @@ var KTDatatableLocalSortDemo = function () {
 
             // layout definition
             layout: {
-                scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-                footer: false, // display/hide footer
+                scroll: true,   // biar tabel scrollable (horizontal/vertical)
+                footer: false,
             },
 
             // column sorting
@@ -81,8 +81,8 @@ var KTDatatableLocalSortDemo = function () {
                             'title': 'Pending',
                             'state': 'info'
                         },
-                        'On Progress': {
-                            'title': 'On Progress',
+                        'Actived': {
+                            'title': 'Actived',
                             'state': 'primary'
                         },
                         'Rescheduled': {
@@ -113,6 +113,10 @@ var KTDatatableLocalSortDemo = function () {
                         'Pending': {
                             'title': 'Pending',
                             'state': 'info'
+                        },
+                        'Actived': {
+                            'title': 'Actived',
+                            'state': 'primary'
                         },
                         'Rescheduled': {
                             'title': 'Rescheduled',

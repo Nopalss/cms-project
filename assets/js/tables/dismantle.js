@@ -28,10 +28,9 @@ var KTDatatableLocalSortDemo = function () {
 
             // layout definition
             layout: {
-                scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-                footer: false, // display/hide footer
+                scroll: true,   // biar tabel scrollable (horizontal/vertical)
+                footer: false,
             },
-
             // column sorting
             sortable: true,
 

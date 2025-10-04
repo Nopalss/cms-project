@@ -4,7 +4,7 @@ require_once __DIR__ . "/../includes/config.php";
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
 
-    $sql = "SELECT registrasi_id, name, phone, paket_internet, is_verified, location, request_schedule 
+    $sql = "SELECT *
             FROM register 
             WHERE registrasi_id = :id";
     $stmt = $pdo->prepare($sql);

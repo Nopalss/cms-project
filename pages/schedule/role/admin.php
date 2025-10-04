@@ -123,7 +123,7 @@ $issues_report = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Close</button>
+                                <a href="<?= BASE_URL ?>pages/schedule/table_issue_report.php" class="btn btn-light-primary font-weight-bold">View All</a>
                             </div>
                         </div>
                     </div>
@@ -194,6 +194,7 @@ $issues_report = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <select class="form-control" id="kt_datatable_search_status">
                                     <option value="">All</option>
                                     <option value="Pending">Pending</option>
+                                    <option value="Actived">Actived</option>
                                     <option value="Rescheduled">Rescheduled</option>
                                     <option value="Cancelled">Cancelled</option>
                                     <option value="Done">Done</option>

@@ -85,11 +85,11 @@ $jamKerja = [
                             </div>
                             <div class="form-group">
                                 <label for="exampleTextarea">Kapan Anda ingin jadwal pemasangan?</label>
-                                <input type="date" min="<?= date('Y-m-d', strtotime('+1 day')); ?>" required name="request_schedule" class="form-control">
+                                <input type="date" min="<?= date('Y-m-d', strtotime('+1 day')); ?>" required name="date" class="form-control">
                             </div>
                             <div class="form-group">
-                                <label for="paket_internet">Jam</label>
-                                <select class="form-control selectpicker" id="paket_internet" required name="jam" data-size=" 7">
+                                <label>Jam Kunjungan</label>
+                                <select class="form-control selectpicker" required name="time" data-size=" 7">
                                     <option value="">Select</option>
                                     <?php foreach ($jamKerja as $j): ?>
                                         <option value="<?= $j ?>"><?= $j ?></option>

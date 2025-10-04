@@ -2,25 +2,58 @@
 
 require_once __DIR__ . '/../../../includes/config.php';
 $_SESSION['menu'] = 'request dismantle';
+$id = $_POST['id'] ?? null;
+try {
+    if ($id) {
+        $sql = "SELECT * FROM customers WHERE is_active ='Active' AND netpay_id =:id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$row) {
+            $_SESSION['alert'] = [
+                'icon' => 'error',
+                'title' => 'Oops! Customers Tidak Ditemukan',
+                'text' => 'Silakan coba lagi.',
+                'button' => "Coba Lagi",
+                'style' => "danger"
+            ];
+            header("Location: " . BASE_URL . "pages/request/dismantle/create.php");
+            exit;
+        }
+    } else {
+        $row = [
+            "netpay_id" => '',
+            "name" => '',
+            "phone" => '',
+            "paket_internet" => '',
+            "is_active" => '',
+            "perumahan" => '',
+            "location" => '',
+        ];
+    }
+
+    $rd_id = "RD" . date("YmdHis");
+} catch (PDOException $e) {
+    $_SESSION['alert'] = [
+        'icon' => 'error',
+        'title' => 'Oops! Ada yang Salah',
+        'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
+    header("Location: " . BASE_URL . "pages/request/dismantle");
+    exit;
+}
 require __DIR__ . '/../../../includes/header.php';
 require __DIR__ . '/../../../includes/aside.php';
 require __DIR__ . '/../../../includes/navbar.php';
-try {
-    $sql = "SELECT netpay_id, name FROM customers WHERE is_active='Active'";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $rd_id = "RD" . date("YmdHs");
-} catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
-}
 ?>
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Entry-->
     <div class=" d-flex flex-column-fluid">
         <!--begin::Container-->
         <div class="container">
-            <form method="post" class="form row" action="<?= BASE_URL ?>controllers/request/dismantle/create.php">
+            <div class="row">
                 <!-- card create request IKR -->
                 <div class="col-md-6 mb-10">
                     <div class="card card-custom shadow-sm">
@@ -32,46 +65,48 @@ try {
                             </div>
                         </div>
                         <div class="card-body">
-                            <div class="form-group">
-                                <label class="text-right">Request Dismantle ID</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" value="<?= $rd_id ?>" disabled="disabled" />
-                                    <input type="hidden" class="form-control" name="rd_id" value="<?= $rd_id ?>" />
+                            <form method="post" class="form">
+                                <div class="form-group">
+                                    <label class="text-right">Netpay ID</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" placeholder="Cari Netpay ID" name="id" required value="<?= $row['netpay_id'] ?>" aria-describedby="basic-addon2">
+                                        <button type="submit" class="btn btn-light-primary"><i class="flaticon-search"></i></button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Netpay ID</label>
-                                <select class="form-control selectpicker" id="netpay_id" required name="netpay_id" data-size=" 7" data-live-search="true">
-                                    <option value="">Select</option>
-                                    <?php foreach ($customers as $c): ?>
-                                        <option value="<?= $c['netpay_id'] ?>"><?= $c['netpay_id'] . " - " .  $c['name']  ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
+                            </form>
+                            <form method="post" class="form" action="<?= BASE_URL ?>controllers/request/dismantle/create.php">
+                                <div class="form-group mt-7">
+                                    <label class="text-right">Request Dismantle ID</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" value="<?= $rd_id ?>" disabled="disabled" />
+                                        <input type="hidden" class="form-control" name="rd_id" value="<?= $rd_id ?>" />
+                                        <input type="hidden" class="form-control" name="netpay_id" required value="<?= $row['netpay_id'] ?>">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label class="text-right">Type dismantle</label>
+                                    <select class="form-control selectpicker" id="type_dismantle" required name="type_dismantle">
+                                        <option value="">Select</option>
+                                        <option value="Pindah Alamat">Pindah Alamat</option>
+                                        <option value="Biaya Mahal">Biaya Mahal</option>
+                                        <option value="Jarang Digunakan">Jarang Digunakan</option>
+                                        <option value="Pelayanan Buruk">Pelayanan Buruk</option>
+                                        <option value="Gangguan Berkepanjangan">Gangguan Berkepanjangan</option>
+                                        <option value="Ganti Provider">Ganti Provider</option>
+                                        <option value="Lainnya">Lainnya</option>
+                                    </select>
+                                </div>
 
-                            <div class="form-group">
-                                <label class="text-right">Type dismantle</label>
-                                <select class="form-control selectpicker" id="type_dismantle" required name="type_dismantle">
-                                    <option value="">Select</option>
-                                    <option value="Pindah Alamat">Pindah Alamat</option>
-                                    <option value="Biaya Mahal">Biaya Mahal</option>
-                                    <option value="Jarang Digunakan">Jarang Digunakan</option>
-                                    <option value="Pelayanan Buruk">Pelayanan Buruk</option>
-                                    <option value="Gangguan Berkepanjangan">Gangguan Berkepanjangan</option>
-                                    <option value="Ganti Provider">Ganti Provider</option>
-                                    <option value="Lainnya">Lainnya</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group mb-1">
-                                <label for="exampleTextarea">Deskripsi Dismantle</label>
-                                <textarea class="form-control" id="exampleTextarea" required name="deskripsi_dismantle" rows="3"></textarea>
-                            </div>
+                                <div class="form-group mb-1">
+                                    <label for="exampleTextarea">Deskripsi Dismantle</label>
+                                    <textarea class="form-control" id="exampleTextarea" required name="deskripsi_dismantle" rows="3"></textarea>
+                                </div>
                         </div>
                         <div class="card-footer text-right">
                             <a href="<?= BASE_URL ?>pages/request/maintenance" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
                             <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Create</button>
                         </div>
+                        </form>
                     </div>
                 </div>
                 <div class="col-md-6 mb-10">
@@ -91,30 +126,38 @@ try {
                                 <table class="table table-striped">
                                     <tr>
                                         <th>Netpay ID</th>
-                                        <td id="data-netpay"></td>
+                                        <td><?= $row['netpay_id'] ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Name</th>
-                                        <td id="data-name"></td>
+                                        <th>Nama</th>
+                                        <td><?= $row['name'] ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Phone</th>
-                                        <td id="data-phone"></td>
+                                        <th>No Hp</th>
+                                        <td id="data-phone"><?= $row['phone'] ?></td>
                                     </tr>
                                     <tr>
                                         <th>Paket</th>
-                                        <td id="data-paket"> </td>
+                                        <td><?= $row['paket_internet'] ?> </td>
                                     </tr>
                                     <tr>
-                                        <th>Location</th>
-                                        <td id="data-location" class="text-wrap"></td>
+                                        <th>Is Active?</th>
+                                        <td><?= $row['is_active'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Perumahan</th>
+                                        <td class="text-wrap"><?= $row['perumahan'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Alamat</th>
+                                        <td class="text-wrap"><?= $row['location'] ?></td>
                                     </tr>
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
         <!--end::Container-->
     </div>

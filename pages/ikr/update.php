@@ -2,9 +2,7 @@
 
 require_once __DIR__ . '/../../includes/config.php';
 $_SESSION['menu'] = 'ikr';
-require __DIR__ . '/../../includes/header.php';
-require __DIR__ . '/../../includes/aside.php';
-require __DIR__ . '/../../includes/navbar.php';
+
 try {
     $ikr_id = isset($_GET['id']) ? $_GET['id'] : null;
     $ikr_id = $_GET['id'] ?? null;
@@ -19,6 +17,7 @@ try {
         header("Location: " . BASE_URL . "pages/ikr/");
         exit;
     }
+
     $sql = "SELECT ikr.* , c.* FROM ikr JOIN customers c ON ikr.netpay_id = c.netpay_id WHERE ikr.ikr_id = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([":id" => $ikr_id]);
@@ -34,6 +33,9 @@ try {
         header("Location: " . BASE_URL . "pages/ikr/");
         exit;
     }
+    require __DIR__ . '/../../includes/header.php';
+    require __DIR__ . '/../../includes/aside.php';
+    require __DIR__ . '/../../includes/navbar.php';
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }

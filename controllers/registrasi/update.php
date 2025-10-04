@@ -40,17 +40,16 @@ if (isset($_POST['submit'])) {
     }
 
     // Ambil & sanitasi data POST
-    $jam  = isset($_POST['jam']) ? sanitize($_POST['jam']) : null;
     $registrasi_id = isset($_POST['registrasi_id']) ? sanitize($_POST['registrasi_id']) : null;
     $name          = isset($_POST['name']) ? sanitize($_POST['name']) : null;
     $phone         = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
     $paket_internet = isset($_POST['paket_internet']) ? sanitize($_POST['paket_internet']) : null;
-    $request_schedule = isset($_POST['request_schedule']) ? sanitize($_POST['request_schedule']) : null;
-    $location      = isset($_POST['location']) ? sanitize($_POST['location']) : null;
-    $is_verified      = isset($_POST['is_verified']) ? sanitize($_POST['is_verified']) : null;
+    $date  = isset($_POST['date']) ? sanitize($_POST['date']) : null;
+    $time  = isset($_POST['time']) ? sanitize($_POST['time']) : null;
+    $location      = isset($_POST['location']) ? trim($_POST['location']) : null;
 
     // Pastikan semua data terisi
-    if (!$registrasi_id || !$name || !$phone || !$jam || !$paket_internet || !$request_schedule || !$location || !$is_verified || !validatePhone($phone) || !isDateValidTomorrow($request_schedule)) {
+    if (!$name || !$phone || !$paket_internet || !$date  || !$time || !$location || !validatePhone($phone) || !isDateValidTomorrow($date)) {
         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
@@ -68,9 +67,9 @@ if (isset($_POST['submit'])) {
                 SET name = :name,
                     phone = :phone,
                     paket_internet = :paket_internet,
-                    request_schedule = :request_schedule,
-                    location = :location,
-                    is_verified = :is_verified
+                    date = :date,
+                    time = :time,
+                    location = :location
                 WHERE registrasi_id = :registrasi_id";
 
         $stmt = $pdo->prepare($sql);
@@ -79,9 +78,9 @@ if (isset($_POST['submit'])) {
             ':name' => $name,
             ':phone' => $phone,
             ':paket_internet' => $paket_internet,
-            ':request_schedule' => $request_schedule . "T" . $jam,
+            ':date' => $date,
+            ':time' => $time,
             ':location' => $location,
-            ':is_verified' => $is_verified
         ]);
         $_SESSION['alert'] = [
             'icon' => 'success',
@@ -93,10 +92,11 @@ if (isset($_POST['submit'])) {
         header("Location: " . BASE_URL . "pages/registrasi/");
         exit;
     } catch (PDOException $e) {
+        error_log("DB Error: " . $e->getMessage());
         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
-            'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+            'text' => 'Silakan coba lagi nanti.',
             'button' => "Coba Lagi",
             'style' => "danger"
         ];

@@ -58,7 +58,7 @@ if (isset($_POST['submit'])) {
     }
 
     // Buat ID unik (kombinasi tanggal + uniqid biar aman)
-    $issue_id = 'I' . date("YmdHs");
+    $issue_id = 'I' . date("YmdHis");
 
     try {
         // Query insert dengan prepared statement → tabel pakai plural

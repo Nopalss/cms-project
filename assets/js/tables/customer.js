@@ -28,8 +28,8 @@ var KTDatatableLocalSortDemo = function () {
 
             // layout definition
             layout: {
-                scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-                footer: false, // display/hide footer
+                scroll: true,   // biar tabel scrollable (horizontal/vertical)
+                footer: false,
             },
 
             // column sorting
@@ -112,7 +112,7 @@ var KTDatatableLocalSortDemo = function () {
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteTemplate('${row.netpay_id}', 'controllers/customer/delete.php')"class="navi-link">\
+                                        <a onclick="confirmDeleteTemplate('${row.netpay_id}', 'controllers/customer/delete.php')" class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
                                             <span class="navi-text">Hapus</span>\
                                         </a>\

@@ -22,7 +22,10 @@ var KTDatatableLocalSortDemo = function () {
                     webstorage: false,
                 },
             },
-            layout: { scroll: false, footer: false },
+            layout: {
+                scroll: true,   // biar tabel scrollable (horizontal/vertical)
+                footer: false,
+            },
             sortable: true,
             pagination: true,
             search: {
@@ -83,7 +86,7 @@ var KTDatatableLocalSortDemo = function () {
     <ul class="navi flex-column navi-hover py-2">
       <li class="navi-header font-weight-bolder text-uppercase font-size-xs text-primary pb-2">Choose an action:</li>
       <li class="navi-item">
-        <a href="${editUrl}" class="navi-link">
+        <a href="${HOST_URL}" class="navi-link">
           <span class="navi-icon"><i class="la la-pencil-alt text-warning"></i></span>
           <span class="navi-text">Edit</span>
         </a>
@@ -122,23 +125,6 @@ var KTDatatableLocalSortDemo = function () {
         });
 
 
-        function confirmDelete(scheduleId) {
-            Swal.fire({
-                title: 'Yakin mau hapus?',
-                text: "Data schedule akan dihapus permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect ke delete.php dengan parameter ID
-                    window.location.href = "<?= BASE_URL ?>controllers/schedules/delete.php?id=" + scheduleId;
-                }
-            });
-        }
 
 
 

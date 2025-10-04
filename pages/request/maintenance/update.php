@@ -2,20 +2,36 @@
 
 require_once __DIR__ . '/../../../includes/config.php';
 $_SESSION['menu'] = 'request maintenance';
-require __DIR__ . '/../../../includes/header.php';
-require __DIR__ . '/../../../includes/aside.php';
-require __DIR__ . '/../../../includes/navbar.php';
+
+$rm_id = isset($_GET['id']) ? $_GET['id'] : null;
 try {
-    $rm_id = isset($_GET['id']) ? $_GET['id'] : null;
-    $sql = "SELECT netpay_id, name FROM customers WHERE is_active ='Active'";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    $customers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $sql = "SELECT * FROM request_maintenance WHERE rm_id = :rm_id";
+    if (!$rm_id) {
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Oops! ID Request  Tidak Ditemukan',
+            'text' => 'Silakan coba lagi.',
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
+        header("Location: " . BASE_URL . "pages/request/maintenance/");
+        exit;
+    }
+    $sql = "SELECT rm.*, c.* FROM request_maintenance rm JOIN customers c ON rm.netpay_id = c.netpay_id WHERE rm_id = :rm_id";
     $stmt = $pdo->prepare($sql);
     $stmt->bindParam(':rm_id', $rm_id, PDO::PARAM_STR);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$row) {
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Oops! Request Tidak Ditemukan',
+            'text' => 'Silakan coba lagi.',
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
+        header("Location: " . BASE_URL . "pages/request/maintenance/");
+        exit;
+    }
     $type_issue = ['Signal Lemah', 'Modem Rusak', 'Kabel Bermasalah', 'Gangguan Internet', 'Upgrade Paket', 'Lainnya'];
 } catch (PDOException $e) {
     $_SESSION['alert'] = [
@@ -28,6 +44,9 @@ try {
     header("Location: " . BASE_URL . "pages/request/maintenance/");
     exit;
 }
+require __DIR__ . '/../../../includes/header.php';
+require __DIR__ . '/../../../includes/aside.php';
+require __DIR__ . '/../../../includes/navbar.php';
 ?>
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Entry-->
@@ -54,14 +73,11 @@ try {
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label>Netpay ID</label>
-                                <select class="form-control selectpicker" id="netpay_id" required name="netpay_id" data-size=" 7" data-live-search="true">
-                                    <option value="">Select</option>
-                                    <?php foreach ($customers as $c): ?>
-                                        <?php $selected = $c['netpay_id'] == $row['netpay_id'] ? 'selected' : '' ?>
-                                        <option value="<?= $c['netpay_id'] ?>" <?= $selected ?>><?= $c['netpay_id'] . ' - ' .  $c['name'] ?></option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <label class="text-right">Netpay ID</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" value="<?= $row['netpay_id'] ?>" disabled="disabled" />
+                                    <input type="hidden" class="form-control" name="netpay_id" value="<?= $row['netpay_id'] ?>" />
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -103,27 +119,31 @@ try {
                                 <table class="table table-striped">
                                     <tr>
                                         <th>Netpay ID</th>
-                                        <td id="data-netpay"></td>
+                                        <td><?= $row['netpay_id'] ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Name</th>
-                                        <td id="data-name"></td>
+                                        <th>Nama</th>
+                                        <td><?= $row['name'] ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Phone</th>
-                                        <td id="data-phone"></td>
+                                        <th>No Hp</th>
+                                        <td id="data-phone"><?= $row['phone'] ?></td>
                                     </tr>
                                     <tr>
                                         <th>Paket</th>
-                                        <td id="data-paket"> </td>
+                                        <td><?= $row['paket_internet'] ?> </td>
                                     </tr>
                                     <tr>
                                         <th>Is Active?</th>
-                                        <td id="data-active"></td>
+                                        <td><?= $row['is_active'] ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Location</th>
-                                        <td id="data-location" class="text-wrap"></td>
+                                        <th>Perumahan</th>
+                                        <td class="text-wrap"><?= $row['perumahan'] ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Alamat</th>
+                                        <td class="text-wrap"><?= $row['location'] ?></td>
                                     </tr>
                                 </table>
                             </div>

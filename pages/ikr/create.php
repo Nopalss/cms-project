@@ -24,6 +24,13 @@ try {
     $stmt->execute([":id" => $id]);
     $customer = $stmt->fetch(PDO::FETCH_ASSOC);
     $ikr_id = "SI" . date("YmdHis");
+    $paketInternet = [
+        "5"   => "5 mbps - 150rb/bln",
+        "10"  => "10 mbps - 300rb/bln",
+        "30"  => "30 mbps - 650rb/bln",
+        "50"  => "50 mbps - 850rb/bln",
+        "100" => "100 mbps - 1jt/bln"
+    ];
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -105,7 +112,7 @@ try {
                             <!-- Telepon -->
                             <div class="form-group">
                                 <label for="telp">Telepon</label>
-                                <input type="text" class="form-control" id="telp" name="telp" value="<?= $customer['phone'] ?>" required>
+                                <input type="text" class="form-control" id="telp" name="telp" pattern="^08[0-9]{8,11}$" value="<?= $customer['phone'] ?>" required>
                             </div>
 
                             <!-- S/N -->
@@ -115,15 +122,19 @@ try {
                             </div>
 
                             <!-- Paket & Type ONT -->
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="paket">Paket</label>
-                                    <input type="text" class="form-control" id="paket" name="paket" required>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="type_ont">Type ONT</label>
-                                    <input type="text" class="form-control" id="type_ont" name="type_ont" required>
-                                </div>
+                            <div class="form-group">
+                                <label for="paket_internet">Paket</label>
+                                <select class="form-control selectpicker" id="paket_internet" required name="paket" data-size=" 7">
+                                    <option value="">Select</option>
+                                    <?php foreach ($paketInternet as $key => $value): ?>
+                                        <?php $selected = ($key == $customer['paket_internet']) ? 'selected' : ''; ?>
+                                        <option value='<?= $key ?>' <?= $selected ?>><?= $value ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="type_ont">Type ONT</label>
+                                <input type="text" class="form-control" id="type_ont" name="type_ont" required>
                             </div>
 
                             <!-- Redaman -->
@@ -205,23 +216,23 @@ try {
                                         <td id="data-netpay"><?= $customer['netpay_id'] ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Name</th>
+                                        <th>Nama</th>
                                         <td id="data-name"><?= $customer['name'] ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Phone</th>
+                                        <th>No Hp</th>
                                         <td id="data-phone"><?= $customer['phone'] ?></td>
                                     </tr>
                                     <tr>
                                         <th>Paket</th>
-                                        <td id="data-paket"><?= $customer['paket_internet'] ?> </td>
+                                        <td id="data-paket"><?= $customer['paket_internet'] ?> Mbps</td>
                                     </tr>
                                     <tr>
                                         <th>Is Active?</th>
                                         <td id="data-active"><?= $customer['is_active'] ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Location</th>
+                                        <th>Alamat</th>
                                         <td id="data-location" class="text-wrap"><?= $customer['location'] ?></td>
                                     </tr>
                                 </table>

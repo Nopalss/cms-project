@@ -28,8 +28,8 @@ var KTDatatableLocalSortDemo = function () {
 
             // layout definition
             layout: {
-                scroll: false, // enable/disable datatable scroll both horizontal and vertical when needed.
-                footer: false, // display/hide footer
+                scroll: true,   // biar tabel scrollable (horizontal/vertical)
+                footer: false,
             },
 
             // column sorting
@@ -140,7 +140,7 @@ var KTDatatableLocalSortDemo = function () {
     </a>\
 </li>\
 <li class="navi-item cursor-pointer">\
-    <a class="navi-link btn-detail-registrasi" data-id="${row.registrasi_id}" data-name="${row.name}" data-location="${row.location}" data-phone="${row.phone}" data-paket="${row.paket_internet}" data-verified="${row.is_verified}" data-schedule="${row.request_schedule}">\
+    <a class="navi-link btn-detail-registrasi" data-id="${row.registrasi_id}" data-name="${row.name}" data-location="${row.location}" data-phone="${row.phone}" data-paket="${row.paket_internet}" data-verified="${row.is_verified}" data-date="${row.date}" data-time="${row.time}">\
         <span class="navi-icon"><i class="flaticon-eye text-info"></i></span>\
         <span class="navi-text"> Detail</span>\
     </a>\

@@ -42,13 +42,12 @@ if (isset($_POST['submit'])) {
     $name   = isset($_POST['name']) ? sanitize($_POST['name']) : null;
     $phone = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
     $paket_internet    = isset($_POST['paket_internet']) ? sanitize($_POST['paket_internet']) : null;
-    $request_schedule  = isset($_POST['request_schedule']) ? sanitize($_POST['request_schedule']) : null;
-    $jam  = isset($_POST['jam']) ? sanitize($_POST['jam']) : null;
+    $date  = isset($_POST['date']) ? sanitize($_POST['date']) : null;
+    $time  = isset($_POST['time']) ? sanitize($_POST['time']) : null;
     $location  = isset($_POST['location']) ? sanitize($_POST['location']) : null;
-    // Konversi format tanggal (dari MM/DD/YYYY → YYYY-MM-DD)
 
     // Pastikan semua data terisi
-    if (!$name || !$phone || !$paket_internet || !$request_schedule || !$location || !$jam || !validatePhone($phone) || !isDateValidTomorrow($request_schedule)) {
+    if (!$name || !$phone || !$paket_internet || !$date  || !$time || !$location || !validatePhone($phone) || !isDateValidTomorrow($date)) {
         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
@@ -62,18 +61,19 @@ if (isset($_POST['submit'])) {
 
 
     // Buat ID unik
-    $registrasi_id = date("YmdHs");
+    $registrasi_id = uniqid('REG');
     try {
         // Query insert dengan prepared statement
-        $sql = "INSERT INTO register (registrasi_id, name, phone, paket_internet, request_schedule, location) 
-                VALUES (:registrasi_id, :name, :phone, :paket_internet, :request_schedule, :location)";
+        $sql = "INSERT INTO register (registrasi_id, name, phone, paket_internet, date, time,  location) 
+                VALUES (:registrasi_id, :name, :phone, :paket_internet, :date, :time, :location)";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             ':registrasi_id' => $registrasi_id,
             ':name' => $name,
             ':phone' => $phone,
             ':paket_internet' => $paket_internet,
-            ':request_schedule' => $request_schedule . "T" . $jam,
+            ':date' => $date,
+            ':time' => $time,
             ':location' => $location
         ]);
         $_SESSION['alert'] = [

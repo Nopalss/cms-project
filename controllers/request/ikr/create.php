@@ -32,18 +32,22 @@ if (isset($_POST['submit'])) {
     $name   = isset($_POST['name']) ? sanitize($_POST['name']) : null;
     $phone = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
     $paket_internet    = isset($_POST['paket_internet']) ? sanitize($_POST['paket_internet']) : null;
-    $is_verified    = isset($_POST['is_verified']) ? sanitize($_POST['is_verified']) : null;
-    $request_schedule  = isset($_POST['request_schedule']) ? sanitize($_POST['request_schedule']) : null;
     $location  = isset($_POST['location']) ? sanitize($_POST['location']) : null;
     $rikr_id    = isset($_POST['rikr_id']) ? sanitize($_POST['rikr_id']) : null;
     $netpay_kode    = isset($_POST['netpay_kode']) ? sanitize($_POST['netpay_kode']) : null;
     $netpay_id    = isset($_POST['netpay_id']) ? sanitize($_POST['netpay_id']) : null;
-    $netpay_id    = $netpay_kode . $netpay_id;
-    $jadwal_pemasangan  = isset($_POST['jadwal_pemasangan']) ? sanitize($_POST['jadwal_pemasangan']) : null;
+    if (strlen($netpay_kode) != 3) {
+        $netpay_id    = $netpay_kode . '0' . $netpay_id;
+    } else {
+        $netpay_id    = $netpay_kode . $netpay_id;
+    }
+    $time  = isset($_POST['time_pemasangan']) ? sanitize($_POST['time_pemasangan']) : null;
+    $date  = isset($_POST['date_pemasangan']) ? sanitize($_POST['date_pemasangan']) : null;
     $catatan    = isset($_POST['catatan']) ? sanitize($_POST['catatan']) : null;
+    $perumahan    = isset($_POST['perumahan']) ? sanitize($_POST['perumahan']) : null;
 
     // Pastikan semua data terisi
-    if (!$name || !$phone || !$paket_internet || !$request_schedule || !$location || !validatePhone($phone) || !$is_verified || !$rikr_id || !$netpay_kode  || !$netpay_id || !$catatan ||  $jadwal_pemasangan != $request_schedule) {
+    if (!$name || !$phone || !$registrasi_id || !$paket_internet || !$date || !$time || !$location || !$perumahan || !validatePhone($phone) || !$rikr_id || !$netpay_kode  || !$netpay_id || !$catatan) {
         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
@@ -57,6 +61,7 @@ if (isset($_POST['submit'])) {
 
     try {
         // query insert request_ikr
+        $pdo->beginTransaction();
         $sql = "INSERT INTO request_ikr (rikr_id ,netpay_id, registrasi_id, jadwal_pemasangan, catatan, request_by) 
                 VALUES (:rikr_id , :netpay_id, :registrasi_id, :jadwal_pemasangan, :catatan, :request_by)";
         $stmt = $pdo->prepare($sql);
@@ -64,75 +69,63 @@ if (isset($_POST['submit'])) {
             ':rikr_id' => $rikr_id,
             ':netpay_id' => $netpay_id,
             ':registrasi_id' => $registrasi_id,
-            ':jadwal_pemasangan' => $jadwal_pemasangan,
+            ':jadwal_pemasangan' => $date . "T" . $time,
             ':catatan' => $catatan,
             ':request_by' => $_SESSION['username']
         ]);
 
-        if ($rikr_success) {
-            // Query insert customers
-            $sql = "INSERT INTO customers (netpay_id, name, phone, paket_internet, location) 
-                VALUES (:netpay_id, :name, :phone, :paket_internet, :location)";
-            $stmt = $pdo->prepare($sql);
-            $customers_success = $stmt->execute([
-                ':netpay_id' => $netpay_id,
-                ':name' => $name,
-                ':phone' => $phone,
-                ':paket_internet' => $paket_internet,
-                ':location' => $location,
 
-            ]);
-            //  cek kalo success
-            if ($customers_success) {
-                // Query insert queue schedules
+        // Query insert customers
+        $sql = "INSERT INTO customers (netpay_id, name, phone, paket_internet, location, perumahan) 
+                VALUES (:netpay_id, :name, :phone, :paket_internet, :location, :perumahan)";
+        $stmt = $pdo->prepare($sql);
+        $customers_success = $stmt->execute([
+            ':netpay_id' => $netpay_id,
+            ':name' => $name,
+            ':phone' => $phone,
+            ':paket_internet' => $paket_internet,
+            ':location' => $location,
+            ':perumahan' => $perumahan
+        ]);
 
-                $queue_id = "Q" . date("YmdHs");
-                $sql = "INSERT INTO queue_scheduling (queue_id, type_queue, request_id) 
+
+        $queue_id = "Q" . date("YmdHis");
+        $sql = "INSERT INTO queue_scheduling (queue_id, type_queue, request_id) 
                 VALUES (:queue_id, :type_queue, :request_id)";
-                $stmt = $pdo->prepare($sql);
-                $queue_success = $stmt->execute([
-                    ':queue_id' => $queue_id,
-                    ':type_queue' => "Install",
-                    ':request_id' => $rikr_id
-                ]);
-                if ($queue_success) {
-                    // Query update dengan prepared statement
-                    $sql = "UPDATE register 
-                            SET name = :name,
-                                phone = :phone,
-                                paket_internet = :paket_internet,
-                                request_schedule = :request_schedule,
-                                location = :location,
-                                is_verified = 'Verified'
-                            WHERE registrasi_id = :registrasi_id";
+        $stmt = $pdo->prepare($sql);
+        $queue_success = $stmt->execute([
+            ':queue_id' => $queue_id,
+            ':type_queue' => "Install",
+            ':request_id' => $rikr_id
+        ]);
 
-                    $stmt = $pdo->prepare($sql);
-                    $stmt->execute([
-                        ':registrasi_id' => $registrasi_id,
-                        ':name' => $name,
-                        ':phone' => $phone,
-                        ':paket_internet' => $paket_internet,
-                        ':request_schedule' => $request_schedule,
-                        ':location' => $location
-                    ]);
-                    $_SESSION['alert'] = [
-                        'icon' => 'success',
-                        'title' => 'Selamat!',
-                        'text' => 'Pendaftaran Request sukses',
-                        'button' => "Oke",
-                        'style' => "success"
-                    ];
-                    header("Location: " . BASE_URL . "pages/request/ikr/");
-                    exit;
-                }
-            }
-        }
+        $sql = "UPDATE register 
+                SET   is_verified = 'Verified'
+                WHERE registrasi_id = :registrasi_id";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ':registrasi_id' => $registrasi_id,
+        ]);
+
+        $pdo->commit();
+        $_SESSION['alert'] = [
+            'icon' => 'success',
+            'title' => 'Selamat!',
+            'text' => 'Pendaftaran Request sukses',
+            'button' => "Oke",
+            'style' => "success"
+        ];
+        header("Location: " . BASE_URL . "pages/request/ikr/");
+        exit;
     } catch (PDOException $e) {
         // echo $e;
+        $pdo->rollBack();
+        error_log("DB Error: " . $e->getMessage());
         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
-            'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+            'text' => 'Silakan coba lagi nanti.',
             'button' => "Coba Lagi",
             'style' => "danger"
         ];

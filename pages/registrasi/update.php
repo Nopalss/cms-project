@@ -29,7 +29,6 @@ try {
     $stmt->bindParam(':id', $id, PDO::PARAM_STR);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    list($date, $time) = explode('T', $row['request_schedule']);
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -81,27 +80,15 @@ try {
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="is_verified">Is Verified?</label>
-                            <select class="form-control selectpicker" id="is_verified" required name="is_verified" data-size=" 7">
-                                <option value="">Select</option>
-                                <?php
-                                $is_verified = ['Verified', 'Unverified'];
-                                foreach ($is_verified as $i): ?>
-                                    <?php $selected = ($i == $row['is_verified']) ? 'selected' : ''; ?>
-                                    <option value='<?= $i ?>' <?= $selected ?>><?= $i ?></option>"
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="form-group">
                             <label for="exampleTextarea">Kapan Anda ingin jadwal pemasangan?</label>
-                            <input type="date" min="<?= date('Y-m-d', strtotime('+1 day')); ?>" required name="request_schedule" value="<?= $date ?>" class="form-control">
+                            <input type="date" min="<?= date('Y-m-d', strtotime('+1 day')); ?>" required name="date" value="<?= $row['date'] ?>" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label for="paket_internet">Jam</label>
-                            <select class="form-control selectpicker" id="paket_internet" required name="jam" data-size=" 7">
+                            <label>Jam Kunjungan</label>
+                            <select class="form-control selectpicker" required name="time" data-size=" 7">
                                 <option value="">Select</option>
                                 <?php foreach ($jamKerja as $j): ?>
-                                    <?php $selected = $j == $time ? 'selected' : ''; ?>
+                                    <?php $selected = $j == $row['time'] ? 'selected' : ''; ?>
                                     <option value="<?= $j ?>" <?= $selected ?>><?= $j ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -112,7 +99,7 @@ try {
                         </div>
                     </div>
                     <div class="card-footer text-right">
-                        <a href="<?= BASE_URL ?>pages/registrasi/" class="btn btn-light-danger font-weight-bold" data-dismiss="modal">Cancel</a>
+                        <a href="<?= BASE_URL ?>pages/registrasi/" class="btn btn-light-danger font-weight-bold">Cancel</a>
                         <button type="submit" name="submit" class="btn btn-primary font-weight-bold">Update</button>
                     </div>
                 </form>

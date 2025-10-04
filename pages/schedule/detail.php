@@ -175,11 +175,11 @@ try {
                                         <td><?= htmlspecialchars($row['netpay_id'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Name</th>
+                                        <th>Nama</th>
                                         <td><?= htmlspecialchars($row['name'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Phone</th>
+                                        <th>No HP</th>
                                         <td><?= htmlspecialchars($row['phone'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
@@ -191,7 +191,11 @@ try {
                                         <td><?= htmlspecialchars($row['is_active'] ?? '-') ?></td>
                                     </tr>
                                     <tr>
-                                        <th>Location</th>
+                                        <th>Perumahan</th>
+                                        <td class="text-wrapped"><?= htmlspecialchars($row['perumahan'] ?? '-') ?></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Alamat</th>
                                         <td class="text-wrapped"><?= htmlspecialchars($row['location'] ?? '-') ?></td>
                                     </tr>
                                 </table>
@@ -203,6 +207,23 @@ try {
 
             <!-- Action Buttons -->
             <?php if (($row['status'] ?? '') === 'Pending' || ($row['status'] ?? '') === 'Rescheduled'): ?>
+                <div class="text-right mt-3">
+                    <?php if (empty($row['has_issue'])): ?>
+                        <a class="btn mr-5 btn-light-warning" href="<?= BASE_URL ?>pages/schedule/issue_report.php?id=<?= htmlspecialchars($row['schedule_id']) ?>">
+                            <span class="navi-icon"><i class="flaticon2-warning"></i></span>
+                            <span class="navi-text">Task Issue Report</span>
+                        </a>
+
+                        <div class="btn">
+                            <button onclick="confirmActiveTask('<?= $row['schedule_id'] ?>', 'controllers/schedules/actived.php')" class=" btn btn-success">
+                                <span class="navi-icon"><i class="fas fa-hourglass-start"></i></span>
+                                <span class="navi-text">Mulai Kerja</span>
+                            </button>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+            <?php if (($row['status'] ?? '') === 'Actived'): ?>
                 <div class="text-right mt-3">
                     <?php if (empty($row['has_issue'])): ?>
                         <a class="btn mr-5 btn-light-warning" href="<?= BASE_URL ?>pages/schedule/issue_report.php?id=<?= htmlspecialchars($row['schedule_id']) ?>">
@@ -223,6 +244,7 @@ try {
                     <?php endif; ?>
                 </div>
             <?php endif; ?>
+
 
         </div>
     </div>

@@ -9,41 +9,18 @@ try {
     // Konversi format tanggal (dari MM/DD/YYYY → YYYY-MM-DD)
     $dateObj = DateTime::createFromFormat('m/d/Y', $dateInput);
     $date    = $dateObj ? $dateObj->format('Y-m-d') : null;
-    $sql = "SELECT 
-                i.issue_id,
-                i.schedule_id,
-                i.reported_by,
-                i.issue_type,
-                i.description,
-                i.created_at,
-                i.status AS issue_status,
-                s.date, 
-                s.time, 
-                s.location, 
-                s.job_type, 
-                s.status AS schedule_status,
-                t.name AS technician_name
-            FROM issues_report i
-            LEFT JOIN schedules s ON i.schedule_id = s.schedule_id
-            LEFT JOIN technician t ON i.reported_by = t.tech_id
-            WHERE 1=1";
+    $sql = "SELECT * FROM issues_report i WHERE 1=1";
     $params = [];
 
     if (!empty($search)) {
         $sql .= " AND (
-                        i.issue_id LIKE :search
-                        OR i.schedule_id LIKE :search
-                        OR i.reported_by LIKE :search
-                        OR i.issue_type LIKE :search
-                        OR i.description LIKE :search
-                        OR i.created_at LIKE :search
-                        OR i.status LIKE :search
-                        OR s.date LIKE :search
-                        OR s.time LIKE :search
-                        OR s.location LIKE :search
-                        OR s.job_type LIKE :search
-                        OR s.status LIKE :search
-                        OR t.name LIKE :search
+            issue_id LIKE :search
+                        schedule_id LIKE :search
+                        reported_by LIKE :search
+                        issue_type LIKE :search
+                        description LIKE :search
+                        created_at LIKE :search
+                        status LIKE :search
                     )
     ";
         $params[':search'] = "%$search%";
@@ -51,17 +28,18 @@ try {
 
 
     if (!empty($issue_type)) {
-        $sql .= " AND i.issue_type = :issue_type";
+        $sql .= " AND issue_type = :issue_type";
         $params[':issue_type'] = $issue_type;
     }
 
     if (!empty($reported_by)) {
-        $sql .= " AND i.reported_by = :reported_by";
+        $sql .= " AND reported_by = :reported_by";
         $params[':reported_by'] = $reported_by;
     }
+
     if (!empty($date)) {
-        $sql .= " AND DATE(i.created_at) = :search_date";
-        $params[':search_date'] = $date;
+        $sql .= " AND created_at LIKE :search_date";
+        $params[':search_date'] = "%$date%";
     }
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
