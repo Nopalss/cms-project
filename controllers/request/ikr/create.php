@@ -28,7 +28,7 @@ if (isset($_POST['submit'])) {
         return false; // selain itu dianggap tidak valid
     }
     // Ambil & sanitasi data POST
-    $registrasi_id   = isset($_POST['registrasi_id']) ? sanitize($_POST['registrasi_id']) : null;
+    $registrasi_key   = isset($_POST['registrasi_key']) ? sanitize($_POST['registrasi_key']) : null;
     $name   = isset($_POST['name']) ? sanitize($_POST['name']) : null;
     $phone = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
     $paket_internet    = isset($_POST['paket_internet']) ? sanitize($_POST['paket_internet']) : null;
@@ -47,7 +47,7 @@ if (isset($_POST['submit'])) {
     $perumahan    = isset($_POST['perumahan']) ? sanitize($_POST['perumahan']) : null;
 
     // Pastikan semua data terisi
-    if (!$name || !$phone || !$registrasi_id || !$paket_internet || !$date || !$time || !$location || !$perumahan || !validatePhone($phone) || !$rikr_id || !$netpay_kode  || !$netpay_id || !$catatan) {
+    if (!$name || !$phone  || !$registrasi_key || !$paket_internet || !$date || !$time || !$location || !$perumahan || !validatePhone($phone) || !$rikr_id || !$netpay_kode  || !$netpay_id || !$catatan) {
         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
@@ -61,20 +61,8 @@ if (isset($_POST['submit'])) {
 
     try {
         // query insert request_ikr
+
         $pdo->beginTransaction();
-        $sql = "INSERT INTO request_ikr (rikr_id ,netpay_id, registrasi_id, jadwal_pemasangan, catatan, request_by) 
-                VALUES (:rikr_id , :netpay_id, :registrasi_id, :jadwal_pemasangan, :catatan, :request_by)";
-        $stmt = $pdo->prepare($sql);
-        $rikr_success = $stmt->execute([
-            ':rikr_id' => $rikr_id,
-            ':netpay_id' => $netpay_id,
-            ':registrasi_id' => $registrasi_id,
-            ':jadwal_pemasangan' => $date . "T" . $time,
-            ':catatan' => $catatan,
-            ':request_by' => $_SESSION['username']
-        ]);
-
-
         // Query insert customers
         $sql = "INSERT INTO customers (netpay_id, name, phone, paket_internet, location, perumahan) 
                 VALUES (:netpay_id, :name, :phone, :paket_internet, :location, :perumahan)";
@@ -87,8 +75,19 @@ if (isset($_POST['submit'])) {
             ':location' => $location,
             ':perumahan' => $perumahan
         ]);
+        $netpay_key = $pdo->lastInsertId();
 
-
+        $sql = "INSERT INTO request_ikr (rikr_id ,netpay_key, registrasi_key, jadwal_pemasangan, catatan, request_by) 
+                VALUES (:rikr_id , :netpay_key, :registrasi_key, :jadwal_pemasangan, :catatan, :request_by)";
+        $stmt = $pdo->prepare($sql);
+        $rikr_success = $stmt->execute([
+            ':rikr_id' => $rikr_id,
+            ':netpay_key' => $netpay_key,
+            ':registrasi_key' => $registrasi_key,
+            ':jadwal_pemasangan' => $date . "T" . $time,
+            ':catatan' => $catatan,
+            ':request_by' => $_SESSION['username']
+        ]);
         $queue_id = "Q" . date("YmdHis");
         $sql = "INSERT INTO queue_scheduling (queue_id, type_queue, request_id) 
                 VALUES (:queue_id, :type_queue, :request_id)";
@@ -101,11 +100,11 @@ if (isset($_POST['submit'])) {
 
         $sql = "UPDATE register 
                 SET   is_verified = 'Verified'
-                WHERE registrasi_id = :registrasi_id";
+                WHERE registrasi_key = :registrasi_key";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            ':registrasi_id' => $registrasi_id,
+            ':registrasi_key' => $registrasi_key,
         ]);
 
         $pdo->commit();

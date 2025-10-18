@@ -6,7 +6,7 @@ if (isset($_GET['id'])) {
 
     $sql = "SELECT *
             FROM register 
-            WHERE registrasi_id = :id";
+            WHERE registrasi_key = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);

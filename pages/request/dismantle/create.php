@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../../../includes/config.php';
 $_SESSION['menu'] = 'request dismantle';
 $id = $_POST['id'] ?? null;
+$rd_id = "";
 try {
     if ($id) {
         $sql = "SELECT * FROM customers WHERE is_active ='Active' AND netpay_id =:id";
@@ -20,8 +21,10 @@ try {
             header("Location: " . BASE_URL . "pages/request/dismantle/create.php");
             exit;
         }
+        $rd_id = "RD" . date("YmdHis");
     } else {
         $row = [
+            "netpay_key" => '',
             "netpay_id" => '',
             "name" => '',
             "phone" => '',
@@ -31,8 +34,6 @@ try {
             "location" => '',
         ];
     }
-
-    $rd_id = "RD" . date("YmdHis");
 } catch (PDOException $e) {
     $_SESSION['alert'] = [
         'icon' => 'error',
@@ -81,6 +82,7 @@ require __DIR__ . '/../../../includes/navbar.php';
                                         <input type="text" class="form-control" value="<?= $rd_id ?>" disabled="disabled" />
                                         <input type="hidden" class="form-control" name="rd_id" value="<?= $rd_id ?>" />
                                         <input type="hidden" class="form-control" name="netpay_id" required value="<?= $row['netpay_id'] ?>">
+                                        <input type="hidden" class="form-control" name="netpay_key" required value="<?= $row['netpay_key'] ?>">
                                     </div>
                                 </div>
                                 <div class="form-group">

@@ -10,8 +10,9 @@ try {
     $dateObj = DateTime::createFromFormat('m/d/Y', $dateInput);
     $date    = $dateObj ? $dateObj->format('Y-m-d') : null;
 
-    $sql = "SELECT r.*, COALESCE(q.status, 'Not Queued') AS status
+    $sql = "SELECT r.*, COALESCE(q.status, 'Not Queued') AS status, c.netpay_id
         FROM request_dismantle r
+        LEFT JOIN customers c ON r.netpay_key = c.netpay_key
         LEFT JOIN queue_scheduling q ON r.rd_id = q.request_id
         WHERE 1=1";
 
@@ -20,7 +21,7 @@ try {
     if (!empty($search)) {
         $sql .= " AND (
                     r.rm_id LIKE :search
-                    OR r.netpay_id LIKE :search
+                    OR c.netpay_id LIKE :search
                     OR r.type_issue LIKE :search
                     OR r.deskripsi_issue LIKE :search
                     OR r.request_by LIKE :search

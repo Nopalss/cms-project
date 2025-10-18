@@ -10,13 +10,11 @@ if (isset($_POST['submit'])) {
         return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
     }
 
-    $rm_id   = isset($_POST['rm_id']) ? sanitize($_POST['rm_id']) : null;
-    $netpay_id   = isset($_POST['netpay_id']) ? sanitize($_POST['netpay_id']) : null;
+    $rm_key   = isset($_POST['rm_key']) ? (int)$_POST['rm_key'] : null;
     $type_issue   = isset($_POST['type_issue']) ? sanitize($_POST['type_issue']) : null;
     $deskripsi_issue   = isset($_POST['deskripsi_issue']) ? sanitize($_POST['deskripsi_issue']) : null;
-    $request_by   = $_SESSION['username'];
 
-    if (!$rm_id || !$netpay_id || !$type_issue || !$deskripsi_issue) {
+    if (!$rm_key || !$type_issue || !$deskripsi_issue) {
         $_SESSION['alert'] = [
             'icon' => 'danger',
             'title' => 'Oops! Ada yang Salah',
@@ -33,18 +31,14 @@ if (isset($_POST['submit'])) {
 
         // Update request
         $sql = "UPDATE request_maintenance 
-                SET netpay_id = :netpay_id, 
-                    type_issue = :type_issue, 
-                    deskripsi_issue = :deskripsi_issue, 
-                    request_by = :request_by 
-                WHERE rm_id = :rm_id";
+                SET type_issue = :type_issue, 
+                    deskripsi_issue = :deskripsi_issue
+                WHERE rm_key = :rm_key";
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            ":rm_id" => $rm_id,
-            ":netpay_id" => $netpay_id,
+            ":rm_key" => $rm_key,
             ":type_issue" => $type_issue,
             ":deskripsi_issue" => $deskripsi_issue,
-            ":request_by" => $request_by
         ]);
 
         $pdo->commit();

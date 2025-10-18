@@ -6,7 +6,7 @@ require __DIR__ . '/../../../includes/header.php';
 require __DIR__ . '/../../../includes/aside.php';
 require __DIR__ . '/../../../includes/navbar.php';
 try {
-    $rikr_id = isset($_GET['id']) ? $_GET['id'] : null;
+    $rikr_key = isset($_GET['id']) ? $_GET['id'] : null;
     $perumahan = [
         "Puri Lestari"   => "Puri Lestari - 01",
         "Gramapuri Persada"   => "Gramapuri Persada - 02",
@@ -41,30 +41,33 @@ try {
         "15:00",
         "16:00"
     ];
-    if ($rikr_id) {
+    if ($rikr_key) {
         $sql = "SELECT 
+                    r.rikr_key,
                     r.rikr_id,
-                    r.netpay_id,
-                    r.registrasi_id,
+                    r.netpay_key,
+                    r.registrasi_key,
                     r.jadwal_pemasangan,
                     r.catatan,
                     r.request_by,
+                    c.netpay_id,
                     c.name,
                     c.location,
                     c.phone,
                     c.paket_internet,
                     c.perumahan,
+                    rg.registrasi_id,
                     rg.`date` as date_request,
                     rg.`time` as time_request
                 FROM request_ikr r
                 JOIN customers c 
-                    ON r.netpay_id = c.netpay_id
+                    ON r.netpay_key = c.netpay_key
                 JOIN register rg 
-                    ON r.registrasi_id = rg.registrasi_id
-                WHERE r.rikr_id = :rikr_id";
+                    ON r.registrasi_key = rg.registrasi_key
+                WHERE r.rikr_key = :rikr_key";
 
         $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':rikr_id', $rikr_id, PDO::PARAM_STR);
+        $stmt->bindParam(':rikr_key', $rikr_key, PDO::PARAM_STR);
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         list($date, $time) = explode("T", $row['jadwal_pemasangan']);
@@ -109,9 +112,12 @@ try {
                                     <div class="input-group">
                                         <input type="text" class="form-control" value="<?= $row['registrasi_id'] ?>" disabled="disabled" />
                                         <input type="hidden" name="registrasi_id" value="<?= $row['registrasi_id'] ?>" />
+                                        <input type="hidden" name="registrasi_key" value="<?= $row['registrasi_key'] ?>" />
+                                        <input type="hidden" name="netpay_key" value="<?= $row['netpay_key'] ?>" />
                                     </div>
                                 </div>
                             </div>
+                            <input type="hidden" name="rikr_key" value="<?= $row['rikr_key'] ?>" />
                             <div class="form-group">
                                 <label for="name">Name</label>
                                 <input id="name" type="text" class="form-control" name="name" value="<?= $row['name'] ?>" required>
@@ -193,7 +199,6 @@ try {
                                     </div>
                                     <input type="text" class="form-control" value="<?= $netpay_id ?>" disabled="disabled" />
                                     <input type="hidden" class="form-control" name="netpay_id" value="<?= $netpay_id ?>" />
-                                    <input type="hidden" class="form-control" name="netpay_old" value="<?= $row["netpay_id"] ?>" />
                                 </div>
                             </div>
 

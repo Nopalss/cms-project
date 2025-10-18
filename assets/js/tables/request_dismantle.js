@@ -136,14 +136,14 @@ var KTDatatableLocalSortDemo = function () {
                                     </li>\
                                     ${row.status === "Pending"
                             ? `<li class="navi-item cursor-pointer">
-                                    <a href='${HOST_URL + 'pages/request/dismantle/update.php?id=' + row.rd_id}' class="navi-link">
+                                    <a href='${HOST_URL + 'pages/request/dismantle/update.php?id=' + row.rd_key}' class="navi-link">
                                         <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>
                                         <span class="navi-text">Edit</span>
                                     </a>
                                 </li>`: ""
                         }
                                     <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteTemplate('${row.rd_id}', 'controllers/request/dismantle/delete.php')" class="navi-link">\
+                                        <a onclick="confirmDeleteTemplate('${row.rd_key}', 'controllers/request/dismantle/delete.php')" class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
                                             <span class="navi-text">Hapus</span>\
                                         </a>\

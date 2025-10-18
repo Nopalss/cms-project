@@ -4,7 +4,7 @@ require_once __DIR__ . "/../../../includes/check_password.php";
 
 $username = $_SESSION['username'] ?? null;
 $password = trim($_POST['password'] ?? '');
-$id       = $_POST['id'] ?? null;
+$id       = isset($_POST['id']) ? (int)$_POST['id'] : null;
 
 if (!$username || !$password || !$id) {
     $_SESSION['alert'] = [
@@ -35,7 +35,7 @@ try {
     $pdo->beginTransaction();
 
     // Pastikan request_maintenance ada
-    $sql = "SELECT rm_id FROM request_maintenance WHERE rm_id = :id";
+    $sql = "SELECT rm_key, rm_id FROM request_maintenance WHERE rm_key = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -56,10 +56,10 @@ try {
     // Hapus dulu dari queue_scheduling (anak)
     $sql = "DELETE FROM queue_scheduling WHERE request_id = :id";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id' => $id]);
+    $stmt->execute([':id' => $row['rm_id']]);
 
     // Hapus dari request_maintenance (induk)
-    $sql = "DELETE FROM request_maintenance WHERE rm_id = :id";
+    $sql = "DELETE FROM request_maintenance WHERE rm_key = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $id]);
 

@@ -27,14 +27,14 @@ if (!$user) {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/ikr/");
+    header("Location: " . BASE_URL . "pages/request/dismantle/");
     exit;
 }
 try {
     $pdo->beginTransaction();
 
     // Pastikan request_maintenance ada
-    $sql = "SELECT rd_id FROM request_dismantle WHERE rd_id = :id";
+    $sql = "SELECT rd_key, rd_id FROM request_dismantle WHERE rd_key = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -55,10 +55,10 @@ try {
     // Hapus dulu dari queue_scheduling (anak)
     $sql = "DELETE FROM queue_scheduling WHERE request_id = :id";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id' => $id]);
+    $stmt->execute([':id' => $row['rd_id']]);
 
     // Hapus dari request_maintenance (induk)
-    $sql = "DELETE FROM request_dismantle WHERE rd_id = :id";
+    $sql = "DELETE FROM request_dismantle WHERE rd_key = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $id]);
 

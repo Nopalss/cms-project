@@ -29,8 +29,9 @@ if (isset($_POST['submit'])) {
         return false; // selain itu dianggap tidak valid
     }
     //     // Ambil & sanitasi data POST
-    $netpay_old = isset($_POST['netpay_old']) ? sanitize($_POST['netpay_old']) : $null;
-    $registrasi_id   = isset($_POST['registrasi_id']) ? sanitize($_POST['registrasi_id']) : null;
+    $rikr_key    = isset($_POST['rikr_key']) ? sanitize($_POST['rikr_key']) : null;
+    $netpay_key = isset($_POST['netpay_key']) ? sanitize($_POST['netpay_key']) : null;
+    $registrasi_key   = isset($_POST['registrasi_key']) ? sanitize($_POST['registrasi_key']) : null;
     $name   = isset($_POST['name']) ? sanitize($_POST['name']) : null;
     $phone = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
     $paket_internet    = isset($_POST['paket_internet']) ? sanitize($_POST['paket_internet']) : null;
@@ -45,7 +46,7 @@ if (isset($_POST['submit'])) {
     $perumahan    = isset($_POST['perumahan']) ? sanitize($_POST['perumahan']) : null;
 
     // Pastikan semua data terisi
-    if (!$name || !$phone || !$registrasi_id || !$paket_internet || !$date || !$time || !$perumahan || !$location || !validatePhone($phone) || !$rikr_id || !$netpay_kode  || !$netpay_id || !$catatan) {
+    if (!$name || !$phone || !$registrasi_key || !$netpay_key || !$rikr_key || !$paket_internet || !$date || !$time || !$perumahan || !$location || !validatePhone($phone) || !$rikr_id || !$netpay_kode  || !$netpay_id || !$catatan) {
         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
@@ -61,26 +62,19 @@ if (isset($_POST['submit'])) {
         // query update request_ikr
         $pdo->beginTransaction();
         $sql = "UPDATE request_ikr 
-                SET netpay_id = :netpay_id,
-                    registrasi_id = :registrasi_id,
-                    jadwal_pemasangan = :jadwal_pemasangan,
-                    catatan = :catatan,
-                    request_by = :request_by
-                WHERE rikr_id = :rikr_id";
+                SET jadwal_pemasangan = :jadwal_pemasangan,
+                    catatan = :catatan
+                WHERE rikr_key = :rikr_key";
 
         $stmt = $pdo->prepare($sql);
 
         $rikr_success = $stmt->execute([
-            ':netpay_id' => $netpay_id,
-            ':registrasi_id' => $registrasi_id,
             ':jadwal_pemasangan' => $date . "T" . $time,
             ':catatan' => $catatan,
-            ':request_by' => $_SESSION['username'],
-            ':rikr_id' => $rikr_id,
+            ':rikr_key' => $rikr_key
         ]);
 
-
-        // Query insert customers
+        // Query update customers
         $sql = "UPDATE customers 
                     SET netpay_id = :netpay_id,
                         name = :name,
@@ -88,10 +82,10 @@ if (isset($_POST['submit'])) {
                         paket_internet = :paket_internet, 
                         location = :location,
                         perumahan = :perumahan 
-                    WHERE netpay_id = :netpay_old";
+                    WHERE netpay_key = :netpay_key";
         $stmt = $pdo->prepare($sql);
         $customers_success = $stmt->execute([
-            ':netpay_old' => $netpay_old,
+            ':netpay_key' => $netpay_key,
             ':netpay_id' => $netpay_id,
             ':name' => $name,
             ':phone' => $phone,

@@ -3,9 +3,9 @@
 require_once __DIR__ . '/../../../includes/config.php';
 $_SESSION['menu'] = 'request maintenance';
 
-$rm_id = isset($_GET['id']) ? $_GET['id'] : null;
+$rm_key = isset($_GET['id']) ? $_GET['id'] : null;
 try {
-    if (!$rm_id) {
+    if (!$rm_key) {
         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Oops! ID Request  Tidak Ditemukan',
@@ -16,9 +16,9 @@ try {
         header("Location: " . BASE_URL . "pages/request/maintenance/");
         exit;
     }
-    $sql = "SELECT rm.*, c.* FROM request_maintenance rm JOIN customers c ON rm.netpay_id = c.netpay_id WHERE rm_id = :rm_id";
+    $sql = "SELECT rm.*, c.* FROM request_maintenance rm JOIN customers c ON rm.netpay_key = c.netpay_key WHERE rm_key = :rm_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':rm_id', $rm_id, PDO::PARAM_STR);
+    $stmt->bindParam(':rm_key', $rm_key, PDO::PARAM_STR);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$row) {
@@ -68,8 +68,8 @@ require __DIR__ . '/../../../includes/navbar.php';
                             <div class="form-group">
                                 <label class="text-right">Request Maintenance ID</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" value="<?= $rm_id ?>" disabled="disabled" />
-                                    <input type="hidden" class="form-control" name="rm_id" value="<?= $rm_id ?>" />
+                                    <input type="text" class="form-control" value="<?= $row['rm_id']  ?>" disabled="disabled" />
+                                    <input type="hidden" class="form-control" name="rm_key" value="<?= $rm_key ?>" />
                                 </div>
                             </div>
                             <div class="form-group">

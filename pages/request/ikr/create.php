@@ -40,7 +40,7 @@ try {
         "24" => "Indramayu - 24",
         "28" => "Cibinong - 28",
     ];
-    $sql = "SELECT registrasi_id FROM register WHERE is_verified = 'Unverified'";
+    $sql = "SELECT registrasi_id, registrasi_key FROM register WHERE is_verified = 'Unverified'";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $ids = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -66,7 +66,13 @@ try {
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (!$row) {
-            $_SESSION['error'] = "Data Registrasi Tidak Ditemukan";
+            $_SESSION['alert'] = [
+                'icon' => 'error',
+                'title' => 'Oops! Ada yang Salah',
+                'text' => 'Data Registrasi Tidak Ditemukan',
+                'button' => "Coba Lagi",
+                'style' => "danger"
+            ];
             header("Location: " . BASE_URL . "pages/request/ikr/");
             exit;
         }
@@ -119,20 +125,18 @@ if (!isset($row)) {
                                 <div>
                                     <div class="input-group">
                                         <?php if (empty($row['registrasi_id'])): ?>
-                                            <select class="form-control selectpicker" id="registrasi_id" required name="registrasi_id" data-size=" 7">
+                                            <select class="form-control selectpicker" id="registrasi_id" required name="registrasi_key" data-size=" 7">
                                                 <?php if (count($ids)  <= 0): ?>
                                                     <option value="">Daftar Verifikasi Kosong</option>
                                                 <?php else: ?>
                                                     <option value="">---Select---</option>
                                                     <?php foreach ($ids as $i): ?>
-                                                        <option value="<?= $i['registrasi_id'] ?>"><?= $i['registrasi_id'] ?></option>
+                                                        <option value="<?= $i['registrasi_key'] ?>"><?= $i['registrasi_id'] ?></option>
                                                     <?php endforeach; ?>
                                                 <?php endif; ?>
                                             </select>
-
                                         <?php else: ?>
-                                            <input type="text" class="form-control" value="<?= $row['registrasi_id'] ?>" required disabled="disabled" />
-                                            <input type="hidden" name="registrasi_id" value="<?= $row['registrasi_id'] ?>" required />
+                                            <input type="hidden" name="registrasi_key" value="<?= $row['registrasi_key'] ?>" required />
                                         <?php endif; ?>
                                     </div>
                                 </div>

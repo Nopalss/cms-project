@@ -5,6 +5,7 @@ $_SESSION['menu'] = 'request maintenance';
 
 
 $id = $_POST['id'] ?? null;
+$rm_id = "";
 try {
     if ($id) {
         $sql = "SELECT * FROM customers WHERE is_active ='Active' AND netpay_id =:id";
@@ -22,9 +23,11 @@ try {
             header("Location: " . BASE_URL . "pages/request/maintenance/create.php");
             exit;
         }
+        $rm_id = "RM" . date("YmdHis");
     } else {
         $row = [
             "netpay_id" => '',
+            "netpay_key" => '',
             "name" => '',
             "phone" => '',
             "paket_internet" => '',
@@ -33,8 +36,6 @@ try {
             "location" => '',
         ];
     }
-
-    $rm_id = "RM" . date("YmdHis");
 } catch (PDOException $e) {
     $_SESSION['alert'] = [
         'icon' => 'error',
@@ -84,6 +85,7 @@ require __DIR__ . '/../../../includes/navbar.php';
                                         <input type="text" class="form-control" value="<?= $rm_id ?>" disabled="disabled" />
                                         <input type="hidden" class="form-control" name="rm_id" value="<?= $rm_id ?>" />
                                         <input type="hidden" class="form-control" name="netpay_id" required value="<?= $row['netpay_id'] ?>">
+                                        <input type="hidden" class="form-control" name="netpay_key" required value="<?= $row['netpay_key'] ?>">
                                     </div>
                                 </div>
                                 <div class="form-group">

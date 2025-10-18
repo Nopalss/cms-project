@@ -46,6 +46,7 @@ $dismantle_count = $pdo->query("
       AND DATE(`date`) = CURDATE()
 ")->fetch(PDO::FETCH_ASSOC);
 ?>
+
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Subheader-->
     <div class="subheader py-2 py-lg-6  subheader-solid " id="kt_subheader">

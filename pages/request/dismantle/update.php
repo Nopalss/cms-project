@@ -3,9 +3,9 @@
 require_once __DIR__ . '/../../../includes/config.php';
 $_SESSION['menu'] = 'request dismantle';
 
-$rd_id = isset($_GET['id']) ? $_GET['id'] : null;
+$rd_key = isset($_GET['id']) ? $_GET['id'] : null;
 try {
-    if (!$rd_id) {
+    if (!$rd_key) {
         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Oops! ID Request  Tidak Ditemukan',
@@ -16,9 +16,9 @@ try {
         header("Location: " . BASE_URL . "pages/request/dismantle/");
         exit;
     }
-    $sql = "SELECT rd.*, c.* FROM request_dismantle rd JOIN customers c ON rd.netpay_id = c.netpay_id WHERE rd_id = :rd_id";
+    $sql = "SELECT rd.*, c.* FROM request_dismantle rd JOIN customers c ON rd.netpay_key = c.netpay_key WHERE rd_key = :rd_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':rd_id', $rd_id, PDO::PARAM_STR);
+    $stmt->bindParam(':rd_key', $rd_key, PDO::PARAM_STR);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$row) {
@@ -60,8 +60,9 @@ require __DIR__ . '/../../../includes/navbar.php';
                             <div class="form-group">
                                 <label class="text-right">Request Dismantle ID</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" value="<?= $rd_id ?>" disabled="disabled" />
-                                    <input type="hidden" class="form-control" name="rd_id" value="<?= $rd_id ?>" />
+                                    <input type="text" class="form-control" value="<?= $row['rd_id'] ?>" disabled="disabled" />
+                                    <input type="hidden" class="form-control" name="rd_id" value="<?= $row['rd_id'] ?>" />
+                                    <input type="hidden" class="form-control" name="rd_key" value="<?= $row['rd_key'] ?>" />
                                 </div>
                             </div>
                             <div class="form-group">
