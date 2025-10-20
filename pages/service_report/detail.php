@@ -1,10 +1,8 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
+require_once __DIR__ . '/../../helper/redirect.php';
 $_SESSION['menu'] = 'ikr';
-require __DIR__ . '/../../includes/header.php';
-require __DIR__ . '/../../includes/aside.php';
-require __DIR__ . '/../../includes/navbar.php';
-date_default_timezone_set('Asia/Jakarta');
+
 $id = $_GET['id'] ?? null;
 if (!$id) {
     $_SESSION['alert'] = [
@@ -14,8 +12,7 @@ if (!$id) {
         'button' => "Kembali",
         'style' => "warning"
     ];
-    header("Location: " . BASE_URL . "pages/service_report/");
-    exit;
+    redirect("pages/service_report/");
 }
 
 try {
@@ -37,7 +34,11 @@ try {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
+    redirect("pages/service_report/");
 }
+require __DIR__ . '/../../includes/header.php';
+require __DIR__ . '/../../includes/aside.php';
+require __DIR__ . '/../../includes/navbar.php';
 ?>
 
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../../includes/config.php";
 require_once __DIR__ . "/../../includes/check_password.php";
+require_once __DIR__ . "/../../helper/redirect.php";
 
 $username = $_SESSION['username'] ?? null;
 $password = trim($_POST['password'] ?? '');
@@ -13,8 +14,7 @@ if (!$username || !$password) {
         'button' => "Coba Lagi",
         'style' => "warning"
     ];
-    header("Location: " . BASE_URL . "pages/schedule");
-    exit;
+    redirect("pages/schedule");
 }
 
 $user = checkLogin($pdo, $username, $password);
@@ -26,8 +26,7 @@ if (!$user) {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/schedule/");
-    exit;
+    redirect("pages/schedule/");
 }
 try {
     $schedule_id = $_POST["scheduleId"] ?? null;
@@ -41,10 +40,8 @@ try {
             'button' => "Kembali",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/schedule/");
-        exit;
+        redirect("pages/schedule/");
     }
-
 
     $pdo->beginTransaction();
 
@@ -87,6 +84,4 @@ try {
         'style' => "danger"
     ];
 }
-
-header("Location: " . BASE_URL . "pages/schedule/");
-exit;
+redirect("pages/schedule/");

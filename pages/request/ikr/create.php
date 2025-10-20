@@ -1,10 +1,9 @@
 <?php
 
 require_once __DIR__ . '/../../../includes/config.php';
+require_once __DIR__ . '/../../../helper/checkRowExist.php';
 $_SESSION['menu'] = 'request ikr';
-require __DIR__ . '/../../../includes/header.php';
-require __DIR__ . '/../../../includes/aside.php';
-require __DIR__ . '/../../../includes/navbar.php';
+
 $jamKerja = [
     "08:00",
     "09:00",
@@ -16,7 +15,7 @@ $jamKerja = [
     "16:00"
 ];
 try {
-    $registrasi_id = isset($_GET['id']) ? htmlspecialchars($_GET['id'], ENT_QUOTES, 'UTF-8') : null;
+    $id = isset($_GET['id']) ? htmlspecialchars($_GET['id'], ENT_QUOTES, 'UTF-8') : null;
     $perumahan = [
         "Puri Lestari"   => "Puri Lestari - 01",
         "Gramapuri Persada"   => "Gramapuri Persada - 02",
@@ -57,25 +56,12 @@ try {
         $netpay_id = str_pad($lastId + 1, 6, "0", STR_PAD_LEFT);
     }
 
-
-
-    if ($registrasi_id) {
-        $sql = "SELECT * FROM register WHERE registrasi_id = :id";
+    if ($id) {
+        $sql = "SELECT * FROM register WHERE registrasi_key = :id";
         $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':id', $registrasi_id, PDO::PARAM_STR);
-        $stmt->execute();
+        $stmt->execute([':id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$row) {
-            $_SESSION['alert'] = [
-                'icon' => 'error',
-                'title' => 'Oops! Ada yang Salah',
-                'text' => 'Data Registrasi Tidak Ditemukan',
-                'button' => "Coba Lagi",
-                'style' => "danger"
-            ];
-            header("Location: " . BASE_URL . "pages/request/ikr/");
-            exit;
-        }
+        checkRowExist($row, "pages/request/ikr/");
     }
 } catch (PDOException $e) {
     $_SESSION['alert'] = [
@@ -85,12 +71,12 @@ try {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/request/ikr/");
-    exit;
+    redirect("pages/request/ikr/");
 }
 if (!isset($row)) {
     $row = [
         'registrasi_id'    => '',
+        'registrasi_key'    => '',
         'name'             => '',
         'phone'            => '',
         'paket_internet'   => '',
@@ -100,6 +86,9 @@ if (!isset($row)) {
         'location'         => ''
     ];
 }
+require __DIR__ . '/../../../includes/header.php';
+require __DIR__ . '/../../../includes/aside.php';
+require __DIR__ . '/../../../includes/navbar.php';
 ?>
 
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
@@ -136,6 +125,7 @@ if (!isset($row)) {
                                                 <?php endif; ?>
                                             </select>
                                         <?php else: ?>
+                                            <input type="text" class="form-control" disabled="disabled" value="<?= $row['registrasi_id'] ?>" required>
                                             <input type="hidden" name="registrasi_key" value="<?= $row['registrasi_key'] ?>" required />
                                         <?php endif; ?>
                                     </div>
@@ -148,7 +138,7 @@ if (!isset($row)) {
                             <div class="form-group">
                                 <label for="phone">No HP</label>
                                 <input id="phone" type="tel" class="form-control" name="phone" value="<?= $row['phone'] ?>" placeholder="08xxxxxxxxxx"
-                                    pattern="^08[0-9]{8,11}$"
+                                    pattern="^(?:\+62|62|0)8[0-9]{8,11}$"
                                     required>
                             </div>
                             <div class="form-group">
@@ -163,11 +153,12 @@ if (!isset($row)) {
                             </div>
                             <div class="form-group">
                                 <label for="is_verified">Status Verifikasi</label>
-                                <input type="text" readonly name="is_verified" class="form-control" value="Unverified">
+                                <input type="text" disabled="disabled" class="form-control" value="Unverified">
+                                <input type="hidden" readonly name="is_verified" class="form-control text-danger" value="Unverified">
                             </div>
                             <div class="form-group">
                                 <label for="exampleTextarea">Kapan Anda ingin jadwal pemasangan? <small class="text-muted ml-3">(Permintaan Customer)</small></label>
-                                <input type="date" id="date" min="<?= date('Y-m-d'); ?>" required readonly value="<?= $row['date'] ?>" class="form-control">
+                                <input type="date" id="date" min="<?= date('Y-m-d'); ?>" disabled="disabled" value="<?= $row['date'] ?>" class="form-control">
                             </div>
                             <div class="form-group">
                                 <label>Jam Kunjungan <small class="text-muted ml-3">(Permintaan Customer)</small></label>

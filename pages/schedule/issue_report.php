@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../../includes/config.php';
+require_once __DIR__ . '/../../helper/redirect.php';
 $id = $_GET['id'];
 $sql = "SELECT EXISTS(SELECT 1 FROM issues_report WHERE schedule_id = :schedule_id AND status = 'Pending')";
 $stmt = $pdo->prepare($sql);
@@ -10,8 +11,7 @@ $exists = $stmt->fetchColumn();
 
 if ($exists) {
     $_SESSION['info'] = "Schedule sudah direport, aksi dibatalkan";
-    header("Location: " . BASE_URL . "pages/schedule/");
-    exit;
+    redirect("pages/schedule/");
 }
 
 $_SESSION['menu'] = 'schedule';

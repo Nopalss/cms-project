@@ -1,8 +1,9 @@
 <?php
 
 require_once __DIR__ . '/../../../includes/config.php';
+require_once __DIR__ . '/../../../helper/checkRowExist.php';
 $_SESSION['menu'] = 'request dismantle';
-$id = $_POST['id'] ?? null;
+$id = isset($_POST['id']) ? sanitize($_POST['id']) : null;
 $rd_id = "";
 try {
     if ($id) {
@@ -10,17 +11,7 @@ try {
         $stmt = $pdo->prepare($sql);
         $stmt->execute([':id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        if (!$row) {
-            $_SESSION['alert'] = [
-                'icon' => 'error',
-                'title' => 'Oops! Customers Tidak Ditemukan',
-                'text' => 'Silakan coba lagi.',
-                'button' => "Coba Lagi",
-                'style' => "danger"
-            ];
-            header("Location: " . BASE_URL . "pages/request/dismantle/create.php");
-            exit;
-        }
+        checkRowExist($row, "pages/request/dismantle/create.php");
         $rd_id = "RD" . date("YmdHis");
     } else {
         $row = [
@@ -42,8 +33,7 @@ try {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/request/dismantle");
-    exit;
+    redirect("pages/request/dismantle");
 }
 require __DIR__ . '/../../../includes/header.php';
 require __DIR__ . '/../../../includes/aside.php';
@@ -70,7 +60,7 @@ require __DIR__ . '/../../../includes/navbar.php';
                                 <div class="form-group">
                                     <label class="text-right">Netpay ID</label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" placeholder="Cari Netpay ID" name="id" required value="<?= $row['netpay_id'] ?>" aria-describedby="basic-addon2">
+                                        <input type="text" class="form-control" placeholder="Cari Netpay ID" name="id" autocomplete="off" required value="<?= $row['netpay_id'] ?>" aria-describedby="basic-addon2">
                                         <button type="submit" class="btn btn-light-primary"><i class="flaticon-search"></i></button>
                                     </div>
                                 </div>

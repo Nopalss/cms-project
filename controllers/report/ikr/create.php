@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . "/../../../includes/config.php";
+require_once __DIR__ . "/../../../helper/redirect.php";
+require_once __DIR__ . "/../../../helper/sanitize.php";
 
 if (isset($_POST['submit'])) {
     // Ambil semua inputan
@@ -40,8 +42,7 @@ if (isset($_POST['submit'])) {
     //         'button' => 'Coba Lagi',
     //         'style'  => 'danger'
     //     ];
-    //     header("Location: " . BASE_URL . "pages/ikr/");
-    //     exit;
+    //     redirect("pages/ikr/");
     // }
 
     // Satukan ke array
@@ -73,10 +74,7 @@ if (isset($_POST['submit'])) {
         'schedule_key',
         'pic'
     );
-    function sanitize($data)
-    {
-        return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
-    }
+
 
     foreach ($inputs as $key => $value) {
         $inputs[$key] = sanitize($value);
@@ -106,8 +104,7 @@ if (isset($_POST['submit'])) {
                 'button' => 'Coba Lagi',
                 'style'  => 'danger'
             ];
-            header("Location: " . BASE_URL . "pages/ikr/");
-            exit;
+            redirect("pages/ikr/");
         }
     }
 
@@ -120,8 +117,7 @@ if (isset($_POST['submit'])) {
             'button' => 'Coba Lagi',
             'style'  => 'danger'
         ];
-        header("Location: " . BASE_URL . "pages/ikr/");
-        exit;
+        redirect("pages/ikr/");
     }
 
     if ($rt !== '' && !ctype_digit($rt)) {
@@ -132,8 +128,7 @@ if (isset($_POST['submit'])) {
             'button' => 'Coba Lagi',
             'style'  => 'danger'
         ];
-        header("Location: " . BASE_URL . "pages/ikr/");
-        exit;
+        redirect("pages/ikr/");
     }
 
     if ($rw !== '' && !ctype_digit($rw)) {
@@ -144,8 +139,7 @@ if (isset($_POST['submit'])) {
             'button' => 'Coba Lagi',
             'style'  => 'danger'
         ];
-        header("Location: " . BASE_URL . "pages/ikr/");
-        exit;
+        redirect("pages/ikr/");
     }
 
     try {
@@ -182,8 +176,7 @@ if (isset($_POST['submit'])) {
             'button' => 'Oke',
             'style'  => 'success'
         ];
-        header("Location: " . BASE_URL . "pages/ikr/");
-        exit;
+        redirect("pages/ikr/");
     } catch (PDOException $e) {
         // Rollback kalau gagal
         $pdo->rollBack();
@@ -195,8 +188,7 @@ if (isset($_POST['submit'])) {
             'button' => 'Coba Lagi',
             'style'  => 'danger'
         ];
-        header("Location: " . BASE_URL . "pages/schedule/");
-        exit;
+        redirect("pages/schedule/");
     }
 } else {
     $_SESSION['alert'] = [
@@ -206,6 +198,5 @@ if (isset($_POST['submit'])) {
         'button' => "Oke",
         'style' => "warning"
     ];
-    header("Location: " . BASE_URL . "pages/ikr/");
-    exit;
+    redirect("pages/ikr/");
 }

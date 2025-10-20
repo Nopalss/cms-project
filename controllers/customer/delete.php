@@ -35,9 +35,9 @@ try {
     $pdo->beginTransaction();
 
     // Ambil data ikr
-    $sql = "SELECT netpay_id FROM customers WHERE netpay_id = :netpay_id";
+    $sql = "SELECT netpay_key FROM customers WHERE netpay_key = :netpay_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':netpay_id' => $id]);
+    $stmt->execute([':netpay_key' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
@@ -46,9 +46,9 @@ try {
 
 
     // Hapus 
-    $sql = "DELETE FROM customers WHERE netpay_id = :netpay_id";
+    $sql = "DELETE FROM customers WHERE netpay_key = :netpay_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':netpay_id' => $row['netpay_id']]);
+    $stmt->execute([':netpay_key' => $row['netpay_key']]);
 
     if ($stmt->rowCount() === 0) {
         throw new Exception("Data customers sudah dihapus sebelumnya.");

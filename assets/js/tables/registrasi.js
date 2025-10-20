@@ -121,20 +121,20 @@ var KTDatatableLocalSortDemo = function () {
                                     </li>\
                                    ${row.is_verified === "Unverified"
                             ? `<li class="navi-item cursor-pointer">
-                                            <a href="${HOST_URL + 'pages/request/ikr/create.php?id=' + row.registrasi_id}" class="navi-link">
+                                            <a href="${HOST_URL + 'pages/request/ikr/create.php?id=' + row.registrasi_key}" class="navi-link">
                                                 <span class="navi-icon"><i class="flaticon2-check-mark text-success"></i></span>
                                                 <span class="navi-text">Verified</span>
                                             </a>
                                         </li>
                                         <li class="navi-item cursor-pointer">
-                                            <a href='${HOST_URL + 'pages/registrasi/update.php?id=' + row.registrasi_id}' class="navi-link">
+                                            <a href='${HOST_URL + 'pages/registrasi/update.php?id=' + row.registrasi_key}' class="navi-link">
                                                 <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>
                                                 <span class="navi-text">Edit</span>
                                             </a>
                                         </li >`
                             : ""}
 <li class="navi-item cursor-pointer">\
-    <a onclick="confirmDeleteTemplate('${row.registrasi_id}', 'controllers/registrasi/delete.php')" class="navi-link">\
+    <a onclick="confirmDeleteTemplate('${row.registrasi_key}', 'controllers/registrasi/delete.php')" class="navi-link">\
         <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
         <span class="navi-text">Hapus</span>\
     </a>\
@@ -148,7 +148,6 @@ var KTDatatableLocalSortDemo = function () {
                                 </ul >\
                             </div >\
                         </div >\
-
 `;
                 },
             }],

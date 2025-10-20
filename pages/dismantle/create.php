@@ -1,12 +1,10 @@
 <?php
 
 require_once __DIR__ . '/../../includes/config.php';
+require_once __DIR__ . '/../../helper/redirect.php';
 $_SESSION['menu'] = 'dismantle';
-require __DIR__ . '/../../includes/header.php';
-require __DIR__ . '/../../includes/aside.php';
-require __DIR__ . '/../../includes/navbar.php';
+
 try {
-    date_default_timezone_set('Asia/Jakarta');
     $id = isset($_POST['id']) ? $_POST['id'] : null;
     if (!$id) {
         $_SESSION['alert'] = [
@@ -16,8 +14,7 @@ try {
             'button' => 'Kembali',
             'style' => 'warning'
         ];
-        header("Location: " . BASE_URL . "pages/dismantle/");
-        exit;
+        redirect("pages/dismantle/");
     }
 
     $sql = "SELECT s.schedule_id, s.schedule_key, s.tech_id ,s.netpay_key, c.* FROM schedules s JOIN customers c ON s.netpay_key = c.netpay_key WHERE s.schedule_key = :id";
@@ -32,13 +29,15 @@ try {
             'button' => 'Kembali',
             'style' => 'warning'
         ];
-        header("Location: " . BASE_URL . "pages/dismantle/");
-        exit;
+        redirect("pages/dismantle/");
     }
     $dismantle_id = "DR" . date("YmdHis");
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
+require __DIR__ . '/../../includes/header.php';
+require __DIR__ . '/../../includes/aside.php';
+require __DIR__ . '/../../includes/navbar.php';
 ?>
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Entry-->

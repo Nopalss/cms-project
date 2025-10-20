@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../../../includes/config.php";
 require_once __DIR__ . "/../../../includes/check_password.php";
+require_once __DIR__ . "/../../../helper/redirect.php";
 
 $username = $_SESSION['username'] ?? null;
 $password = trim($_POST['password'] ?? '');
@@ -14,8 +15,7 @@ if (!$username || !$password || !$id) {
         'button' => "Coba Lagi",
         'style' => "warning"
     ];
-    header("Location: " . BASE_URL . "pages/request/ikr/");
-    exit;
+    redirect("pages/request/ikr/");
 }
 
 $user = checkLogin($pdo, $username, $password);
@@ -27,8 +27,7 @@ if (!$user) {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/request/ikr/");
-    exit;
+    redirect("pages/request/ikr/");
 }
 
 
@@ -50,8 +49,7 @@ try {
             'button' => "Oke",
             'style' => "warning"
         ];
-        header("Location: " . BASE_URL . "pages/request/ikr/");
-        exit;
+        redirect("pages/request/ikr/");
     }
 
     // Update status register jadi Unverified
@@ -110,5 +108,4 @@ try {
     ];
 }
 
-header("Location: " . BASE_URL . "pages/request/ikr/");
-exit;
+redirect("pages/request/ikr/");

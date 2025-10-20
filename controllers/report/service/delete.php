@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../../../includes/config.php";
 require_once __DIR__ . "/../../../includes/check_password.php";
+require_once __DIR__ . "/../../../helper/redirect.php";
 
 $username = $_SESSION['username'] ?? null;
 $password = trim($_POST['password'] ?? '');
@@ -14,8 +15,7 @@ if (!$username || !$password || !$id) {
         'button' => "Coba Lagi",
         'style' => "warning"
     ];
-    header("Location: " . BASE_URL . "pages/ikr/");
-    exit;
+    redirect("pages/service_report/");
 }
 
 $user = checkLogin($pdo, $username, $password);
@@ -27,14 +27,13 @@ if (!$user) {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/ikr/");
-    exit;
+    redirect("pages/service_report/");
 }
 
 try {
     $pdo->beginTransaction();
 
-    // Ambil data ikr
+    // Ambil data service
     $sql = "SELECT srv_key, schedule_key FROM service_reports WHERE srv_key = :srv_key";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':srv_key' => $id]);
@@ -50,7 +49,7 @@ try {
     $stmt->execute([':schedule_key' => $row['schedule_key']]);
 
 
-    // Hapus dari IKR
+    // Hapus dari service
     $sql = "DELETE FROM service_reports WHERE srv_key = :srv_key";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':srv_key' => $row['srv_key']]);
@@ -87,5 +86,4 @@ try {
     ];
 }
 
-header("Location: " . BASE_URL . "pages/service_report/");
-exit;
+redirect("pages/service_report/");

@@ -1,9 +1,10 @@
 <?php
 
 require_once __DIR__ . '/../../../includes/config.php';
+require_once __DIR__ . '/../../../helper/checkRowExist.php';
 $_SESSION['menu'] = 'request dismantle';
 
-$rd_key = isset($_GET['id']) ? $_GET['id'] : null;
+$rd_key = isset($_GET['id']) ? (int)$_GET['id'] : null;
 try {
     if (!$rd_key) {
         $_SESSION['alert'] = [
@@ -13,28 +14,23 @@ try {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/request/dismantle/");
-        exit;
+        redirect("pages/request/dismantle/");
     }
     $sql = "SELECT rd.*, c.* FROM request_dismantle rd JOIN customers c ON rd.netpay_key = c.netpay_key WHERE rd_key = :rd_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':rd_key', $rd_key, PDO::PARAM_STR);
-    $stmt->execute();
+    $stmt->execute([':rd_key' => $rd_key]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (!$row) {
-        $_SESSION['alert'] = [
-            'icon' => 'error',
-            'title' => 'Oops! Request Tidak Ditemukan',
-            'text' => 'Silakan coba lagi.',
-            'button' => "Coba Lagi",
-            'style' => "danger"
-        ];
-        header("Location: " . BASE_URL . "pages/request/dismantle/");
-        exit;
-    }
+    checkRowExist($row, "pages/request/dismantle/");
     $type_dismantle = ['Pindah Alamat', 'Biaya Mahal', 'Jarang Digunakan', 'Pelayanan Buruk', 'Gangguan Berkepanjangan', 'Ganti Provider', 'Lainnya'];
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    $_SESSION['alert'] = [
+        'icon' => 'error',
+        'title' => 'Oops! Ada yang Salah',
+        'text' => 'Gagal mendapatkan data, silakan coba lagi',
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
+    redirect("pages/request/dismantle/");
 }
 require __DIR__ . '/../../../includes/header.php';
 require __DIR__ . '/../../../includes/aside.php';

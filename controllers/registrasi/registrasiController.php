@@ -1,8 +1,11 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
+require_once __DIR__ . '/../../helper/sanitize.php';
+require_once __DIR__ . '/../../helper/validatePhone.php';
+require_once __DIR__ . '/../../helper/isDateValidTomorrow.php';
+require_once __DIR__ . '/../../helper/redirect.php';
 
 if (isset($_POST['submit'])) {
-    date_default_timezone_set('Asia/Jakarta');
     $posted_token = $_POST['token'] ?? '';
     $session_token = $_SESSION['form_token'] ?? '';
     if (!hash_equals($session_token, $posted_token)) {
@@ -13,47 +16,11 @@ if (isset($_POST['submit'])) {
             'button' => 'OK',
             'style' => 'danger'
         ];
-        header("Location: " . BASE_URL . "registration.php");
-
-        exit;
+        redirect("registration.php");
     }
     // Token valid → hapus agar sekali pakai
     unset($_SESSION['form_token']);
-    // Fungsi sanitize untuk cegah HTML Injection
-    function sanitize($data)
-    {
-        return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
-    }
-    function isDateValidTomorrow($dateInput)
-    {
-        // Pastikan format Y-m-d
-        $d = DateTime::createFromFormat('Y-m-d', $dateInput);
-        if (!$d || $d->format('Y-m-d') !== $dateInput) {
-            return false; // Format salah
-        }
 
-        $tomorrow = new DateTime('tomorrow');
-        return $d >= $tomorrow;
-    }
-
-    function validatePhone($phone)
-    {
-        // Hilangkan spasi, strip, atau karakter non-digit
-        $phone = preg_replace('/[^0-9]/', '', $phone);
-
-        // Validasi nomor Indonesia
-        // Harus mulai dengan 08, panjang 10–13 digit
-        if (preg_match('/^08[0-9]{8,11}$/', $phone)) {
-            return true;
-        }
-
-        // Alternatif: jika pakai kode negara (+62)
-        if (preg_match('/^62[0-9]{9,12}$/', $phone)) {
-            return true;
-        }
-
-        return false; // selain itu dianggap tidak valid
-    }
     // Ambil & sanitasi data POST
     $name   = isset($_POST['name']) ? sanitize($_POST['name']) : null;
     $phone = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
@@ -71,8 +38,7 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "registration.php");
-        exit;
+        redirect("registration.php");
     }
 
     $sqlCheck = "SELECT COUNT(*) FROM register WHERE phone = :phone";
@@ -88,8 +54,7 @@ if (isset($_POST['submit'])) {
             'button' => "Oke",
             'style' => "warning"
         ];
-        header("Location: " . BASE_URL . "registration.php");
-        exit;
+        redirect("registration.php");
     }
     // Buat ID unik
     $registrasi_id = uniqid('REG');
@@ -114,8 +79,7 @@ if (isset($_POST['submit'])) {
             'button' => "Oke",
             'style' => "success"
         ];
-        header("Location: " . BASE_URL . "registration.php?success=1");
-        exit;
+        redirect("registration.php");
     } catch (PDOException $e) {
         // echo $e;
         $_SESSION['alert'] = [
@@ -125,8 +89,7 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "registration.php");
-        exit;
+        redirect("registration.php");
     }
 } else {
     $_SESSION['alert'] = [
@@ -135,6 +98,5 @@ if (isset($_POST['submit'])) {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "registration.php");
-    exit;
+    redirect("registration.php");
 }

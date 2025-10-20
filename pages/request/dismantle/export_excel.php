@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../../includes/config.php';
 
-$sql = "SELECT r.*, c.name FROM request_dismantle r JOIN customers c ON r.netpay_id = c.netpay_id ";
+$sql = "SELECT r.*, c.name FROM request_dismantle r JOIN customers c ON r.netpay_key = c.netpay_key";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute();

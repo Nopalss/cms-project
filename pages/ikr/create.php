@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . '/../../includes/config.php';
+require_once __DIR__ . '/../../helper/redirect.php';
+require_once __DIR__ . '/../../helper/checkRowExist.php';
 $_SESSION['menu'] = 'ikr';
 
 try {
@@ -13,13 +15,13 @@ try {
             'button' => 'Oke',
             'style' => 'warning'
         ];
-        header("Location: " . BASE_URL . "pages/ikr/");
-        exit;
+        redirect("pages/ikr/");
     }
     $sql = "SELECT s.schedule_key, c.* FROM schedules s JOIN customers c ON s.netpay_key = c.netpay_key WHERE s.schedule_key = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([":id" => $id]);
     $customer = $stmt->fetch(PDO::FETCH_ASSOC);
+    checkRowExist($customer, "pages/ikr/");
     $ikr_id = "SI" . date("YmdHis");
     $paketInternet = [
         "5"   => "5 mbps - 150rb/bln",
@@ -29,7 +31,14 @@ try {
         "100" => "100 mbps - 1jt/bln"
     ];
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    $_SESSION['alert'] = [
+        'icon' => 'error',
+        'title' => 'Oops! Ada yang Salah',
+        'text' => 'Gagal mendapatkan data, silakan coba lagi',
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
+    redirect("pages/ikr/");
 }
 require __DIR__ . '/../../includes/header.php';
 require __DIR__ . '/../../includes/aside.php';

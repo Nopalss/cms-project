@@ -1,14 +1,10 @@
 <?php
 
 require_once __DIR__ . "/../../../includes/config.php";
+require_once __DIR__ . "/../../../helper/redirect.php";
+require_once __DIR__ . "/../../../helper/sanitize.php";
 
 if (isset($_POST['submit'])) {
-    // Fungsi sanitize untuk cegah HTML Injection
-    function sanitize($data)
-    {
-        return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
-    }
-
     $rd_key   = isset($_POST['rd_key']) ? sanitize($_POST['rd_key']) : null;
     $rd_id   = isset($_POST['rd_id']) ? sanitize($_POST['rd_id']) : null;
     $type_dismantle   = isset($_POST['type_dismantle']) ? sanitize($_POST['type_dismantle']) : null;
@@ -23,8 +19,7 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/request/dismantle/");
-        exit;
+        redirect("pages/request/dismantle/");
     }
 
     try {
@@ -51,8 +46,7 @@ if (isset($_POST['submit'])) {
             'button' => "Oke",
             'style' => "success"
         ];
-        header("Location: " . BASE_URL . "pages/request/dismantle/");
-        exit;
+        redirect("pages/request/dismantle/");
     } catch (PDOException $e) {
         $pdo->rollBack();
         error_log($e->getMessage()); // simpan di error log server
@@ -63,8 +57,7 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/request/dismantle/");
-        exit;
+        redirect("pages/request/dismantle/");
     }
 } else {
     $_SESSION['alert'] = [
@@ -74,6 +67,5 @@ if (isset($_POST['submit'])) {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/request/dismantle/");
-    exit;
+    redirect("pages/request/dismantle/");
 }

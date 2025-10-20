@@ -1,10 +1,9 @@
 <?php
 
 require_once __DIR__ . '/../../includes/config.php';
+require_once __DIR__ . '/../../helper/redirect.php';
 $_SESSION['menu'] = 'dismantle';
-require __DIR__ . '/../../includes/header.php';
-require __DIR__ . '/../../includes/aside.php';
-require __DIR__ . '/../../includes/navbar.php';
+
 try {
     date_default_timezone_set('Asia/Jakarta');
     $id = isset($_GET['id']) ? $_GET['id'] : null;
@@ -26,6 +25,9 @@ try {
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
+require __DIR__ . '/../../includes/header.php';
+require __DIR__ . '/../../includes/aside.php';
+require __DIR__ . '/../../includes/navbar.php';
 ?>
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Entry-->

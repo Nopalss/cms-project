@@ -1,15 +1,10 @@
 <?php
 
 require_once __DIR__ . "/../../../includes/config.php";
-
+require_once __DIR__ . "/../../../helper/redirect.php";
+require_once __DIR__ . "/../../../helper/sanitize.php";
 
 if (isset($_POST['submit'])) {
-    // Fungsi sanitize untuk cegah HTML Injection
-    function sanitize($data)
-    {
-        return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
-    }
-
     $rm_id   = isset($_POST['rm_id']) ? sanitize($_POST['rm_id']) : null;
     $netpay_key   = isset($_POST['netpay_key']) ? sanitize($_POST['netpay_key']) : null;
     $type_issue   = isset($_POST['type_issue']) ? sanitize($_POST['type_issue']) : null;
@@ -24,9 +19,9 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/request/maintenance/");
-        exit;
+        redirect("pages/request/maintenance/");
     }
+
     $check = $pdo->prepare("SELECT 1 FROM customers WHERE netpay_key = :id AND is_active = 'Active'");
     $check->execute([':id' => $netpay_key]);
     if (!$check->fetch()) {
@@ -37,12 +32,8 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/request/maintenance/");
-        exit;
+        redirect("pages/request/maintenance/");
     }
-
-
-
     try {
         $pdo->beginTransaction();
 
@@ -78,8 +69,7 @@ if (isset($_POST['submit'])) {
             'button' => "Oke",
             'style' => "success"
         ];
-        header("Location: " . BASE_URL . "pages/request/maintenance/");
-        exit;
+        redirect("pages/request/maintenance/");
     } catch (PDOException $e) {
         $pdo->rollBack();
         $_SESSION['alert'] = [
@@ -89,8 +79,7 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/request/maintenance/");
-        exit;
+        redirect("pages/request/maintenance/");
     }
 } else {
     $_SESSION['alert'] = [
@@ -100,6 +89,5 @@ if (isset($_POST['submit'])) {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/request/maintenance/");
-    exit;
+    redirect("pages/request/maintenance/");
 }

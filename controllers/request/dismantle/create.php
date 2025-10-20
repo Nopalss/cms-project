@@ -1,16 +1,10 @@
 <?php
 
 require_once __DIR__ . "/../../../includes/config.php";
+require_once __DIR__ . "/../../../helper/redirect.php";
+require_once __DIR__ . "/../../../helper/sanitize.php";
 
-
-var_dump($_POST);
 if (isset($_POST['submit'])) {
-    // Fungsi sanitize untuk cegah HTML Injection
-    function sanitize($data)
-    {
-        return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
-    }
-
     $rd_id   = isset($_POST['rd_id']) ? sanitize($_POST['rd_id']) : null;
     $netpay_key   = isset($_POST['netpay_key']) ? sanitize($_POST['netpay_key']) : null;
     $type_dismantle   = isset($_POST['type_dismantle']) ? sanitize($_POST['type_dismantle']) : null;
@@ -25,8 +19,7 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/request/dismantle/");
-        exit;
+        redirect("pages/request/dismantle/");
     }
 
     try {
@@ -63,19 +56,17 @@ if (isset($_POST['submit'])) {
             'button' => "Oke",
             'style' => "success"
         ];
-        header("Location: " . BASE_URL . "pages/request/dismantle/");
-        exit;
+        redirect("pages/request/dismantle/");
     } catch (PDOException $e) {
         $pdo->rollBack();
         $_SESSION['alert'] = [
             'icon' => 'danger',
             'title' => 'Oops! Ada yang Salah',
-            'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+            'text' => 'Terjadi kesalahan pada server. Silakan coba lagi nanti',
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/request/dismantle/");
-        exit;
+        redirect("pages/request/dismantle/");
     }
 } else {
     $_SESSION['alert'] = [
@@ -85,6 +76,5 @@ if (isset($_POST['submit'])) {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/request/dismantle/");
-    exit;
+    redirect("pages/request/dismantle/");
 }

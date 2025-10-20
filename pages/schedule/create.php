@@ -1,13 +1,11 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
-date_default_timezone_set('Asia/Jakarta');
+require_once __DIR__ . '/../../helper/checkRowExist.php';
 $id = isset($_POST['id']) ? $_POST['id'] : null;
 $type_queue = isset($_POST['type_queue']) ? $_POST['type_queue'] : null;
 if ($id && $type_queue) {
     $_SESSION['menu'] = 'schedule';
-    require __DIR__ . '/../../includes/header.php';
-    require __DIR__ . '/../../includes/aside.php';
-    require __DIR__ . '/../../includes/navbar.php';
+
     try {
         $requestTables = [
             "Install"    => ["table" => "request_ikr", "id" => "rikr_id", "catatan" => "catatan"],
@@ -38,9 +36,9 @@ if ($id && $type_queue) {
             WHERE q.queue_key = :queue_key";
 
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':queue_key', $id, PDO::PARAM_STR);
-            $stmt->execute();
+            $stmt->execute([':queue_key' => $id]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            checkRowExist($row, "pages/schedule/");
         }
         $tanggalSchedule   = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'date') : '';
         $tanggalPemasangan = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'full') : '';
@@ -56,12 +54,21 @@ if ($id && $type_queue) {
         $stmt = $pdo->query($sql);
         $technicians = $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Oops! Ada yang Salah',
+            'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
+        redirect("pages/schedule/");
     }
 } else {
-    header("Location: " . BASE_URL . "pages/schedule/");
-    exit;
+    redirect("pages/schedule/");
 }
+require __DIR__ . '/../../includes/header.php';
+require __DIR__ . '/../../includes/aside.php';
+require __DIR__ . '/../../includes/navbar.php';
 ?>
 
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">

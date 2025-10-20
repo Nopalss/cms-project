@@ -1,46 +1,14 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
+require_once __DIR__ . '/../../helper/sanitize.php';
+require_once __DIR__ . '/../../helper/validatePhone.php';
+require_once __DIR__ . '/../../helper/isDateValidTomorrow.php';
+require_once __DIR__ . '/../../helper/redirect.php';
 
 if (isset($_POST['submit'])) {
-    date_default_timezone_set('Asia/Jakarta');
-
-    // Fungsi sanitize untuk cegah HTML Injection
-    function sanitize($data)
-    {
-        return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
-    }
-
-    function isDateValidTomorrow($dateInput)
-    {
-        // Pastikan format Y-m-d
-        $d = DateTime::createFromFormat('Y-m-d', $dateInput);
-        if (!$d || $d->format('Y-m-d') !== $dateInput) {
-            return false; // Format salah
-        }
-
-        $tomorrow = new DateTime('tomorrow');
-        return $d >= $tomorrow;
-    }
-
-    function validatePhone($phone)
-    {
-        // Hilangkan spasi, strip, atau karakter non-digit
-        $phone = preg_replace('/[^0-9]/', '', $phone);
-
-        // Validasi nomor Indonesia
-        if (preg_match('/^08[0-9]{8,11}$/', $phone)) {
-            return true;
-        }
-
-        if (preg_match('/^62[0-9]{9,12}$/', $phone)) {
-            return true;
-        }
-
-        return false;
-    }
 
     // Ambil & sanitasi data POST
-    $registrasi_id = isset($_POST['registrasi_id']) ? sanitize($_POST['registrasi_id']) : null;
+    $registrasi_key = isset($_POST['registrasi_key']) ? sanitize($_POST['registrasi_key']) : null;
     $name          = isset($_POST['name']) ? sanitize($_POST['name']) : null;
     $phone         = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
     $paket_internet = isset($_POST['paket_internet']) ? sanitize($_POST['paket_internet']) : null;
@@ -57,11 +25,22 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/registrasi/");
-        exit;
+        redirect("pages/registrasi/");
     }
 
     try {
+        $check = $pdo->prepare("SELECT COUNT(*) FROM register WHERE registrasi_key = :key");
+        $check->execute([':key' => $registrasi_key]);
+        if ($check->fetchColumn() == 0) {
+            $_SESSION['alert'] = [
+                'icon' => 'error',
+                'title' => 'Data Tidak Ditemukan',
+                'text' => 'Registrasi yang ingin kamu ubah tidak ada.',
+                'button' => "Coba Lagi",
+                'style' => "danger"
+            ];
+            redirect("pages/registrasi/");
+        }
         // Query update dengan prepared statement
         $sql = "UPDATE register 
                 SET name = :name,
@@ -70,11 +49,11 @@ if (isset($_POST['submit'])) {
                     date = :date,
                     time = :time,
                     location = :location
-                WHERE registrasi_id = :registrasi_id";
+                WHERE registrasi_key = :registrasi_key";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            ':registrasi_id' => $registrasi_id,
+            ':registrasi_key' => $registrasi_key,
             ':name' => $name,
             ':phone' => $phone,
             ':paket_internet' => $paket_internet,
@@ -89,8 +68,7 @@ if (isset($_POST['submit'])) {
             'button' => "Oke",
             'style' => "success"
         ];
-        header("Location: " . BASE_URL . "pages/registrasi/");
-        exit;
+        redirect("pages/registrasi/");
     } catch (PDOException $e) {
         error_log("DB Error: " . $e->getMessage());
         $_SESSION['alert'] = [
@@ -100,8 +78,7 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/registrasi/");
-        exit;
+        redirect("pages/registrasi/");
     }
 } else {
     $_SESSION['alert'] = [
@@ -111,6 +88,5 @@ if (isset($_POST['submit'])) {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/registrasi/");
-    exit;
+    redirect("pages/registrasi/");
 }

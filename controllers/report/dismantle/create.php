@@ -1,17 +1,11 @@
 <?php
 require_once __DIR__ . "/../../../includes/config.php";
+require_once __DIR__ . "/../../../helper/sanitize.php";
+require_once __DIR__ . "/../../../helper/redirect.php";
 
 // Set timezone
-date_default_timezone_set('Asia/Jakarta');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    // Fungsi sanitasi input
-    function sanitize($data)
-    {
-        return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
-    }
-
     // Ambil input & sanitasi
     $dismantle_id      = isset($_POST['dismantle_id']) ? sanitize($_POST['dismantle_id']) : null;
     $schedule_key       = isset($_POST['schedule_key']) ? sanitize($_POST['schedule_key']) : null;
@@ -48,8 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'button' => 'Coba Lagi',
                 'style'  => 'danger'
             ];
-            header("Location: " . BASE_URL . "pages/dismantle/");
-            exit;
+            redirect("pages/dismantle/");
         }
     }
 
@@ -108,8 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
     }
 
-    header("Location: " . BASE_URL . "pages/dismantle/");
-    exit;
+    redirect("pages/dismantle/");
 } else {
     $_SESSION['alert'] = [
         'icon' => 'warning',
@@ -118,6 +110,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'button' => "Oke",
         'style' => "warning"
     ];
-    header("Location: " . BASE_URL . "pages/dismantle/");
-    exit;
+    redirect("pages/dismantle/");
 }

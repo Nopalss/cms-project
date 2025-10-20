@@ -1,17 +1,11 @@
 <?php
 require_once __DIR__ . "/../../includes/config.php";
 require_once __DIR__ . "/../../includes/check_password.php";
+require_once __DIR__ . "/../../helper/redirect.php";
+require_once __DIR__ . "/../../helper/sanitize.php";
 
 if (isset($_POST['submit'])) {
-    // Ambil data user dari database
 
-    date_default_timezone_set('Asia/Jakarta'); // Sesuaikan timezone
-
-    // Fungsi sanitize untuk cegah HTML Injection
-    function sanitize($data)
-    {
-        return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
-    }
     $username = $_SESSION['username'] ?? null;
     $password = trim($_POST['password'] ?? '');
     if (!$username || !$password) {
@@ -22,8 +16,7 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "warning"
         ];
-        header("Location: " . BASE_URL . "pages/schedule");
-        exit;
+        redirect("pages/schedule");
     }
 
     $user = checkLogin($pdo, $username, $password);
@@ -35,8 +28,7 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/schedule/");
-        exit;
+        redirect("pages/schedule/");
     }
     // Ambil & sanitasi data POST
     $schedule_id = isset($_POST['schedule_id']) ? sanitize($_POST['schedule_id']) : null;
@@ -53,8 +45,7 @@ if (isset($_POST['submit'])) {
             'button' => "Oke",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/schedule/");
-        exit;
+        redirect("pages/schedule/");
     }
 
     // Buat ID unik (kombinasi tanggal + uniqid biar aman)
@@ -89,6 +80,7 @@ if (isset($_POST['submit'])) {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
+        redirect("pages/schedule/");
     }
 } else {
     $_SESSION['alert'] = [
@@ -99,5 +91,4 @@ if (isset($_POST['submit'])) {
         'style' => "danger"
     ];
 }
-header("Location: " . BASE_URL . "pages/schedule/");
-exit;
+redirect("pages/schedule/");

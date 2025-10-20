@@ -1,43 +1,11 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
+require_once __DIR__ . '/../../helper/sanitize.php';
+require_once __DIR__ . '/../../helper/validatePhone.php';
+require_once __DIR__ . '/../../helper/isDateValidTomorrow.php';
 
 if (isset($_POST['submit'])) {
-    date_default_timezone_set('Asia/Jakarta');
-    // Fungsi sanitize untuk cegah HTML Injection
-    function sanitize($data)
-    {
-        return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
-    }
-    function isDateValidTomorrow($dateInput)
-    {
-        // Pastikan format Y-m-d
-        $d = DateTime::createFromFormat('Y-m-d', $dateInput);
-        if (!$d || $d->format('Y-m-d') !== $dateInput) {
-            return false; // Format salah
-        }
 
-        $tomorrow = new DateTime('tomorrow');
-        return $d >= $tomorrow;
-    }
-
-    function validatePhone($phone)
-    {
-        // Hilangkan spasi, strip, atau karakter non-digit
-        $phone = preg_replace('/[^0-9]/', '', $phone);
-
-        // Validasi nomor Indonesia
-        // Harus mulai dengan 08, panjang 10–13 digit
-        if (preg_match('/^08[0-9]{8,11}$/', $phone)) {
-            return true;
-        }
-
-        // Alternatif: jika pakai kode negara (+62)
-        if (preg_match('/^62[0-9]{9,12}$/', $phone)) {
-            return true;
-        }
-
-        return false; // selain itu dianggap tidak valid
-    }
     // Ambil & sanitasi data POST
     $name   = isset($_POST['name']) ? sanitize($_POST['name']) : null;
     $phone = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
@@ -59,9 +27,9 @@ if (isset($_POST['submit'])) {
         exit;
     }
 
-
     // Buat ID unik
     $registrasi_id = uniqid('REG');
+
     try {
         // Query insert dengan prepared statement
         $sql = "INSERT INTO register (registrasi_id, name, phone, paket_internet, date, time,  location) 

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../../../includes/config.php";
 require_once __DIR__ . "/../../../includes/check_password.php";
+require_once __DIR__ . "/../../../helper/redirect.php";
 
 $username = $_SESSION['username'] ?? null;
 $password = trim($_POST['password'] ?? '');
@@ -14,8 +15,7 @@ if (!$username || !$password || !$id) {
         'button' => "Coba Lagi",
         'style' => "warning"
     ];
-    header("Location: " . BASE_URL . "pages/request/dismantle/");
-    exit;
+    redirect("pages/request/dismantle/");
 }
 
 $user = checkLogin($pdo, $username, $password);
@@ -27,8 +27,7 @@ if (!$user) {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/request/dismantle/");
-    exit;
+    redirect("pages/request/dismantle/");
 }
 try {
     $pdo->beginTransaction();
@@ -48,8 +47,7 @@ try {
             'button' => "Oke",
             'style' => "warning"
         ];
-        header("Location: " . BASE_URL . "pages/request/dismantle/");
-        exit;
+        redirect("pages/request/dismantle/");
     }
 
     // Hapus dulu dari queue_scheduling (anak)
@@ -92,5 +90,4 @@ try {
         'style' => "danger"
     ];
 }
-header("Location: " . BASE_URL . "pages/request/dismantle/");
-exit;
+redirect("pages/request/dismantle/");

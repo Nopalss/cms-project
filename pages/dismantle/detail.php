@@ -1,9 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
 $_SESSION['menu'] = 'dismantle';
-require __DIR__ . '/../../includes/header.php';
-require __DIR__ . '/../../includes/aside.php';
-require __DIR__ . '/../../includes/navbar.php';
+
 
 $id = $_GET['id'] ?? null;
 if (!$id) {
@@ -36,6 +34,9 @@ try {
         'style' => "danger"
     ];
 }
+require __DIR__ . '/../../includes/header.php';
+require __DIR__ . '/../../includes/aside.php';
+require __DIR__ . '/../../includes/navbar.php';
 ?>
 
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
@@ -47,7 +48,7 @@ try {
                     <h5 class="text-dark font-weight-bold my-1 mr-5">Dismantle Report </h5>
                     <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
                         <li class="breadcrumb-item"><a href="" class="text-muted">Detail Dismantle Report</a></li>
-                        <li class="breadcrumb-item"><a href="" class="text-muted"><?= $row['dismante_id'] ?></a></li>
+                        <li class="breadcrumb-item"><a href="" class="text-muted"><?= $row['dismantle_id'] ?></a></li>
                     </ul>
                 </div>
             </div>

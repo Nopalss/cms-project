@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     // Ambil data POST & sanitasi
-    $netpay_id      = isset($_POST['netpay_id']) ? sanitize($_POST['netpay_id']) : null;
+    $netpay_key      = isset($_POST['netpay_key']) ? sanitize($_POST['netpay_key']) : null;
     $name           = isset($_POST['name']) ? sanitize($_POST['name']) : null;
     $phone          = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
     $paket_internet = isset($_POST['paket_internet']) ? sanitize($_POST['paket_internet']) : null;
@@ -27,12 +27,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'button' => 'Coba Lagi',
             'style'  => 'danger'
         ];
-        header("Location: " . BASE_URL . "pages/customers/detail.php?id=" . $netpay_id);
+        header("Location: " . BASE_URL . "pages/customers/detail.php?id=" . $netpay_key);
         exit;
     }
     // Validasi field wajib
     $requiredFields = [
-        'netpay_id'      => $netpay_id,
+        'netpay_key'      => $netpay_key,
         'name'           => $name,
         'phone'          => $phone,
         'paket_internet' => $paket_internet,
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'button' => 'Coba Lagi',
                 'style'  => 'danger'
             ];
-            header("Location: " . BASE_URL . "pages/customers/detail.php?id=" . $netpay_id);
+            header("Location: " . BASE_URL . "pages/customers/detail.php?id=" . $netpay_key);
             exit;
         }
     }
@@ -62,11 +62,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     paket_internet = :paket_internet,
                     is_active = :is_active,
                     location = :location
-                WHERE netpay_id = :netpay_id";
+                WHERE netpay_key = :netpay_key";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            ':netpay_id'      => $netpay_id,
+            ':netpay_key'      => $netpay_key,
             ':name'           => $name,
             ':phone'          => $phone,
             ':paket_internet' => $paket_internet,

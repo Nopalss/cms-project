@@ -1,9 +1,10 @@
 <?php
 
 require_once __DIR__ . '/../../../includes/config.php';
+require_once __DIR__ . '/../../../helper/checkRowExist.php';
 $_SESSION['menu'] = 'request maintenance';
 
-$rm_key = isset($_GET['id']) ? $_GET['id'] : null;
+$rm_key = isset($_GET['id']) ? (int)$_GET['id'] : null;
 try {
     if (!$rm_key) {
         $_SESSION['alert'] = [
@@ -13,25 +14,14 @@ try {
             'button' => "Coba Lagi",
             'style' => "danger"
         ];
-        header("Location: " . BASE_URL . "pages/request/maintenance/");
-        exit;
+        redirect("pages/request/maintenance/");
     }
     $sql = "SELECT rm.*, c.* FROM request_maintenance rm JOIN customers c ON rm.netpay_key = c.netpay_key WHERE rm_key = :rm_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':rm_key', $rm_key, PDO::PARAM_STR);
-    $stmt->execute();
+    $stmt->execute([':rm_key' => $rm_key]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if (!$row) {
-        $_SESSION['alert'] = [
-            'icon' => 'error',
-            'title' => 'Oops! Request Tidak Ditemukan',
-            'text' => 'Silakan coba lagi.',
-            'button' => "Coba Lagi",
-            'style' => "danger"
-        ];
-        header("Location: " . BASE_URL . "pages/request/maintenance/");
-        exit;
-    }
+
+    checkRowExist($row, "pages/request/maintenance/");
     $type_issue = ['Signal Lemah', 'Modem Rusak', 'Kabel Bermasalah', 'Gangguan Internet', 'Upgrade Paket', 'Lainnya'];
 } catch (PDOException $e) {
     $_SESSION['alert'] = [
@@ -41,8 +31,7 @@ try {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/request/maintenance/");
-    exit;
+    redirect("pages/request/maintenance/");
 }
 require __DIR__ . '/../../../includes/header.php';
 require __DIR__ . '/../../../includes/aside.php';

@@ -1,12 +1,11 @@
 <?php
 
 require_once __DIR__ . '/../../../includes/config.php';
+require_once __DIR__ . '/../../../helper/checkRowExist.php';
 $_SESSION['menu'] = 'request ikr';
-require __DIR__ . '/../../../includes/header.php';
-require __DIR__ . '/../../../includes/aside.php';
-require __DIR__ . '/../../../includes/navbar.php';
+
 try {
-    $rikr_key = isset($_GET['id']) ? $_GET['id'] : null;
+    $rikr_key = isset($_GET['id']) ? (int)$_GET['id'] : null;
     $perumahan = [
         "Puri Lestari"   => "Puri Lestari - 01",
         "Gramapuri Persada"   => "Gramapuri Persada - 02",
@@ -67,26 +66,26 @@ try {
                 WHERE r.rikr_key = :rikr_key";
 
         $stmt = $pdo->prepare($sql);
-        $stmt->bindParam(':rikr_key', $rikr_key, PDO::PARAM_STR);
-        $stmt->execute();
+        $stmt->execute([':rikr_key' => $rikr_key]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        checkRowExist($row, "pages/request/ikr");
         list($date, $time) = explode("T", $row['jadwal_pemasangan']);
         $daerah_id = substr($row['netpay_id'], 0, 2);
         $netpay_id = substr($row['netpay_id'], 2);
-        if (!$row) {
-            $_SESSION['alert'] = [
-                'icon' => 'error',
-                'title' => 'Oops! Ada yang Salah, Id Tidak Ditemukan',
-                'button' => "Coba Lagi",
-                'style' => "danger"
-            ];
-            header("Location: " . BASE_URL . "pages/request/ikr/");
-            exit;
-        }
     }
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    $_SESSION['alert'] = [
+        'icon' => 'error',
+        'title' => 'Oops! Ada yang Salah',
+        'text' => 'Gagal mendapatkan data, silakan coba lagi',
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
+    redirect("pages/request/ikr'");
 }
+require __DIR__ . '/../../../includes/header.php';
+require __DIR__ . '/../../../includes/aside.php';
+require __DIR__ . '/../../../includes/navbar.php';
 ?>
 
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
@@ -125,7 +124,7 @@ try {
                             <div class="form-group">
                                 <label for="phone">Phone</label>
                                 <input id="phone" type="tel" class="form-control" name="phone" value="<?= $row['phone'] ?>" placeholder="08xxxxxxxxxx"
-                                    pattern="^08[0-9]{8,11}$"
+                                    pattern="^(?:\+62|62|0)8[0-9]{8,11}$"
                                     required>
                             </div>
                             <div class="form-group">

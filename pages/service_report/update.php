@@ -1,10 +1,9 @@
 <?php
 
 require_once __DIR__ . '/../../includes/config.php';
+require_once __DIR__ . '/../../helper/redirect.php';
 $_SESSION['menu'] = 'service';
-require __DIR__ . '/../../includes/header.php';
-require __DIR__ . '/../../includes/aside.php';
-require __DIR__ . '/../../includes/navbar.php';
+
 try {
     date_default_timezone_set('Asia/Jakarta');
     $id = isset($_GET['id']) ? $_GET['id'] : null;
@@ -16,8 +15,7 @@ try {
             'button' => "Kembali",
             'style' => "warning"
         ];
-        header("Location: " . BASE_URL . "pages/service_report/");
-        exit;
+        redirect("pages/service_report/");
     }
     $sql = "SELECT srv.*, c.* FROM service_reports srv JOIN customers c ON srv.netpay_key = c.netpay_key WHERE srv.srv_key = :id";
     $stmt = $pdo->prepare($sql);
@@ -31,12 +29,21 @@ try {
             'button' => "Kembali",
             'style' => "warning"
         ];
-        header("Location: " . BASE_URL . "pages/service_report/");
-        exit;
+        redirect("pages/service_report/");
     }
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    $_SESSION['alert'] = [
+        'icon' => 'danger',
+        'title' => 'Oops! Ada yang Salah',
+        'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
+    redirect("pages/service_report/");
 }
+require __DIR__ . '/../../includes/header.php';
+require __DIR__ . '/../../includes/aside.php';
+require __DIR__ . '/../../includes/navbar.php';
 ?>
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Entry-->

@@ -1,10 +1,11 @@
 <?php
 require_once __DIR__ . "/../../includes/config.php";
 require_once __DIR__ . "/../../includes/check_password.php";
+require_once __DIR__ . "/../../helper/redirect.php";
 
 $username = $_SESSION['username'] ?? null;
 $password = trim($_POST['password'] ?? '');
-$id       = $_POST['id'] ?? null;
+$id       = (int)($_POST['id'] ?? null);
 
 if (!$username || !$password || !$id) {
     $_SESSION['alert'] = [
@@ -14,8 +15,7 @@ if (!$username || !$password || !$id) {
         'button' => "Coba Lagi",
         'style' => "warning"
     ];
-    header("Location: " . BASE_URL . "pages/registrasi/");
-    exit;
+    redirect("pages/registrasi/");
 }
 
 $user = checkLogin($pdo, $username, $password);
@@ -27,18 +27,16 @@ if (!$user) {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/registrasi/");
-    exit;
+    redirect("pages/registrasi/");
 }
 
 
 
 
 try {
-    $sql = "DELETE FROM register WHERE registrasi_id = :id";
+    $sql = "DELETE FROM register WHERE registrasi_key = :id";
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':id', $id, PDO::PARAM_STR);
-    $stmt->execute();
+    $stmt->execute([':id' => $id]);
 
     $_SESSION['alert'] = [
         'icon' => 'success',
@@ -56,8 +54,4 @@ try {
         'style' => "danger"
     ];
 }
-
-
-// balikin ke halaman schedule
-header("Location: " . BASE_URL . "pages/registrasi/");
-exit;
+redirect("pages/registrasi/");

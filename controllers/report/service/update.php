@@ -1,16 +1,12 @@
 <?php
 require_once __DIR__ . "/../../../includes/config.php";
+require_once __DIR__ . "/../../../helper/redirect.php";
+require_once __DIR__ . "/../../../helper/sanitize.php";
 
 // Set timezone biar konsisten
 date_default_timezone_set('Asia/Jakarta');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    var_dump($_POST);
-    // // Fungsi sanitasi input
-    function sanitize($data)
-    {
-        return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
-    }
 
     // Ambil input & sanitasi
     $srv_key     = $srv_key = (int) ($_POST['srv_key'] ?? 0);;
@@ -33,8 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'button' => 'Coba Lagi',
             'style' => 'danger'
         ];
-        header("Location: " . BASE_URL . "pages/service_report/");
-        exit;
+        redirect("pages/service_report/");
     }
 
     // Cek field wajib
@@ -60,8 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'button' => 'Coba Lagi',
                 'style'  => 'danger'
             ];
-            header("Location: " . BASE_URL . "pages/service_report/");
-            exit;
+            redirect("pages/service_report/");
         }
     }
 
@@ -125,8 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ];
     }
 
-    header("Location: " . BASE_URL . "pages/service_report/");
-    exit;
+    redirect("pages/service_report/");
 } else {
     $_SESSION['alert'] = [
         'icon' => 'warning',
@@ -135,6 +128,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'button' => "Oke",
         'style' => "warning"
     ];
-    header("Location: " . BASE_URL . "pages/service_report/");
-    exit;
+    redirect("pages/service_report/");
 }

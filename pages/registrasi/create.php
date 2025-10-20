@@ -47,7 +47,7 @@ $jamKerja = [
                         <div class="form-group">
                             <label for="phone">Phone</label>
                             <input id="phone" type="tel" class="form-control" name="phone" placeholder="08xxxxxxxxxx"
-                                pattern="^08[0-9]{8,11}$"
+                                pattern="^(?:\+62|62|0)8[0-9]{8,11}$"
                                 required>
                         </div>
                         <div class="form-group">

@@ -1,13 +1,10 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
-date_default_timezone_set('Asia/Jakarta');
+require_once __DIR__ . '/../../helper/redirect.php';
 $id = isset($_POST['id']) ? $_POST['id'] : null;
 $type_queue = isset($_POST['type_queue']) ? $_POST['type_queue'] : null;
 if ($id && $type_queue) {
     $_SESSION['menu'] = 'queue';
-    require __DIR__ . '/../../includes/header.php';
-    require __DIR__ . '/../../includes/aside.php';
-    require __DIR__ . '/../../includes/navbar.php';
     $requestTables = [
         "Install"    => ["table" => "request_ikr", "id" => "rikr_id"],
         "Maintenance" => ["table" => "request_maintenance", "id" => "rm_id"],
@@ -25,7 +22,6 @@ if ($id && $type_queue) {
                 return $dt->format('H:i');
         }
     }
-
 
     try {
         if (isset($requestTables[$type_queue])) {
@@ -51,8 +47,7 @@ if ($id && $type_queue) {
                 'button' => "Kembali",
                 'style' => "warning"
             ];
-            header("Location: " . BASE_URL . "pages/queue/");
-            exit;
+            redirect("pages/queue/");
         }
         $tanggalSchedule   = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'date') : '';
         $tanggalPemasangan = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'full') : '';
@@ -67,9 +62,11 @@ if ($id && $type_queue) {
         echo "Error: " . $e->getMessage();
     }
 } else {
-    header("Location: " . BASE_URL . "pages/schedule/");
-    exit;
+    redirect("pages/schedule/");
 }
+require __DIR__ . '/../../includes/header.php';
+require __DIR__ . '/../../includes/aside.php';
+require __DIR__ . '/../../includes/navbar.php';
 ?>
 
 

@@ -1,16 +1,13 @@
 <?php
 require_once __DIR__ . '/includes/config.php';
-function create_token()
-{
-    return bin2hex(random_bytes(32));
-}
+
 
 $success = isset($_GET['success']);
 
-if (!$success) {
-    $_SESSION['form_token'] = create_token();
-    $token = $_SESSION['form_token'] ?? '';
+if (empty($_SESSION['form_token'])) {
+    $_SESSION['form_token'] = bin2hex(random_bytes(32));
 }
+$token = $_SESSION['form_token'];
 
 $jamKerja = [
     "08:00",
@@ -80,8 +77,8 @@ $jamKerja = [
                             </div>
                             <div class="form-group">
                                 <label for="phone">Phone</label>
-                                <input id="phone" type="tel" class="form-control" name="phone" placeholder="08xxxxxxxxxx"
-                                    pattern="^08[0-9]{8,11}$"
+                                <input id="phone" type="tel" class="form-control" name="phone" autocomplete="off" placeholder="08xxxxxxxxxx"
+                                    pattern="^(?:\+62|62|0)8[0-9]{8,11}$"
                                     required>
                             </div>
                             <input type="hidden" name="token" value="<?= htmlspecialchars($token) ?>">
@@ -111,7 +108,7 @@ $jamKerja = [
                             </div>
                             <div class="form-group">
                                 <label for="exampleTextarea">Alamat</label>
-                                <textarea class="form-control" id="exampleTextarea" required name="location" rows="3"></textarea>
+                                <textarea class="form-control" id="exampleTextarea" required name="location" autocomplete="off" rows="3"></textarea>
                             </div>
                         </div>
                         <div class="card-footer text-right">

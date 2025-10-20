@@ -1,11 +1,8 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
 $_SESSION['menu'] = 'customer';
-require __DIR__ . '/../../includes/header.php';
-require __DIR__ . '/../../includes/aside.php';
-require __DIR__ . '/../../includes/navbar.php';
 
-$id = $_GET['id'] ?? null;
+$id = (int)($_GET['id'] ?? null);
 
 if (!$id) {
     $_SESSION['alert'] = [
@@ -22,10 +19,9 @@ if (!$id) {
 try {
     $sql = "SELECT *
             FROM customers
-            WHERE netpay_id = :netpay_id";
+            WHERE netpay_key = :netpay_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':netpay_id', $id, PDO::PARAM_STR);
-    $stmt->execute();
+    $stmt->execute([':netpay_key' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$row) {
         $_SESSION['alert'] = [
@@ -47,6 +43,10 @@ try {
         'style' => "danger"
     ];
 }
+require __DIR__ . '/../../includes/header.php';
+require __DIR__ . '/../../includes/aside.php';
+require __DIR__ . '/../../includes/navbar.php';
+
 ?>
 
 <div class="content d-flex flex-column flex-column-fluid" id="kt_content">
@@ -59,7 +59,7 @@ try {
                     <h5 class="text-dark font-weight-bold my-1 mr-5"><a class="text-dark " href=" <?= BASE_URL ?>pages/customers/">Customers</a> </h5>
                     <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
                         <li class="breadcrumb-item"><a href="" class="text-muted">Detail Customers</a></li>
-                        <li class="breadcrumb-item"><a href="" class="text-muted"><?= $id ?></a></li>
+                        <li class="breadcrumb-item"><a href="" class="text-muted"><?= $row['netpay_id'] ?></a></li>
                     </ul>
                 </div>
             </div>

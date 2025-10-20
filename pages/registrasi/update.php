@@ -2,11 +2,14 @@
 
 require_once __DIR__ . '/../../includes/config.php';
 $_SESSION['menu'] = 'registrasi';
-require __DIR__ . '/../../includes/header.php';
-require __DIR__ . '/../../includes/aside.php';
-require __DIR__ . '/../../includes/navbar.php';
+
+require_once __DIR__ . '/../../helper/redirect.php';
+require_once __DIR__ . '/../../helper/checkRowExist.php';
 try {
-    $id = $_GET['id'];
+    $id = (int) $_GET['id'];
+    if (!$id) {
+        redirect("pages/registrasi/");
+    }
     $paketInternet = [
         "5"   => "5 mbps - 150rb/bln",
         "10"  => "10 mbps - 300rb/bln",
@@ -24,14 +27,24 @@ try {
         "15:00",
         "16:00"
     ];
-    $sql = "SELECT * FROM register WHERE registrasi_id = :id";
+    $sql = "SELECT * FROM register WHERE registrasi_key = :id";
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':id', $id, PDO::PARAM_STR);
-    $stmt->execute();
+    $stmt->execute([':id' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    checkRowExist($row, "pages/registrasi/");
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    $_SESSION['alert'] = [
+        'icon' => 'error',
+        'title' => 'Oops! Ada yang Salah',
+        'text' => 'Gagal mendapatkan data, silakan coba lagi',
+        'button' => "Coba Lagi",
+        'style' => "danger"
+    ];
+    redirect("pages/registrasi/");
 }
+require __DIR__ . '/../../includes/header.php';
+require __DIR__ . '/../../includes/aside.php';
+require __DIR__ . '/../../includes/navbar.php';
 ?>
 
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
@@ -55,7 +68,7 @@ try {
                             <div>
                                 <div class="input-group">
                                     <input type="text" class="form-control" value="<?= $row['registrasi_id'] ?>" disabled="disabled" />
-                                    <input type="hidden" name="registrasi_id" value="<?= $row['registrasi_id'] ?>" />
+                                    <input type="hidden" name="registrasi_key" value="<?= $row['registrasi_key'] ?>" />
                                 </div>
                             </div>
                         </div>
@@ -75,7 +88,7 @@ try {
                                 <option value="">Select</option>
                                 <?php foreach ($paketInternet as $key => $value): ?>
                                     <?php $selected = ($key == $row['paket_internet']) ? 'selected' : ''; ?>
-                                    <option value='<?= $key ?>' <?= $selected ?>><?= $value ?></option>"
+                                    <option value='<?= $key ?>' <?= $selected ?>><?= $value ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>

@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . "/../../includes/config.php";
 require_once __DIR__ . "/../../includes/check_password.php";
+require_once __DIR__ . "/../../helper/redirect.php";
 
 $username = $_SESSION['username'] ?? null;
 $password = trim($_POST['password'] ?? '');
@@ -14,8 +15,7 @@ if (!$username || !$password || !$id) {
         'button' => "Coba Lagi",
         'style' => "warning"
     ];
-    header("Location: " . BASE_URL . "pages/queue/");
-    exit;
+    redirect("pages/queue/");
 }
 
 // 🔒 Verifikasi password admin
@@ -28,8 +28,7 @@ if (!$user) {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/queue/");
-    exit;
+    redirect("pages/queue/");
 }
 
 try {
@@ -115,5 +114,4 @@ try {
     ];
 }
 
-header("Location: " . BASE_URL . "pages/queue/");
-exit;
+redirect("pages/queue/");

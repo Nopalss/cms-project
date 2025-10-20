@@ -1,12 +1,12 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
+require_once __DIR__ . '/../../helper/redirect.php';
 
 $id = $_GET['id'] ?? null;
 
 if (!$id) {
     $_SESSION['info'] = "ID tidak ditemukan";
-    header("Location: " . BASE_URL . "pages/schedule/");
-    exit;
+    redirect("pages/schedule/");
 }
 
 $sql = "SELECT * FROM issues_report WHERE issue_id = :id";
@@ -16,8 +16,7 @@ $issueReport = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$issueReport) {
     $_SESSION['info'] = "Data issue report tidak ditemukan";
-    header("Location: " . BASE_URL . "pages/schedule/");
-    exit;
+    redirect("pages/schedule/");
 }
 
 $_SESSION['menu'] = 'schedule';

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
+require_once __DIR__ . '/../../helper/checkRowExist.php';
 $_SESSION['menu'] = 'schedule';
-
 
 // ambil id/job_type dari POST dulu, fallback ke GET
 $id = $_POST['id'] ?? $_GET['id'] ?? null;
@@ -23,19 +23,7 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':schedule_key' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if (!$row) {
-        // tidak ada data → redirect atau tampil pesan (pilih salah satu)
-        $_SESSION['alert'] = [
-            'icon' => 'warning',
-            'title' => 'Tidak Ditemukan',
-            'text' => "Schedule dengan ID <b>" . htmlspecialchars($id) . "</b> tidak ditemukan.",
-            'button' => "Kembali",
-            'style' => "warning"
-        ];
-        header("Location: " . BASE_URL . "pages/schedule/");
-        exit;
-    }
+    checkRowExist($row, "pages/schedule/");
 
     // tentukan kolom tanggal (beberapa DB menggunakan nama berbeda)
     $dateField = null;
@@ -65,8 +53,7 @@ try {
         'button' => "Coba Lagi",
         'style' => "danger"
     ];
-    header("Location: " . BASE_URL . "pages/schedule/");
-    exit;
+    redirect("pages/schedule/");
 }
 require __DIR__ . '/../../includes/header.php';
 require __DIR__ . '/../../includes/aside.php';

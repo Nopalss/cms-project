@@ -118,24 +118,6 @@ var KTDatatableLocalSortDemo = function () {
             }],
         });
 
-        function confirmDelete(scheduleId) {
-            Swal.fire({
-                title: 'Yakin mau hapus?',
-                text: "Data schedule akan dihapus permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect ke delete.php dengan parameter ID
-                    window.location.href = "<?= BASE_URL ?>controllers/schedules/delete.php?id=" + scheduleId;
-                }
-            });
-        }
-
         $('#kt_datatable_search_status').on('change', function () {
             datatable.search($(this).val().toLowerCase(), 'status');
         });

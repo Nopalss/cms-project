@@ -60,10 +60,10 @@ require __DIR__ . "/controllers/LoginController.php";
                         </div>
                         <form class="form" id="kt_login_signin_form" method="post">
                             <div class="form-group mb-5">
-                                <input class="form-control h-auto form-control-solid py-4 px-8" type="text" placeholder="Username" name="username" autocomplete="off" />
+                                <input class="form-control h-auto form-control-solid py-4 px-8" type="text" placeholder="Username" name="username" autocomplete="off" required />
                             </div>
                             <div class="form-group mb-5">
-                                <input class="form-control h-auto form-control-solid py-4 px-8" type="password" placeholder="Password" name="password" />
+                                <input class="form-control h-auto form-control-solid py-4 px-8" type="password" placeholder="Password" name="password" autocomplete="current-password" required />
                             </div>
                             <button id="kt_login_signin_submit" type="submit" name="login" class="btn btn-primary font-weight-bold px-9 py-4 my-3 mx-4">Sign In</button>
                         </form>

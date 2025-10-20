@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../../includes/config.php';
 $sql = "SELECT s.*, c.name, c.location 
         FROM dismantle_reports s  
-        JOIN customers c ON s.netpay_id = c.netpay_id";
+        JOIN customers c ON s.netpay_key = c.netpay_key";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $service = $stmt->fetchAll(PDO::FETCH_ASSOC);

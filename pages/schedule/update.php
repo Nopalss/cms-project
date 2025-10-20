@@ -1,13 +1,11 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
-date_default_timezone_set('Asia/Jakarta');
+require_once __DIR__ . '/../../helper/checkRowExist.php';
 $id = isset($_POST['id']) ? $_POST['id'] : null;
 $issue_id = isset($_POST['issue_id']) ? $_POST['issue_id'] : null;
 $job_type = isset($_POST['job_type']) ? $_POST['job_type'] : null;
 if ($id && $job_type) {
     $_SESSION['menu'] = 'schedule';
-
-
     try {
         $status = ['Pending', 'Rescheduled', 'Cancelled', 'Done'];
         $requestTables = [
@@ -28,8 +26,7 @@ if ($id && $job_type) {
             }
         }
         if (!isset($requestTables[$job_type])) {
-            header("Location: " . BASE_URL . "pages/schedule/");
-            exit;
+            redirect("pages/schedule/");
         }
 
         if (isset($requestTables[$job_type])) {
@@ -47,17 +44,7 @@ if ($id && $job_type) {
             $stmt->bindParam(':schedule_key', $id, PDO::PARAM_STR);
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!$row) {
-                $_SESSION['alert'] = [
-                    'icon' => 'error',
-                    'title' => 'Data tidak ditemukan',
-                    'text' => 'Schedule dengan ID ' . htmlspecialchars($id) . ' tidak tersedia.',
-                    'button' => 'Kembali',
-                    'style' => 'danger'
-                ];
-                header("Location: " . BASE_URL . "pages/schedule/");
-                exit;
-            }
+            checkRowExist($row, "pages/schedule/");
         }
         $tanggalSchedule   = isset($row['date']) ? formatDate($row['date'], 'date') : '';
         $tanggalPemasangan = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'full') : '';
@@ -71,22 +58,27 @@ if ($id && $job_type) {
         $sql = "SELECT * FROM technician";
         $stmt = $pdo->query($sql);
         $technicians = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        if ($issue_id) {
-            $sql = "SELECT * FROM issues_report WHERE issue_id = :issue_id";
-            $stmt = $pdo->prepare($sql);
+        if (!empty($issue_id)) {
+            $stmt = $pdo->prepare("SELECT * FROM issues_report WHERE issue_id = :issue_id LIMIT 1");
             $stmt->execute([':issue_id' => $issue_id]);
             $issue = $stmt->fetch(PDO::FETCH_ASSOC);
         }
-        require __DIR__ . '/../../includes/header.php';
-        require __DIR__ . '/../../includes/aside.php';
-        require __DIR__ . '/../../includes/navbar.php';
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        $_SESSION['alert'] = [
+            'icon' => 'error',
+            'title' => 'Oops! Ada yang Salah',
+            'text' => 'Silakan coba lagi nanti. Error: ' . $e->getMessage(),
+            'button' => "Coba Lagi",
+            'style' => "danger"
+        ];
+        redirect("pages/schedule/");
     }
 } else {
-    header("Location: " . BASE_URL . "pages/schedule/");
-    exit;
+    redirect("pages/schedule/");
 }
+require __DIR__ . '/../../includes/header.php';
+require __DIR__ . '/../../includes/aside.php';
+require __DIR__ . '/../../includes/navbar.php';
 ?>
 
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">

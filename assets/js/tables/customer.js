@@ -106,19 +106,19 @@ var KTDatatableLocalSortDemo = function () {
                                         Choose an action:\
                                     </li>\
                                     <li class="navi-item">\
-                                        <a href='${HOST_URL + 'pages/customers/update.php?id=' + row.netpay_id}' class="navi-link">\
+                                        <a href='${HOST_URL + 'pages/customers/update.php?id=' + row.netpay_key}' class="navi-link">\
                                             <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>\
                                             <span class="navi-text">Edit</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteTemplate('${row.netpay_id}', 'controllers/customer/delete.php')" class="navi-link">\
+                                        <a onclick="confirmDeleteTemplate('${row.netpay_key}', 'controllers/customer/delete.php')" class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
                                             <span class="navi-text">Hapus</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a class="navi-link btn-detail" href="${HOST_URL + 'pages/customers/detail.php?id=' + row.netpay_id}">\
+                                        <a class="navi-link btn-detail" href="${HOST_URL + 'pages/customers/detail.php?id=' + row.netpay_key}">\
                                             <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>\
                                             <span class="navi-text">Detail</span>\
                                         </a>\
