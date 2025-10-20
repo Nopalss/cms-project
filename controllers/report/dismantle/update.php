@@ -9,27 +9,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
     }
 
-    $dismantle_id      = isset($_POST['dismantle_id']) ? sanitize($_POST['dismantle_id']) : null;
-    $netpay_id         = isset($_POST['netpay_id']) ? sanitize($_POST['netpay_id']) : null;
+    $dismantle_key      = isset($_POST['dismantle_key']) ? sanitize($_POST['dismantle_key']) : null;
     $tanggal           = isset($_POST['tanggal']) ? sanitize($_POST['tanggal']) : null;
     $jam               = isset($_POST['jam']) ? sanitize($_POST['jam']) : null;
     $alasan            = isset($_POST['alasan']) ? sanitize($_POST['alasan']) : null;
     $action            = isset($_POST['action']) ? sanitize($_POST['action']) : null;
     $part_removed      = isset($_POST['part_removed']) ? sanitize($_POST['part_removed']) : null;
     $kondisi_perangkat = isset($_POST['kondisi_perangkat']) ? sanitize($_POST['kondisi_perangkat']) : null;
-    $pic               = isset($_POST['pic']) ? sanitize($_POST['pic']) : null;
     $keterangan        = isset($_POST['keterangan']) ? sanitize($_POST['keterangan']) : null;
 
     $requiredFields = [
-        'dismantle_id' => $dismantle_id,
-        'netpay_id'    => $netpay_id,
+        'dismantle_key' => $dismantle_key,
         'tanggal'      => $tanggal,
         'jam'          => $jam,
         'alasan'       => $alasan,
         'action'         => $action,
         'part_removed'         => $part_removed,
         'kondisi_perangkat'         => $kondisi_perangkat,
-        'pic'          => $pic,
         'keterangan'   => $keterangan,
     ];
 
@@ -52,28 +48,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Update dismantle_reports
         $sql = "UPDATE dismantle_reports 
-                SET netpay_id = :netpay_id, 
-                    tanggal = :tanggal, 
+                SET tanggal = :tanggal, 
                     jam = :jam, 
                     alasan = :alasan, 
                     action = :action, 
                     part_removed = :part_removed, 
                     kondisi_perangkat = :kondisi_perangkat, 
-                    pic = :pic, 
                     keterangan = :keterangan
-                WHERE dismantle_id = :dismantle_id";
+                WHERE dismantle_key = :dismantle_key";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            ':dismantle_id'      => $dismantle_id,
-            ':netpay_id'         => $netpay_id,
+            ':dismantle_key'      => $dismantle_key,
             ':tanggal'           => $tanggal,
             ':jam'               => $jam,
             ':alasan'            => $alasan,
             ':action'            => $action,
             ':part_removed'      => $part_removed,
             ':kondisi_perangkat' => $kondisi_perangkat,
-            ':pic'               => $pic,
             ':keterangan'        => $keterangan,
         ]);
         $pdo->commit();

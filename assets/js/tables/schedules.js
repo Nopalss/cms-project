@@ -151,20 +151,20 @@ var KTDatatableLocalSortDemo = function () {
                                     <li class="navi-item cursor-pointer">\
                                         <form action="${HOST_URL}pages/schedule/update.php" method="post">\
                                             <input type="hidden" name="job_type" value="${row.job_type}">\
-                                                <button type="submit" name="id" class="btn  border-0 navi-link btn-detail-rikr" value="${row.schedule_id}">\
+                                                <button type="submit" name="id" class="btn  border-0 navi-link btn-detail-rikr" value="${row.schedule_key}">\
                                                 <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>\
                                                 <span class="navi-text">Edit</span>\
                                             </button>\
                                         </form>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteTemplate('${row.schedule_id}', 'controllers/schedules/delete.php')" class="navi-link">\
+                                        <a onclick="confirmDeleteTemplate('${row.schedule_key}', 'controllers/schedules/delete.php')" class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
                                             <span class="navi-text">Hapus</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a class="navi-link btn-detail" data-id="${row.schedule_id}" data-netpay="${row.netpay_id}" data-tech="${row.technician_name}" data-date="${row.date}" data-job="${row.job_type}" data-state="${status[row.status].state}" data-status="${row.status}" data-location="${row.location}">\
+                                        <a class="navi-link btn-detail" data-id="${row.schedule_id}" data-netpay="${row.netpay_id}" data-tech="${row.technician_name}" data-date="${row.date}" data-time="${row.time}" data-job="${row.job_type}" data-state="${status[row.status].state}" data-status="${row.status}" data-location="${row.location}">\
                                             <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>\
                                             <span class="navi-text">Detail</span>\
                                         </a>\

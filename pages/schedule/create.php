@@ -1,6 +1,6 @@
 <?php
-
 require_once __DIR__ . '/../../includes/config.php';
+date_default_timezone_set('Asia/Jakarta');
 $id = isset($_POST['id']) ? $_POST['id'] : null;
 $type_queue = isset($_POST['type_queue']) ? $_POST['type_queue'] : null;
 if ($id && $type_queue) {
@@ -14,7 +14,6 @@ if ($id && $type_queue) {
             "Maintenance"  => ["table" => "request_maintenance", "id" => "rm_id", "catatan" => "deskripsi_issue"],
             "Dismantle"    => ["table" => "request_dismantle", "id" => "rd_id", "catatan" => "deskripsi_dismantle"],
         ];
-
         function formatDate($datetime, $type = 'date')
         {
             $dt = new DateTime($datetime);
@@ -35,11 +34,11 @@ if ($id && $type_queue) {
             $sql = "SELECT q.*, r.*, c.*, r.$catKey as catatan 
             FROM queue_scheduling q
             JOIN $table r ON q.request_id = r.$idCol
-            JOIN customers c ON r.netpay_id = c.netpay_id
-            WHERE q.queue_id = :queue_id";
+            JOIN customers c ON r.netpay_key = c.netpay_key
+            WHERE q.queue_key = :queue_key";
 
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':queue_id', $id, PDO::PARAM_STR);
+            $stmt->bindParam(':queue_key', $id, PDO::PARAM_STR);
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
         }
@@ -116,8 +115,8 @@ if ($id && $type_queue) {
                                     <label for="name">Netpay ID</label>
                                     <input type="text" class="form-control" value="<?= $row['netpay_id'] ?>" disabled="disabled" required>
                                     <input type="hidden" class="form-control" name="schedule_id" value="<?= $schedule_id ?>">
-                                    <input type="hidden" class="form-control" name="queue_id" value="<?= $row['queue_id'] ?>">
-                                    <input type="hidden" class="form-control" name="netpay_id" value="<?= $row['netpay_id'] ?>">
+                                    <input type="hidden" class="form-control" name="queue_key" value="<?= $row['queue_key'] ?>">
+                                    <input type="hidden" class="form-control" name="netpay_key" value="<?= $row['netpay_key'] ?>">
                                 </div>
                                 <div class="form-group">
                                     <label>Teknisi</label>

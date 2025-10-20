@@ -9,13 +9,13 @@ try {
     // Konversi format tanggal (dari MM/DD/YYYY → YYYY-MM-DD)
     $dateObj = DateTime::createFromFormat('m/d/Y', $dateInput);
     $date    = $dateObj ? $dateObj->format('Y-m-d') : null;
-    $sql = "SELECT s.schedule_id, s.netpay_id ,s.tech_id, s.date, s.time, c.location, s.job_type, s.status, t.name AS technician_name FROM schedules s LEFT JOIN technician t ON s.tech_id = t.tech_id JOIN customers c ON s.netpay_id = c.netpay_id WHERE 1=1";
+    $sql = "SELECT s.schedule_key, s.schedule_id, c.netpay_id ,s.tech_id, s.date, s.time, c.location, s.job_type, s.status, t.name AS technician_name FROM schedules s LEFT JOIN technician t ON s.tech_id = t.tech_id JOIN customers c ON s.netpay_key = c.netpay_key WHERE 1=1";
     $params = [];
 
     if (!empty($search)) {
         $sql .= " AND (s.schedule_id LIKE :search
                OR s.tech_id LIKE :search
-               OR s.netpay_id LIKE :search
+               OR c.netpay_id LIKE :search
                OR s.date LIKE :search
                OR s.time LIKE :search
                OR s.location LIKE :search
@@ -24,7 +24,6 @@ try {
                OR t.name LIKE :search)";
         $params[':search'] = "%$search%";
     }
-
 
     if (!empty($status)) {
         $sql .= " AND s.status = :status";

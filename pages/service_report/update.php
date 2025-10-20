@@ -19,7 +19,7 @@ try {
         header("Location: " . BASE_URL . "pages/service_report/");
         exit;
     }
-    $sql = "SELECT srv.*, c.* FROM service_reports srv JOIN customers c ON srv.netpay_id = c.netpay_id WHERE srv.srv_id = :id";
+    $sql = "SELECT srv.*, c.* FROM service_reports srv JOIN customers c ON srv.netpay_key = c.netpay_key WHERE srv.srv_key = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([":id" => $id]);
     $customer = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -59,14 +59,12 @@ try {
                                 <label class="text-right">Service Report ID</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" value="<?= $customer['srv_id'] ?>" disabled="disabled" />
-                                    <input type="hidden" class="form-control" name="srv_id" value="<?= $customer['srv_id'] ?>" />
-                                    <input type="hidden" class="form-control" name="schedule_id" value="<?= $customer['schedule_id'] ?>" />
+                                    <input type="hidden" class="form-control" name="srv_key" value="<?= $customer['srv_key'] ?>" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label>Netpay ID</label>
                                 <input type="text" class="form-control" value="<?= $customer['netpay_id'] ?>" disabled="disabled" />
-                                <input type="hidden" class="form-control" name="netpay_id" value="<?= $customer['netpay_id'] ?>" />
                             </div>
                             <div class="form-group">
                                 <label>Tanggal</label>

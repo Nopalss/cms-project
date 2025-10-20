@@ -5,16 +5,15 @@ require_once __DIR__ . "/../../../includes/config.php";
 date_default_timezone_set('Asia/Jakarta');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    // Fungsi sanitasi input
+    var_dump($_POST);
+    // // Fungsi sanitasi input
     function sanitize($data)
     {
         return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
     }
 
     // Ambil input & sanitasi
-    $srv_id     = sanitize($_POST['srv_id'] ?? '');
-    $netpay_id  = sanitize($_POST['netpay_id'] ?? '');
+    $srv_key     = $srv_key = (int) ($_POST['srv_key'] ?? 0);;
     $tanggal    = sanitize($_POST['tanggal'] ?? '');
     $jam        = sanitize($_POST['jam'] ?? '');
     $problem    = sanitize($_POST['problem'] ?? '');
@@ -24,8 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $red_aft    = sanitize($_POST['red_aft'] ?? '');
     $pic        = sanitize($_POST['pic'] ?? '');
     $keterangan = sanitize($_POST['keterangan'] ?? '');
-    $check = $pdo->prepare("SELECT COUNT(*) FROM service_reports WHERE srv_id = :srv_id");
-    $check->execute([':srv_id' => $srv_id]);
+    $check = $pdo->prepare("SELECT COUNT(*) FROM service_reports WHERE srv_key = :srv_key");
+    $check->execute([':srv_key' => $srv_key]);
     if ($check->fetchColumn() == 0) {
         $_SESSION['alert'] = [
             'icon' => 'error',
@@ -40,8 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Cek field wajib
     $requiredFields = [
-        'srv_id'     => $srv_id,
-        'netpay_id'  => $netpay_id,
+        'srv_key'     => $srv_key,
         'tanggal'    => $tanggal,
         'jam'        => $jam,
         'problem'    => $problem,
@@ -74,7 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sql = "UPDATE service_reports 
                 SET tanggal = :tanggal,
                     jam = :jam,
-                    netpay_id = :netpay_id,
                     problem = :problem,
                     action = :action,
                     part = :part,
@@ -82,14 +79,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     red_aft = :red_aft,
                     pic = :pic,
                     keterangan = :keterangan
-                WHERE srv_id = :srv_id";
+                WHERE srv_key = :srv_key";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
-            ':srv_id'     => $srv_id,
+            ':srv_key'     => $srv_key,
             ':tanggal'    => $tanggal,
             ':jam'        => $jam,
-            ':netpay_id'  => $netpay_id,
             ':problem'    => $problem,
             ':action'     => $action,
             ':part'       => $part,

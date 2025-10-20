@@ -35,9 +35,9 @@ try {
     $pdo->beginTransaction();
 
     // Ambil data ikr
-    $sql = "SELECT srv_id, schedule_id FROM service_reports WHERE srv_id = :srv_id";
+    $sql = "SELECT srv_key, schedule_key FROM service_reports WHERE srv_key = :srv_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':srv_id' => $id]);
+    $stmt->execute([':srv_key' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
@@ -45,18 +45,18 @@ try {
     }
 
     // Update schedule
-    $sql = "UPDATE schedules SET status = 'Pending' WHERE schedule_id = :schedule_id";
+    $sql = "UPDATE schedules SET status = 'Pending' WHERE schedule_key = :schedule_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':schedule_id' => $row['schedule_id']]);
+    $stmt->execute([':schedule_key' => $row['schedule_key']]);
 
 
     // Hapus dari IKR
-    $sql = "DELETE FROM service_reports WHERE srv_id = :srv_id";
+    $sql = "DELETE FROM service_reports WHERE srv_key = :srv_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':srv_id' => $row['srv_id']]);
+    $stmt->execute([':srv_key' => $row['srv_key']]);
 
     if ($stmt->rowCount() === 0) {
-        throw new Exception("Data IKR sudah dihapus sebelumnya.");
+        throw new Exception("Data service sudah dihapus sebelumnya.");
     }
 
     $pdo->commit();

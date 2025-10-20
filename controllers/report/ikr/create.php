@@ -5,7 +5,7 @@ require_once __DIR__ . "/../../../includes/config.php";
 if (isset($_POST['submit'])) {
     // Ambil semua inputan
     $ikr_id      = $_POST['ikr_id'] ?? '';
-    $netpay_id   = $_POST['netpay_id'] ?? '';
+    $netpay_key   = $_POST['netpay_key'] ?? '';
     $group_ikr   = $_POST['group_ikr'] ?? '';
     $ikr_an      = $_POST['ikr_an'] ?? '';
     $alamat      = $_POST['alamat'] ?? '';
@@ -28,26 +28,26 @@ if (isset($_POST['submit'])) {
     $odc         = $_POST['odc'] ?? '';
     $enclosure   = $_POST['enclosure'] ?? '';
     $paket_no    = $_POST['paket_no'] ?? '';
-    $schedule_id = $_POST['schedule_id'] ?? '';
+    $schedule_key = $_POST['schedule_key'] ?? '';
     $pic = $_SESSION['id_karyawan'];
-    $check = $pdo->prepare("SELECT COUNT(*) FROM ikr WHERE ikr_id = :ikr_id");
-    $check->execute([':ikr_id' => $ikr_id]);
-    if ($check->fetchColumn() > 0) {
-        $_SESSION['alert'] = [
-            'icon'   => 'error',
-            'title'  => 'Duplikat!',
-            'text'   => 'IKR ID sudah ada di database.',
-            'button' => 'Coba Lagi',
-            'style'  => 'danger'
-        ];
-        header("Location: " . BASE_URL . "pages/ikr/");
-        exit;
-    }
+    // $check = $pdo->prepare("SELECT COUNT(*) FROM ikr");
+    // $check->execute([':ikr_id' => $ikr_id]);
+    // if ($check->fetchColumn() > 0) {
+    //     $_SESSION['alert'] = [
+    //         'icon'   => 'error',
+    //         'title'  => 'Duplikat!',
+    //         'text'   => 'IKR ID sudah ada di database.',
+    //         'button' => 'Coba Lagi',
+    //         'style'  => 'danger'
+    //     ];
+    //     header("Location: " . BASE_URL . "pages/ikr/");
+    //     exit;
+    // }
 
     // Satukan ke array
     $inputs = compact(
         'ikr_id',
-        'netpay_id',
+        'netpay_key',
         'group_ikr',
         'ikr_an',
         'alamat',
@@ -70,7 +70,7 @@ if (isset($_POST['submit'])) {
         'odc',
         'enclosure',
         'paket_no',
-        'schedule_id',
+        'schedule_key',
         'pic'
     );
     function sanitize($data)
@@ -84,7 +84,7 @@ if (isset($_POST['submit'])) {
     // Validasi field wajib
     $requiredFields = [
         'ikr_id',
-        'netpay_id',
+        'netpay_key',
         'group_ikr',
         'ikr_an',
         'alamat',
@@ -94,7 +94,7 @@ if (isset($_POST['submit'])) {
         'telp',
         'sn',
         'paket',
-        'schedule_id'
+        'schedule_key'
     ];
 
     foreach ($requiredFields as $field) {
@@ -154,23 +154,23 @@ if (isset($_POST['submit'])) {
 
         // Insert ke tabel ikr (schedule_id ditambahin)
         $stmt = $pdo->prepare("INSERT INTO ikr (
-            ikr_id, netpay_id, group_ikr, ikr_an, alamat, rt, rw, desa, kec, kab, telp, sn, paket,
-            type_ont, redaman, odp_no, odc_no, jc_no, mac_sebelum, mac_sesudah, odp, odc, enclosure, paket_no, schedule_id, pic
+            ikr_id, netpay_key, group_ikr, ikr_an, alamat, rt, rw, desa, kec, kab, telp, sn, paket,
+            type_ont, redaman, odp_no, odc_no, jc_no, mac_sebelum, mac_sesudah, odp, odc, enclosure, paket_no, schedule_key, pic
         ) VALUES (
-            :ikr_id, :netpay_id, :group_ikr, :ikr_an, :alamat, :rt, :rw, :desa, :kec, :kab, :telp, :sn, :paket,
-            :type_ont, :redaman, :odp_no, :odc_no, :jc_no, :mac_sebelum, :mac_sesudah, :odp, :odc, :enclosure, :paket_no, :schedule_id, :pic
+            :ikr_id, :netpay_key, :group_ikr, :ikr_an, :alamat, :rt, :rw, :desa, :kec, :kab, :telp, :sn, :paket,
+            :type_ont, :redaman, :odp_no, :odc_no, :jc_no, :mac_sebelum, :mac_sesudah, :odp, :odc, :enclosure, :paket_no, :schedule_key, :pic
         )");
         $stmt->execute($inputs);
 
         // Update customers
-        $sql = "UPDATE customers SET is_active = 'Active' WHERE netpay_id = :netpay_id";
+        $sql = "UPDATE customers SET is_active = 'Active' WHERE netpay_key = :netpay_key";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([':netpay_id' => $netpay_id]);
+        $stmt->execute([':netpay_key' => $netpay_key]);
 
         // Update schedules
-        $sql = "UPDATE schedules SET status = 'Done' WHERE schedule_id = :schedule_id";
+        $sql = "UPDATE schedules SET status = 'Done' WHERE schedule_key = :schedule_key";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([':schedule_id' => $schedule_id]);
+        $stmt->execute([':schedule_key' => $schedule_key]);
 
         // Commit semua perubahan
         $pdo->commit();

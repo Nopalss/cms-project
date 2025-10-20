@@ -11,8 +11,8 @@ if (isset($_POST['submit'])) {
 
     // Ambil & sanitasi data POST
     $schedule_id   = isset($_POST['schedule_id']) ? sanitize($_POST['schedule_id']) : null;
-    $queue_id   = isset($_POST['queue_id']) ? sanitize($_POST['queue_id']) : null;
-    $netpay_id   = isset($_POST['netpay_id']) ? sanitize($_POST['netpay_id']) : null;
+    $queue_key   = isset($_POST['queue_key']) ? sanitize($_POST['queue_key']) : null;
+    $netpay_key   = isset($_POST['netpay_key']) ? sanitize($_POST['netpay_key']) : null;
     $tech_id   = isset($_POST['tech_id']) ? sanitize($_POST['tech_id']) : null;
     $date = isset($_POST['date']) ? sanitize($_POST['date']) : null;
     $time      = isset($_POST['time']) ? sanitize($_POST['time']) : null;
@@ -20,7 +20,7 @@ if (isset($_POST['submit'])) {
     $catatan  = isset($_POST['catatan']) ? sanitize($_POST['catatan']) : null;
 
     // Pastikan semua data terisi
-    if (!$schedule_id || !$queue_id || !$netpay_id || !$tech_id || !$date || !$time || !$job_type || !$catatan) {
+    if (!$schedule_id  || !$queue_key || !$netpay_key || !$tech_id || !$date || !$time || !$job_type || !$catatan) {
         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
@@ -34,25 +34,25 @@ if (isset($_POST['submit'])) {
 
     try {
         // Query insert dengan prepared statement
-        $sql = "INSERT INTO schedules (schedule_id, netpay_id ,tech_id, `date`, `time`, job_type, queue_id, catatan) 
-                VALUES (:schedule_id, :netpay_id, :tech_id, :date, :time, :job_type, :queue_id, :catatan)";
+        $sql = "INSERT INTO schedules (schedule_id, netpay_key ,tech_id, `date`, `time`, job_type, queue_key, catatan) 
+                VALUES (:schedule_id, :netpay_key, :tech_id, :date, :time, :job_type, :queue_key, :catatan)";
         $stmt = $pdo->prepare($sql);
         $scheduleSuccess = $stmt->execute([
             ':schedule_id' => $schedule_id,
-            ':netpay_id' => $netpay_id,
+            ':netpay_key' => $netpay_key,
             ':tech_id'     => $tech_id,
             ':date'        => $date,
             ':time'         => $time,
             ':job_type'    => $job_type,
-            ':queue_id'     => $queue_id,
+            ':queue_key'     => $queue_key,
             ':catatan'     => $catatan
         ]);
         if ($scheduleSuccess) {
             $sql = "UPDATE queue_scheduling 
                         SET status = 'Accepted' 
-                    WHERE queue_id = :queue_id";
+                    WHERE queue_key = :queue_key";
             $stmt = $pdo->prepare($sql);
-            $queueSuccess = $stmt->execute([":queue_id" => $queue_id]);
+            $queueSuccess = $stmt->execute([":queue_key" => $queue_key]);
             if ($queueSuccess) {
                 $_SESSION['alert'] = [
                     'icon' => 'success',

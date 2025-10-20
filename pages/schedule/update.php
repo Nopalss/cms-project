@@ -38,13 +38,13 @@ if ($id && $job_type) {
 
             $sql = "SELECT s.*, s.catatan as deskripsi, s.status as status_schedule, q.*, r.*, c.* 
             FROM schedules s
-            JOIN queue_scheduling q ON s.queue_id = q.queue_id
+            JOIN queue_scheduling q ON s.queue_key = q.queue_key
             JOIN $table r ON q.request_id = r.$idCol
-            JOIN customers c ON r.netpay_id = c.netpay_id
-            WHERE s.schedule_id = :schedule_id";
+            JOIN customers c ON r.netpay_key = c.netpay_key
+            WHERE s.schedule_key = :schedule_key";
 
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':schedule_id', $id, PDO::PARAM_STR);
+            $stmt->bindParam(':schedule_key', $id, PDO::PARAM_STR);
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$row) {
@@ -111,7 +111,7 @@ if ($id && $job_type) {
                         </li>
                         <li class="breadcrumb-item">
                             <a href="" class="text-muted">
-                                <?= $id ?> </a>
+                                <?= $row['schedule_id'] ?> </a>
                         </li>
                     </ul>
                     <!-- end::Breadcrumb -->
@@ -139,9 +139,9 @@ if ($id && $job_type) {
                                 <div class="form-group">
                                     <label for="name">Netpay ID</label>
                                     <input type="text" class="form-control" value="<?= $row['netpay_id'] ?>" disabled="disabled" required>
-                                    <input type="hidden" class="form-control" name="schedule_id" value="<?= $row['schedule_id'] ?>">
-                                    <input type="hidden" class="form-control" name="queue_id" value="<?= $row['queue_id'] ?>">
-                                    <input type="hidden" class="form-control" name="netpay_id" value="<?= $row['netpay_id'] ?>">
+                                    <input type="hidden" class="form-control" name="schedule_key" value="<?= $row['schedule_key'] ?>">
+                                    <input type="hidden" class="form-control" name="queue_key" value="<?= $row['queue_key'] ?>">
+                                    <input type="hidden" class="form-control" name="netpay_key" value="<?= $row['netpay_key'] ?>">
                                 </div>
                                 <div class="form-group">
                                     <label>Teknisi</label>

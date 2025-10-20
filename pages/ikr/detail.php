@@ -21,10 +21,10 @@ if (!$id) {
 try {
     $sql = "SELECT ikr.*, c.*
             FROM ikr
-            JOIN customers c ON ikr.netpay_id = c.netpay_id
-            WHERE ikr.ikr_id = :ikr_id";
+            JOIN customers c ON ikr.netpay_key = c.netpay_key
+            WHERE ikr.ikr_key = :ikr_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':ikr_id', $id, PDO::PARAM_STR);
+    $stmt->bindParam(':ikr_key', $id, PDO::PARAM_STR);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$row) {
@@ -62,7 +62,7 @@ try {
                     </a>
                     <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
                         <li class="breadcrumb-item"><a href="" class="text-muted">Detail Report IKR</a></li>
-                        <li class="breadcrumb-item"><a href="" class="text-muted"><?= $id ?></a></li>
+                        <li class="breadcrumb-item"><a href="" class="text-muted"><?= $row['ikr_id'] ?></a></li>
                     </ul>
                 </div>
             </div>

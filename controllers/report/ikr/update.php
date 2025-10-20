@@ -4,8 +4,7 @@ require_once __DIR__ . "/../../../includes/config.php";
 
 if (isset($_POST['submit'])) {
     // Ambil semua inputan
-    $ikr_id      = $_POST['ikr_id'] ?? '';
-    $netpay_id   = $_POST['netpay_id'] ?? '';
+    $ikr_key      = $_POST['ikr_key'] ?? '';
     $group_ikr   = $_POST['group_ikr'] ?? '';
     $ikr_an      = $_POST['ikr_an'] ?? '';
     $alamat      = $_POST['alamat'] ?? '';
@@ -28,8 +27,8 @@ if (isset($_POST['submit'])) {
     $odc         = $_POST['odc'] ?? '';
     $enclosure   = $_POST['enclosure'] ?? '';
     $paket_no    = $_POST['paket_no'] ?? '';
-    $check = $pdo->prepare("SELECT COUNT(*) FROM ikr WHERE ikr_id = :ikr_id");
-    $check->execute([':ikr_id' => $ikr_id]);
+    $check = $pdo->prepare("SELECT COUNT(*) FROM ikr WHERE ikr_key = :ikr_key");
+    $check->execute([':ikr_key' => $ikr_key]);
     if ($check->fetchColumn() == 0) {
         $_SESSION['alert'] = [
             'icon' => 'error',
@@ -43,8 +42,7 @@ if (isset($_POST['submit'])) {
     }
     // Satukan ke array
     $inputs = compact(
-        'ikr_id',
-        'netpay_id',
+        'ikr_key',
         'group_ikr',
         'ikr_an',
         'alamat',
@@ -79,8 +77,7 @@ if (isset($_POST['submit'])) {
 
     // Validasi field wajib
     $requiredFields = [
-        'ikr_id',
-        'netpay_id',
+        'ikr_key',
         'group_ikr',
         'ikr_an',
         'alamat',
@@ -149,7 +146,6 @@ if (isset($_POST['submit'])) {
 
         // Update data di tabel ikr
         $sql = "UPDATE ikr SET
-            netpay_id   = :netpay_id,
             group_ikr   = :group_ikr,
             ikr_an      = :ikr_an,
             alamat      = :alamat,
@@ -172,7 +168,7 @@ if (isset($_POST['submit'])) {
             odc         = :odc,
             enclosure   = :enclosure,
             paket_no    = :paket_no
-        WHERE ikr_id = :ikr_id";
+        WHERE ikr_key = :ikr_key";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute($inputs);

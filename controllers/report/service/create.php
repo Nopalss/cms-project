@@ -14,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Ambil input & sanitasi
     $srv_id     = sanitize($_POST['srv_id'] ?? '');
-    $schedule_id     = sanitize($_POST['schedule_id'] ?? '');
-    $netpay_id  = sanitize($_POST['netpay_id'] ?? '');
+    $schedule_key     = sanitize($_POST['schedule_key'] ?? '');
+    $netpay_key  = sanitize($_POST['netpay_key'] ?? '');
     $tanggal    = sanitize($_POST['tanggal'] ?? '');
     $jam        = sanitize($_POST['jam'] ?? '');
     $problem    = sanitize($_POST['problem'] ?? '');
@@ -29,7 +29,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Cek field wajib
     $requiredFields = [
         'srv_id'     => $srv_id,
-        'netpay_id'  => $netpay_id,
+        'netpay_key'  => $netpay_key,
         'tanggal'    => $tanggal,
         'jam'        => $jam,
         'problem'    => $problem,
@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'red_aft'    => $red_aft,
         'pic'        => $pic,
         'keterangan' => $keterangan,
-        'schedule_id' => $schedule_id,
+        'schedule_key' => $schedule_key,
     ];
 
     foreach ($requiredFields as $field => $value) {
@@ -57,8 +57,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     try {
-        $checkSrv = $pdo->prepare("SELECT COUNT(*) FROM service_reports WHERE srv_id = :srv_id");
-        $checkSrv->execute([':srv_id' => $srv_id]);
+        $checkSrv = $pdo->prepare("SELECT COUNT(*) FROM service_reports WHERE srv_key = :srv_key");
+        $checkSrv->execute([':srv_key' => $srv_key]);
         if ($checkSrv->fetchColumn() > 0) {
             $_SESSION['alert'] = [
                 'icon' => 'error',
@@ -75,16 +75,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Query insert
         $sql = "INSERT INTO service_reports 
-                (srv_id, tanggal, jam, netpay_id, problem, action, part, red_bef, red_aft, pic, keterangan, schedule_id) 
+                (srv_id, tanggal, jam, netpay_key, problem, action, part, red_bef, red_aft, pic, keterangan, schedule_key) 
                 VALUES 
-                (:srv_id, :tanggal, :jam, :netpay_id, :problem, :action, :part, :red_bef, :red_aft, :pic, :keterangan, :schedule_id)";
+                (:srv_id, :tanggal, :jam, :netpay_key, :problem, :action, :part, :red_bef, :red_aft, :pic, :keterangan, :schedule_key)";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             ':srv_id'     => $srv_id,
             ':tanggal'    => $tanggal,
             ':jam'        => $jam,
-            ':netpay_id'  => $netpay_id,
+            ':netpay_key'  => $netpay_key,
             ':problem'    => $problem,
             ':action'     => $action,
             ':part'       => $part,
@@ -92,12 +92,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ':red_aft'    => $red_aft,
             ':pic'        => $pic,
             ':keterangan' => $keterangan,
-            ':schedule_id' => $schedule_id
+            ':schedule_key' => $schedule_key
         ]);
         // Update schedules
-        $sql = "UPDATE schedules SET status = 'Done' WHERE schedule_id = :schedule_id";
+        $sql = "UPDATE schedules SET status = 'Done' WHERE schedule_key = :schedule_key";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([':schedule_id' => $schedule_id]);
+        $stmt->execute([':schedule_key' => $schedule_key]);
 
         $pdo->commit();
 

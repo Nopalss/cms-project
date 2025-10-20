@@ -1,64 +1,28 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
 $_SESSION['menu'] = 'schedule';
-require __DIR__ . '/../../includes/header.php';
-require __DIR__ . '/../../includes/aside.php';
-require __DIR__ . '/../../includes/navbar.php';
+
 
 // ambil id/job_type dari POST dulu, fallback ke GET
 $id = $_POST['id'] ?? $_GET['id'] ?? null;
 $job_type = $_POST['job_type'] ?? $_GET['job_type'] ?? null;
-
-$requestTables = [
-    "Instalasi"    => ["table" => "request_ikr", "id" => "rikr_id"],
-    "Maintenance"  => ["table" => "request_maintenance", "id" => "rm_id"],
-    "Dismantle"    => ["table" => "request_dismantle", "id" => "rd_id"]
-];
 
 try {
     if (empty($id)) {
         throw new Exception("ID schedule tidak ditemukan.");
     }
 
-    // default row null
-    $row = null;
-
-    if (isset($requestTables[$job_type])) {
-        $table  = $requestTables[$job_type]['table'];
-        $idCol  = $requestTables[$job_type]['id'];
-
-        // gunakan LEFT JOIN supaya ketiadaan child-row tidak menghilangkan schedule
-        $sql = "SELECT s.*, c.*, q.request_id,
-                       EXISTS (
-                           SELECT 1
-                           FROM issues_report ir
-                           WHERE ir.schedule_id = s.schedule_id
-                             AND ir.status = 'Pending'
-                       ) AS has_issue
-                FROM schedules s
-                LEFT JOIN customers c ON s.netpay_id = c.netpay_id
-                LEFT JOIN queue_scheduling q ON s.queue_id = q.queue_id
-                LEFT JOIN $table r ON q.request_id = r.$idCol
-                WHERE s.schedule_id = :schedule_id
-                LIMIT 1";
-
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':schedule_id' => $id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    } else {
-        // fallback: ambil schedule + customer tanpa join request table
-        $sql = "SELECT s.*, c.*,
+    $sql = "SELECT s.*, c.*,
                        EXISTS (
                            SELECT 1 FROM issues_report ir WHERE ir.schedule_id = s.schedule_id AND ir.status = 'Pending'
                        ) AS has_issue
                 FROM schedules s
-                LEFT JOIN customers c ON s.netpay_id = c.netpay_id
-                WHERE s.schedule_id = :schedule_id
+                LEFT JOIN customers c ON s.netpay_key = c.netpay_key
+                WHERE s.schedule_key = :schedule_key
                 LIMIT 1";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':schedule_id' => $id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    }
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute([':schedule_key' => $id]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
         // tidak ada data → redirect atau tampil pesan (pilih salah satu)
@@ -104,6 +68,9 @@ try {
     header("Location: " . BASE_URL . "pages/schedule/");
     exit;
 }
+require __DIR__ . '/../../includes/header.php';
+require __DIR__ . '/../../includes/aside.php';
+require __DIR__ . '/../../includes/navbar.php';
 ?>
 
 <!-- HTML: gunakan safe-access (null coalescing) untuk menghindari notice -->
@@ -215,7 +182,7 @@ try {
                         </a>
 
                         <div class="btn">
-                            <button onclick="confirmActiveTask('<?= $row['schedule_id'] ?>', 'controllers/schedules/actived.php')" class=" btn btn-success">
+                            <button onclick="confirmActiveTask('<?= $row['schedule_key'] ?>', 'controllers/schedules/actived.php')" class=" btn btn-success">
                                 <span class="navi-icon"><i class="fas fa-hourglass-start"></i></span>
                                 <span class="navi-text">Mulai Kerja</span>
                             </button>
@@ -234,7 +201,7 @@ try {
                             <?php $jobKey = $row['job_type'] ?? $job_type; ?>
                             <?php if (!empty($actionDone[$jobKey])): ?>
                                 <form action="<?= BASE_URL ?>pages/<?= htmlspecialchars($actionDone[$jobKey]) ?>/create.php" method="post">
-                                    <button class=" btn btn-success" name="id" value="<?= htmlspecialchars($row['schedule_id']) ?>">
+                                    <button class=" btn btn-success" name="id" value="<?= htmlspecialchars($row['schedule_key']) ?>">
                                         <span class="navi-icon"><i class="flaticon2-check-mark"></i></span>
                                         <span class="navi-text">Mark as Done</span>
                                     </button>

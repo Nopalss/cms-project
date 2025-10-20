@@ -14,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Ambil input & sanitasi
     $dismantle_id      = isset($_POST['dismantle_id']) ? sanitize($_POST['dismantle_id']) : null;
-    $schedule_id       = isset($_POST['schedule_id']) ? sanitize($_POST['schedule_id']) : null;
-    $netpay_id         = isset($_POST['netpay_id']) ? sanitize($_POST['netpay_id']) : null;
+    $schedule_key       = isset($_POST['schedule_key']) ? sanitize($_POST['schedule_key']) : null;
+    $netpay_key         = isset($_POST['netpay_key']) ? sanitize($_POST['netpay_key']) : null;
     $tanggal           = isset($_POST['tanggal']) ? sanitize($_POST['tanggal']) : null;
     $jam               = isset($_POST['jam']) ? sanitize($_POST['jam']) : null;
     $alasan            = isset($_POST['alasan']) ? sanitize($_POST['alasan']) : null;
@@ -27,8 +27,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Validasi field wajib
     $requiredFields = [
         'dismantle_id' => $dismantle_id,
-        'schedule_id'  => $schedule_id,
-        'netpay_id'    => $netpay_id,
+        'schedule_key'  => $schedule_key,
+        'netpay_key'    => $netpay_key,
         'tanggal'      => $tanggal,
         'jam'          => $jam,
         'alasan'       => $alasan,
@@ -58,15 +58,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Insert ke dismantle_reports
         $sql = "INSERT INTO dismantle_reports 
-                (dismantle_id, schedule_id, netpay_id, tanggal, jam, alasan, action, part_removed, kondisi_perangkat, pic, keterangan) 
+                (dismantle_id, schedule_key, netpay_key, tanggal, jam, alasan, action, part_removed, kondisi_perangkat, pic, keterangan) 
                 VALUES 
-                (:dismantle_id, :schedule_id, :netpay_id, :tanggal, :jam, :alasan, :action, :part_removed, :kondisi_perangkat, :pic, :keterangan)";
+                (:dismantle_id, :schedule_key, :netpay_key, :tanggal, :jam, :alasan, :action, :part_removed, :kondisi_perangkat, :pic, :keterangan)";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute([
             ':dismantle_id'      => $dismantle_id,
-            ':schedule_id'       => $schedule_id,
-            ':netpay_id'         => $netpay_id,
+            ':schedule_key'       => $schedule_key,
+            ':netpay_key'         => $netpay_key,
             ':tanggal'           => $tanggal,
             ':jam'               => $jam,
             ':alasan'            => $alasan,
@@ -78,13 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ]);
 
         // Update status schedule → Done
-        $sql = "UPDATE schedules SET status = 'Done' WHERE schedule_id = :schedule_id";
+        $sql = "UPDATE schedules SET status = 'Done' WHERE schedule_key = :schedule_key";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([':schedule_id' => $schedule_id]);
+        $stmt->execute([':schedule_key' => $schedule_key]);
 
-        $sql = "UPDATE customers SET is_active = 'Inactive' WHERE netpay_id = :netpay_id";
+        $sql = "UPDATE customers SET is_active = 'Inactive' WHERE netpay_key = :netpay_key";
         $stmt = $pdo->prepare($sql);
-        $stmt->execute([':netpay_id' => $netpay_id]);
+        $stmt->execute([':netpay_key' => $netpay_key]);
 
 
         $pdo->commit();

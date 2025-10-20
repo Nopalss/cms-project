@@ -252,7 +252,7 @@ require_once __DIR__ . '/config.php';
                                             <form action="${HOST_URL}pages/schedule/create.php" method="post">
                                                 <span>
                                                     <input type="hidden" name="type_queue" value="${item.type_queue}">
-                                                    <button type="submit" name="id" class="btn btn-primary border-0 btn-detail-rikr" value="${item.queue_id}">
+                                                    <button type="submit" name="id" class="btn btn-primary border-0 btn-detail-rikr" value="${item.queue_key}">
                                                         <span class="navi-icon"><i class="flaticon-calendar-with-a-clock-time-tools"></i></span>
                                                         <span class="navi-text">Schedule Now</span>
                                                     </button>
@@ -595,8 +595,7 @@ require_once __DIR__ . '/config.php';
                         if (jam) {
                             $("#time").append(`<option value = "${jam}" selected>${jam}</option>`);
                             res.jamKosong.forEach(function(time) {
-                                let selected = time == jamPemasangan ? 'selected' : '';
-                                $("#time").append(`<option value="${time}" ${selected} >${time}</option>`);
+                                $("#time").append(`<option value="${time}">${time}</option>`);
                             });
                         } else {
                             let jamKosong = res.jamKosong;

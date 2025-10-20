@@ -35,9 +35,9 @@ try {
     $pdo->beginTransaction();
 
     // Ambil data ikr
-    $sql = "SELECT dismantle_id, schedule_id, netpay_id FROM dismantle_reports WHERE dismantle_id = :dismantle_id";
+    $sql = "SELECT dismantle_id, dismantle_key, schedule_key, netpay_key FROM dismantle_reports WHERE dismantle_key = :dismantle_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':dismantle_id' => $id]);
+    $stmt->execute([':dismantle_key' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
@@ -45,18 +45,18 @@ try {
     }
 
     // Update schedule
-    $sql = "UPDATE schedules SET status = 'Pending' WHERE schedule_id = :schedule_id";
+    $sql = "UPDATE schedules SET status = 'Pending' WHERE schedule_key = :schedule_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':schedule_id' => $row['schedule_id']]);
+    $stmt->execute([':schedule_key' => $row['schedule_key']]);
 
-    $sql = "UPDATE customers SET is_active = 'Active' WHERE netpay_id = :netpay_id";
+    $sql = "UPDATE customers SET is_active = 'Active' WHERE netpay_key = :netpay_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':netpay_id' => $row['netpay_id']]);
+    $stmt->execute([':netpay_key' => $row['netpay_key']]);
 
     // Hapus dari IKR
-    $sql = "DELETE FROM dismantle_reports WHERE dismantle_id = :dismantle_id";
+    $sql = "DELETE FROM dismantle_reports WHERE dismantle_key = :dismantle_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':dismantle_id' => $row['dismantle_id']]);
+    $stmt->execute([':dismantle_key' => $row['dismantle_key']]);
 
     if ($stmt->rowCount() === 0) {
         throw new Exception("Data dismantle sudah dihapus sebelumnya.");

@@ -19,7 +19,7 @@ try {
         header("Location: " . BASE_URL . "pages/dismantle/");
         exit;
     }
-    $sql = "SELECT dr.*, c.* FROM dismantle_reports dr JOIN customers c ON dr.netpay_id = c.netpay_id WHERE dr.dismantle_id = :id";
+    $sql = "SELECT dr.*, c.* FROM dismantle_reports dr JOIN customers c ON dr.netpay_key = c.netpay_key WHERE dr.dismantle_key = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([":id" => $id]);
     $customer = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -48,13 +48,13 @@ try {
                                 <label class="text-right">Dismantle Report ID</label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" value="<?= $customer['dismantle_id'] ?>" disabled="disabled" />
-                                    <input type="hidden" class="form-control" name="dismantle_id" value="<?= $customer['dismantle_id'] ?>" />
+                                    <input type="hidden" class="form-control" name="dismantle_key" value="<?= $customer['dismantle_key'] ?>" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label>Netpay ID</label>
                                 <input type="text" class="form-control" value="<?= $customer['netpay_id'] ?>" disabled="disabled" />
-                                <input type="hidden" class="form-control" name="netpay_id" value="<?= $customer['netpay_id'] ?>" />
+                                <input type="hidden" class="form-control" name="netpay_key" value="<?= $customer['netpay_key'] ?>" />
                             </div>
                             <div class="form-group">
                                 <label>Tanggal</label>

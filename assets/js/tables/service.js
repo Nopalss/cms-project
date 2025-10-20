@@ -92,19 +92,19 @@ var KTDatatableLocalSortDemo = function () {
                                         Choose an action:\
                                     </li>\
                                     <li class="navi-item">\
-                                        <a href='${HOST_URL + 'pages/service_report/update.php?id=' + row.srv_id}' class="navi-link">\
+                                        <a href='${HOST_URL + 'pages/service_report/update.php?id=' + row.srv_key}' class="navi-link">\
                                             <span class="navi-icon "><i class="la la-pencil-alt text-warning"></i></span>\
                                             <span class="navi-text">Edit</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteTemplate('${row.srv_id}', 'controllers/report/service/delete.php')"class="navi-link">\
+                                        <a onclick="confirmDeleteTemplate('${row.srv_key}', 'controllers/report/service/delete.php')"class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
                                             <span class="navi-text">Hapus</span>\
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a class="navi-link btn-detail" href="${HOST_URL + 'pages/service_report/detail.php?id=' + row.srv_id}">\
+                                        <a class="navi-link btn-detail" href="${HOST_URL + 'pages/service_report/detail.php?id=' + row.srv_key}">\
                                             <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>\
                                             <span class="navi-text">Detail</span>\
                                         </a>\
@@ -117,24 +117,6 @@ var KTDatatableLocalSortDemo = function () {
                 },
             }],
         });
-
-        function confirmDelete(scheduleId) {
-            Swal.fire({
-                title: 'Yakin mau hapus?',
-                text: "Data schedule akan dihapus permanen!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Ya, hapus!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Redirect ke delete.php dengan parameter ID
-                    window.location.href = "<?= BASE_URL ?>controllers/schedules/delete.php?id=" + scheduleId;
-                }
-            });
-        }
 
         $('#kt_datatable_search_status').on('change', function () {
             datatable.search($(this).val().toLowerCase(), 'status');

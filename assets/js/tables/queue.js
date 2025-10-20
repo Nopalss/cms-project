@@ -131,7 +131,7 @@ var KTDatatableLocalSortDemo = function () {
                             ? `<li class="navi-item cursor-pointer">
                                     <form action="${HOST_URL}pages/schedule/create.php" method="post">
                                         <input type="hidden" name="type_queue" value="${row.type_queue}">
-                                        <button type="submit" name="id" class="btn  border-0 navi-link" value="${row.queue_id}">
+                                        <button type="submit" name="id" class="btn  border-0 navi-link" value="${row.queue_key}">
                                             <span class="navi-icon"><i class="flaticon-calendar-with-a-clock-time-tools text-primary"></i></span>
                                             <span class="navi-text"> Schedule Now</span>
                                         </button>
@@ -140,7 +140,7 @@ var KTDatatableLocalSortDemo = function () {
                         }
                                     
                                     <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteTemplate('${row.queue_id}', 'controllers/queue/delete.php')" class="navi-link">\
+                                        <a onclick="confirmDeleteTemplate('${row.queue_key}', 'controllers/queue/delete.php')" class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
                                             <span class="navi-text">Hapus</span>\
                                         </a>\
@@ -148,7 +148,7 @@ var KTDatatableLocalSortDemo = function () {
                                     <li class="navi-item cursor-pointer">\
                                         <form action="${HOST_URL}pages/queue/detail.php" method="post">\
                                             <input type="hidden" name="type_queue" value="${row.type_queue}" >\
-                                            <button type="submit" class="btn border-0 navi-link" name="id" value="${row.queue_id}">\
+                                            <button type="submit" class="btn border-0 navi-link" name="id" value="${row.queue_key}">\
                                             <span class="navi-icon"><i class="flaticon-eye text-info"></i></span>\
                                             <span class="navi-text"> Detail</span>\
                                             </button>\

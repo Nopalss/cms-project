@@ -4,9 +4,8 @@ require_once __DIR__ . '/../../includes/config.php';
 $_SESSION['menu'] = 'ikr';
 
 try {
-    $ikr_id = isset($_GET['id']) ? $_GET['id'] : null;
-    $ikr_id = $_GET['id'] ?? null;
-    if (!$ikr_id) {
+    $ikr_key = isset($_GET['id']) ? $_GET['id'] : null;
+    if (!$ikr_key) {
         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Oops!',
@@ -18,9 +17,9 @@ try {
         exit;
     }
 
-    $sql = "SELECT ikr.* , c.* FROM ikr JOIN customers c ON ikr.netpay_id = c.netpay_id WHERE ikr.ikr_id = :id";
+    $sql = "SELECT ikr.* , c.* FROM ikr JOIN customers c ON ikr.netpay_key = c.netpay_key WHERE ikr.ikr_key = :id";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([":id" => $ikr_id]);
+    $stmt->execute([":id" => $ikr_key]);
     $customer = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$customer) {
         $_SESSION['alert'] = [
@@ -60,14 +59,14 @@ try {
                             <div class="form-group">
                                 <label class="text-right">Report IKR ID</label>
                                 <div class="input-group">
-                                    <input type="text" class="form-control" value="<?= $ikr_id ?>" disabled="disabled" />
-                                    <input type="hidden" class="form-control" name="ikr_id" value="<?= $ikr_id ?>" />
+                                    <input type="text" class="form-control" value="<?= $customer['ikr_id'] ?>" disabled="disabled" />
+                                    <input type="hidden" class="form-control" name="ikr_key" value="<?= $ikr_key ?>" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label>Netpay ID</label>
                                 <input type="text" class="form-control" value="<?= $customer['netpay_id'] ?>" disabled="disabled" />
-                                <input type="hidden" class="form-control" name="netpay_id" value="<?= $customer['netpay_id'] ?>" />
+                                <input type="hidden" class="form-control" name="netpay_key" value="<?= $customer['netpay_key'] ?>" />
                             </div>
                             <!-- Group IKR -->
                             <div class="form-group">

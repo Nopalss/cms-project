@@ -35,7 +35,7 @@ try {
     $pdo->beginTransaction();
 
     // Pastikan schedule ada
-    $sql = "SELECT schedule_id, queue_id FROM schedules WHERE schedule_id = :id";
+    $sql = "SELECT schedule_id, schedule_key, queue_key FROM schedules WHERE schedule_key = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -56,12 +56,12 @@ try {
     // Update queue_scheduling → set status Pending
     $sql = "UPDATE queue_scheduling 
                 SET status = 'Pending'
-                WHERE queue_id = :id";
+                WHERE queue_key = :id";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id' => $row['queue_id']]);
+    $stmt->execute([':id' => $row['queue_key']]);
 
     // Hapus schedule
-    $sql = "DELETE FROM schedules WHERE schedule_id = :id";
+    $sql = "DELETE FROM schedules WHERE schedule_key = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $id]);
 

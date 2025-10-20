@@ -33,10 +33,10 @@ if (!$user) {
 }
 
 try {
-    $sql = "UPDATE schedules SET status = 'Actived' WHERE schedule_id = :schedule_id";
+    $sql = "UPDATE schedules SET status = 'Actived' WHERE schedule_key = :schedule_key";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
-        ':schedule_id' => $id
+        ':schedule_key' => $id
     ]);
 
     $_SESSION['alert'] = [

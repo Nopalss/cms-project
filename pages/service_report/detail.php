@@ -4,7 +4,7 @@ $_SESSION['menu'] = 'ikr';
 require __DIR__ . '/../../includes/header.php';
 require __DIR__ . '/../../includes/aside.php';
 require __DIR__ . '/../../includes/navbar.php';
-
+date_default_timezone_set('Asia/Jakarta');
 $id = $_GET['id'] ?? null;
 if (!$id) {
     $_SESSION['alert'] = [
@@ -21,10 +21,10 @@ if (!$id) {
 try {
     $sql = "SELECT srv.*, c.*
             FROM service_reports srv
-            JOIN customers c ON srv.netpay_id = c.netpay_id
-            WHERE srv.srv_id = :srv_id";
+            JOIN customers c ON srv.netpay_key = c.netpay_key
+            WHERE srv.srv_key = :srv_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':srv_id', $id, PDO::PARAM_STR);
+    $stmt->bindParam(':srv_key', $id, PDO::PARAM_STR);
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     $dt = new DateTime($row['created_at']);
@@ -49,7 +49,7 @@ try {
                     <h5 class="text-dark font-weight-bold my-1 mr-5">Service Report </h5>
                     <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
                         <li class="breadcrumb-item"><a href="" class="text-muted">Detail Service Report</a></li>
-                        <li class="breadcrumb-item"><a href="" class="text-muted"><?= $id ?></a></li>
+                        <li class="breadcrumb-item"><a href="" class="text-muted"><?= $row['srv_id'] ?></a></li>
                     </ul>
                 </div>
             </div>

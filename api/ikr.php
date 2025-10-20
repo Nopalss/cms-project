@@ -4,7 +4,6 @@ require_once __DIR__ . "/../includes/config.php";
 try {
     $search = $_POST['query']['generalSearch'] ?? '';
     $dateInput = $_POST['query']['date'] ?? '';
-    $status = $_POST['query']['status'] ?? '';
 
     // Konversi format tanggal (dari MM/DD/YYYY → YYYY-MM-DD)
     $dateObj = DateTime::createFromFormat('m/d/Y', $dateInput);
@@ -12,7 +11,7 @@ try {
 
 
 
-    $sql = "SELECT * FROM ikr WHERE 1=1";
+    $sql = "SELECT i.*, c.netpay_id FROM ikr i LEFT JOIN customers c ON i.netpay_key = c.netpay_key WHERE 1=1";
 
     $params = [];
     if ($_SESSION['role'] == 'teknisi') {
@@ -22,45 +21,41 @@ try {
 
     if (!empty($search)) {
         $sql .= " AND (
-                    ikr_id LIKE :search
-                    OR netpay_id LIKE :search
-                    OR group_ikr LIKE :search
-                    OR ikr_an LIKE :search
-                    OR alamat LIKE :search
-                    OR rt LIKE :search
-                    OR rw LIKE :search
-                    OR desa LIKE :search
-                    OR kec LIKE :search
-                    OR kab LIKE :search
-                    OR telp LIKE :search
-                    OR sn LIKE :search
-                    OR paket LIKE :search
-                    OR type_ont LIKE :search
-                    OR redaman LIKE :search
-                    OR odp_no LIKE :search
-                    OR odc_no LIKE :search
-                    OR jc_no LIKE :search
-                    OR mac_sebelum LIKE :search
-                    OR mac_sesudah LIKE :search
-                    OR odp LIKE :search
-                    OR odc LIKE :search
-                    OR enclosure LIKE :search
-                    OR paket_no LIKE :search
-                    OR created_at LIKE :search
-                    OR updated_at LIKE :search
-                    OR schedule_id LIKE :search
+                    i.ikr_id LIKE :search
+                    OR c.netpay_id LIKE :search
+                    OR i.group_ikr LIKE :search
+                    OR i.ikr_an LIKE :search
+                    OR i.alamat LIKE :search
+                    OR i.rt LIKE :search
+                    OR i.rw LIKE :search
+                    OR i.desa LIKE :search
+                    OR i.kec LIKE :search
+                    OR i.kab LIKE :search
+                    OR i.telp LIKE :search
+                    OR i.sn LIKE :search
+                    OR i.paket LIKE :search
+                    OR i.type_ont LIKE :search
+                    OR i.redaman LIKE :search
+                    OR i.odp_no LIKE :search
+                    OR i.odc_no LIKE :search
+                    OR i.jc_no LIKE :search
+                    OR i.mac_sebelum LIKE :search
+                    OR i.mac_sesudah LIKE :search
+                    OR i.odp LIKE :search
+                    OR i.odc LIKE :search
+                    OR i.enclosure LIKE :search
+                    OR i.paket_no LIKE :search
+                    OR i.created_at LIKE :search
+                    OR i.updated_at LIKE :search
+                    OR i.schedule_key LIKE :search
                 )";
 
         $params[':search'] = "%$search%";
     }
 
     if (!empty($date)) {
-        $sql .= " AND created_at LIKE :created_at";
+        $sql .= " AND i.created_at LIKE :created_at";
         $params[':created_at'] = "%$date%";
-    }
-    if (!empty($status)) {
-        $sql .= " AND status = :status";
-        $params[':status'] = $status;
     }
 
     $stmt = $pdo->prepare($sql);

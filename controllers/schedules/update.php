@@ -13,17 +13,17 @@ if (isset($_POST['submit'])) {
 
     // Ambil & sanitasi data
     $issue_id    = isset($_POST['issue_id']) ? sanitize($_POST['issue_id']) : null;
-    $schedule_id = isset($_POST['schedule_id']) ? sanitize($_POST['schedule_id']) : null;
-    $netpay_id   = isset($_POST['netpay_id']) ? sanitize($_POST['netpay_id']) : null;
+    $schedule_key = isset($_POST['schedule_key']) ? sanitize($_POST['schedule_key']) : null;
+    $netpay_key   = isset($_POST['netpay_key']) ? sanitize($_POST['netpay_key']) : null;
     $tech_id     = isset($_POST['tech_id']) ? sanitize($_POST['tech_id']) : null;
     $date        = isset($_POST['date']) ? sanitize($_POST['date']) : null;
     $time        = isset($_POST['time']) ? sanitize($_POST['time']) : null;
     $job_type    = isset($_POST['job_type']) ? sanitize($_POST['job_type']) : null;
     $status      = isset($_POST['status']) ? sanitize($_POST['status']) : null;
-    $catatan      = trim($_POST['catatan']);
+    $catatan = isset($_POST['catatan']) ? sanitize($_POST['catatan']) : null;
 
     // Validasi dasar
-    if (!$schedule_id || !$netpay_id || !$tech_id || !$date || !$time || !$job_type || !$status || !$catatan) {
+    if (!$schedule_key || !$netpay_key || !$tech_id || !$date || !$time || !$job_type || !$status || !$catatan) {
         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Oops! Ada yang Salah',
@@ -43,26 +43,21 @@ if (isset($_POST['submit'])) {
 
         // Update schedules
         $sqlSchedule = "UPDATE schedules 
-                            SET netpay_id = :netpay_id, 
-                                tech_id   = :tech_id, 
+                            SET tech_id   = :tech_id, 
                                 date      = :date, 
                                 time      = :time, 
-                                job_type  = :job_type, 
                                 status    = :status,
                                 catatan    = :catatan
-                            WHERE schedule_id = :schedule_id";
+                            WHERE schedule_key = :schedule_key";
         $stmt = $pdo->prepare($sqlSchedule);
         $stmt->execute([
-            ':netpay_id'     => $netpay_id,
-            ':tech_id'       => $tech_id,
+            ':tech_id'          => $tech_id,
             ':date'          => $date,
             ':time'          => $time,
-            ':job_type'      => $job_type,
             ':status'        => $statusToUpdate,
             ':catatan'   => $catatan,
-            ':schedule_id'   => $schedule_id
+            ':schedule_key'   => $schedule_key
         ]);
-
 
         // Update issues_report jika ada issue_id
         if (!empty($issue_id)) {

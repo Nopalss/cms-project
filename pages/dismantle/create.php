@@ -20,7 +20,7 @@ try {
         exit;
     }
 
-    $sql = "SELECT s.schedule_id, s.tech_id ,s.netpay_id, c.* FROM schedules s JOIN customers c ON s.netpay_id = c.netpay_id WHERE s.schedule_id = :id";
+    $sql = "SELECT s.schedule_id, s.schedule_key, s.tech_id ,s.netpay_key, c.* FROM schedules s JOIN customers c ON s.netpay_key = c.netpay_key WHERE s.schedule_key = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([":id" => $id]);
     $customer = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -62,13 +62,13 @@ try {
                                 <div class="input-group">
                                     <input type="text" class="form-control" value="<?= $dismantle_id ?>" disabled="disabled" />
                                     <input type="hidden" class="form-control" name="dismantle_id" value="<?= $dismantle_id ?>" />
-                                    <input type="hidden" class="form-control" name="schedule_id" value="<?= $customer['schedule_id'] ?>" />
+                                    <input type="hidden" class="form-control" name="schedule_key" value="<?= $customer['schedule_key'] ?>" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label>Netpay ID</label>
                                 <input type="text" class="form-control" value="<?= $customer['netpay_id'] ?>" disabled="disabled" />
-                                <input type="hidden" class="form-control" name="netpay_id" value="<?= $customer['netpay_id'] ?>" />
+                                <input type="hidden" class="form-control" name="netpay_key" value="<?= $customer['netpay_key'] ?>" />
                             </div>
                             <div class="form-group">
                                 <label>Tanggal</label>

@@ -2,7 +2,7 @@
 $tech_id =  $_SESSION['id_karyawan'];
 // Mengambil data scehdule berdasarkan id teknisi
 $sql = "SELECT s.*, c.location, c.phone FROM schedules s
-        JOIN customers c ON s.netpay_id = c.netpay_id
+        JOIN customers c ON s.netpay_key = c.netpay_key
         WHERE date = CURDATE()
         AND tech_id = :tech_id
         ORDER BY time ASC";
@@ -84,7 +84,7 @@ $statusClasses = [
                                                         <li class="navi-item cursor-pointer">
                                                             <form action="<?= BASE_URL ?>pages/schedule/detail.php" method="post">
                                                                 <input type="hidden" name="job_type" value="<?= $s['job_type'] ?>">
-                                                                <button type="submit" name="id" class="btn  border-0 navi-link btn-detail-rikr" value="<?= $s['schedule_id'] ?>">
+                                                                <button type="submit" name="id" class="btn  border-0 navi-link btn-detail-rikr" value="<?= $s['schedule_key'] ?>">
                                                                     <span class="navi-icon "><i class="flaticon-eye text-info"></i></span>
                                                                     <span class="navi-text">Detail</span>
                                                                 </button>

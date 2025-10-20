@@ -10,29 +10,29 @@ try {
     $dateObj = DateTime::createFromFormat('m/d/Y', $dateInput);
     $date    = $dateObj ? $dateObj->format('Y-m-d') : null;
 
-    $sql = "SELECT * FROM dismantle_reports WHERE 1=1";
+    $sql = "SELECT d.*, c.netpay_id FROM dismantle_reports d LEFT JOIN customers c ON d.netpay_key = c.netpay_key WHERE 1=1";
 
     $params = [];
 
     $params = [];
     if ($_SESSION['role'] == 'teknisi') {
-        $sql .= ' AND pic = :pic';
+        $sql .= ' AND d.pic = :pic';
         $params[":pic"] = $_SESSION['id_karyawan'];
     }
 
     if (!empty($search)) {
         $sql .= " AND (
-                    dismantle_id LIKE :search
-                    OR tanggal LIKE :search
-                    OR jam LIKE :search
-                    OR netpay_id LIKE :search
-                    OR lokasi LIKE :search
-                    OR alasan LIKE :search
-                    OR action LIKE :search
-                    OR part_removed LIKE :search
-                    OR kondisi_perangkat LIKE :search
-                    OR pic LIKE :search
-                    OR keterangan LIKE :search
+                    d.dismantle_id LIKE :search
+                    OR d.tanggal LIKE :search
+                    OR d.jam LIKE :search
+                    OR c.netpay_id LIKE :search
+                    OR d.lokasi LIKE :search
+                    OR d.alasan LIKE :search
+                    OR d.action LIKE :search
+                    OR d.part_removed LIKE :search
+                    OR d.kondisi_perangkat LIKE :search
+                    OR d.pic LIKE :search
+                    OR d.keterangan LIKE :search
                 )";
         $params[':search'] = "%$search%";
     }

@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
+date_default_timezone_set('Asia/Jakarta');
 $id = isset($_POST['id']) ? $_POST['id'] : null;
 $type_queue = isset($_POST['type_queue']) ? $_POST['type_queue'] : null;
 if ($id && $type_queue) {
@@ -34,13 +35,24 @@ if ($id && $type_queue) {
             $sql = "SELECT q.*, r.*, c.* 
             FROM queue_scheduling q
             JOIN $table r ON q.request_id = r.$idCol
-            JOIN customers c ON r.netpay_id = c.netpay_id
-            WHERE q.queue_id = :queue_id";
+            JOIN customers c ON r.netpay_key = c.netpay_key
+            WHERE q.queue_key = :queue_key";
 
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':queue_id', $id, PDO::PARAM_STR);
+            $stmt->bindParam(':queue_key', $id, PDO::PARAM_STR);
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+        if (!$row) {
+            $_SESSION['alert'] = [
+                'icon' => 'warning',
+                'title' => 'Data Tidak Ditemukan',
+                'text' => 'Queue dengan ID tersebut tidak tersedia.',
+                'button' => "Kembali",
+                'style' => "warning"
+            ];
+            header("Location: " . BASE_URL . "pages/queue/");
+            exit;
         }
         $tanggalSchedule   = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'date') : '';
         $tanggalPemasangan = isset($row['jadwal_pemasangan']) ? formatDate($row['jadwal_pemasangan'], 'full') : '';
@@ -83,7 +95,7 @@ if ($id && $type_queue) {
                         </li>
                         <li class="breadcrumb-item">
                             <a href="" class="text-muted">
-                                <?= $id ?> </a>
+                                <?= $row['queue_id'] ?> </a>
                         </li>
                     </ul>
                     <!-- end::Breadcrumb -->
@@ -94,7 +106,7 @@ if ($id && $type_queue) {
                 <form action="<?= BASE_URL ?>pages/schedule/create.php" method="post">
                     <span>
                         <input type="hidden" name="type_queue" value="<?= $row['type_queue'] ?>">
-                        <button type="submit" name="id" class="btn border-0  btn-light-primary align-self-end" value="<?= $row['queue_id'] ?>">
+                        <button type="submit" name="id" class="btn border-0  btn-light-primary align-self-end" value="<?= $row['queue_key'] ?>">
                             <span class="navi-icon"><i class="flaticon-calendar-with-a-clock-time-tools"></i></span>
                             <span class="navi-text">Schedule Now</span>
                         </button>

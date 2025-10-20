@@ -35,9 +35,9 @@ try {
     $pdo->beginTransaction();
 
     // Ambil data ikr
-    $sql = "SELECT ikr_id, netpay_id, schedule_id FROM ikr WHERE ikr_id = :ikr_id";
+    $sql = "SELECT ikr_key, netpay_key, schedule_key FROM ikr WHERE ikr_key = :ikr_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':ikr_id' => $id]);
+    $stmt->execute([':ikr_key' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$row) {
@@ -45,19 +45,19 @@ try {
     }
 
     // Update schedule
-    $sql = "UPDATE schedules SET status = 'Pending' WHERE schedule_id = :schedule_id";
+    $sql = "UPDATE schedules SET status = 'Pending' WHERE schedule_key = :schedule_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':schedule_id' => $row['schedule_id']]);
+    $stmt->execute([':schedule_key' => $row['schedule_key']]);
 
     // Update customer
-    $sql = "UPDATE customers SET is_active = 'Inactive' WHERE netpay_id = :netpay_id";
+    $sql = "UPDATE customers SET is_active = 'Inactive' WHERE netpay_key = :netpay_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':netpay_id' => $row['netpay_id']]);
+    $stmt->execute([':netpay_key' => $row['netpay_key']]);
 
     // Hapus dari IKR
-    $sql = "DELETE FROM ikr WHERE ikr_id = :ikr_id";
+    $sql = "DELETE FROM ikr WHERE ikr_key = :ikr_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':ikr_id' => $row['ikr_id']]);
+    $stmt->execute([':ikr_key' => $row['ikr_key']]);
 
     if ($stmt->rowCount() === 0) {
         throw new Exception("Data IKR sudah dihapus sebelumnya.");

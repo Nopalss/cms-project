@@ -36,9 +36,9 @@ try {
     $pdo->beginTransaction();
 
     // Ambil data queue
-    $sql = "SELECT queue_id, request_id, type_queue 
+    $sql = "SELECT *
             FROM queue_scheduling 
-            WHERE queue_id = :id";
+            WHERE queue_key = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $id]);
     $queue = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -83,13 +83,13 @@ try {
             if (!$rd) throw new Exception('Data request Dismantle tidak ditemukan.');
 
             $pdo->prepare("DELETE FROM request_dismantle WHERE rd_id = :id")
-                ->execute([':id' => $rd['rd_id']]); // ✅ FIXED
+                ->execute([':id' => $rd['rd_id']]);
             break;
     }
 
     // Hapus queue_scheduling
-    $stmt = $pdo->prepare("DELETE FROM queue_scheduling WHERE queue_id = :id");
-    $stmt->execute([':id' => $queue['queue_id']]);
+    $stmt = $pdo->prepare("DELETE FROM queue_scheduling WHERE queue_key = :id");
+    $stmt->execute([':id' => $queue['queue_key']]);
 
     if ($stmt->rowCount() === 0) {
         throw new Exception('Tidak ada data queue yang dihapus.');
@@ -105,6 +105,7 @@ try {
     ];
 } catch (Exception $e) {
     $pdo->rollBack();
+    error_log("Queue deletion error: " . $e->getMessage());
     $_SESSION['alert'] = [
         'icon'  => 'error',
         'title' => 'Oops! Ada yang Salah',

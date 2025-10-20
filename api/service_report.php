@@ -10,30 +10,30 @@ try {
     $dateObj = DateTime::createFromFormat('m/d/Y', $dateInput);
     $date    = $dateObj ? $dateObj->format('Y-m-d') : null;
 
-    $sql = "SELECT * FROM service_reports WHERE 1=1";
+    $sql = "SELECT s.*, c.netpay_id FROM service_reports s LEFT JOIN customers c ON s.netpay_key = c.netpay_key WHERE 1=1";
 
 
     $params = [];
 
     $params = [];
     if ($_SESSION['role'] == 'teknisi') {
-        $sql .= ' AND pic = :pic';
+        $sql .= ' AND s.pic = :pic';
         $params[":pic"] = $_SESSION['id_karyawan'];
     }
 
     if (!empty($search)) {
         $sql .= " AND (
-            srv_id LIKE :search
-            OR tanggal LIKE :search
-            OR jam LIKE :search
-            OR netpay_id LIKE :search
-            OR problem LIKE :search
-            OR action LIKE :search
-            OR part LIKE :search
-            OR red_bef LIKE :search
-            OR red_aft LIKE :search
-            OR pic LIKE :search
-            OR keterangan LIKE :search
+            s.srv_id LIKE :search
+            OR s.tanggal LIKE :search
+            OR s.jam LIKE :search
+            OR c.netpay_id LIKE :search
+            OR s.problem LIKE :search
+            OR s.action LIKE :search
+            OR s.part LIKE :search
+            OR s.red_bef LIKE :search
+            OR s.red_aft LIKE :search
+            OR s.pic LIKE :search
+            OR s.keterangan LIKE :search
         )";
 
 
@@ -41,7 +41,7 @@ try {
     }
 
     if (!empty($date)) {
-        $sql .= " AND tanggal LIKE :tanggal";
+        $sql .= " AND s.tanggal LIKE :tanggal";
         $params[':tanggal'] = "%$date%";
     }
 

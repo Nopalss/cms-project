@@ -20,11 +20,10 @@ if (!$id) {
 try {
     $sql = "SELECT dr.*, c.*
             FROM dismantle_reports dr
-            JOIN customers c ON dr.netpay_id = c.netpay_id
-            WHERE dr.dismantle_id = :dismantle_id";
+            JOIN customers c ON dr.netpay_key = c.netpay_key
+            WHERE dr.dismantle_key = :dismantle_key";
     $stmt = $pdo->prepare($sql);
-    $stmt->bindParam(':dismantle_id', $id, PDO::PARAM_STR);
-    $stmt->execute();
+    $stmt->execute([':dismantle_key' => $id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     $dt = new DateTime($row['tanggal']);
     $tanggal = $dt->format('d F Y');
@@ -48,7 +47,7 @@ try {
                     <h5 class="text-dark font-weight-bold my-1 mr-5">Dismantle Report </h5>
                     <ul class="breadcrumb breadcrumb-transparent breadcrumb-dot font-weight-bold p-0 my-2 font-size-sm">
                         <li class="breadcrumb-item"><a href="" class="text-muted">Detail Dismantle Report</a></li>
-                        <li class="breadcrumb-item"><a href="" class="text-muted"><?= $id ?></a></li>
+                        <li class="breadcrumb-item"><a href="" class="text-muted"><?= $row['dismante_id'] ?></a></li>
                     </ul>
                 </div>
             </div>

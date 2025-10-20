@@ -2,12 +2,9 @@
 
 require_once __DIR__ . '/../../includes/config.php';
 $_SESSION['menu'] = 'ikr';
-require __DIR__ . '/../../includes/header.php';
-require __DIR__ . '/../../includes/aside.php';
-require __DIR__ . '/../../includes/navbar.php';
+
 try {
     $id = isset($_POST['id']) ? $_POST['id'] : null;
-    $id = $_POST['id'] ?? null;
     if (!$id) {
         $_SESSION['alert'] = [
             'icon' => 'warning',
@@ -19,7 +16,7 @@ try {
         header("Location: " . BASE_URL . "pages/ikr/");
         exit;
     }
-    $sql = "SELECT s.schedule_id ,s.netpay_id, c.* FROM schedules s JOIN customers c ON s.netpay_id = c.netpay_id WHERE s.schedule_id = :id";
+    $sql = "SELECT s.schedule_key, c.* FROM schedules s JOIN customers c ON s.netpay_key = c.netpay_key WHERE s.schedule_key = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([":id" => $id]);
     $customer = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -34,6 +31,9 @@ try {
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
+require __DIR__ . '/../../includes/header.php';
+require __DIR__ . '/../../includes/aside.php';
+require __DIR__ . '/../../includes/navbar.php';
 ?>
 <div class="content  d-flex flex-column flex-column-fluid" id="kt_content">
     <!--begin::Entry-->
@@ -57,13 +57,14 @@ try {
                                 <div class="input-group">
                                     <input type="text" class="form-control" value="<?= $ikr_id ?>" disabled="disabled" />
                                     <input type="hidden" class="form-control" name="ikr_id" value="<?= $ikr_id ?>" />
-                                    <input type="hidden" class="form-control" name="schedule_id" value="<?= $id ?>" />
+                                    <input type="hidden" class="form-control" name="schedule_key" value="<?= $id ?>" />
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label>Netpay ID</label>
                                 <input type="text" class="form-control" value="<?= $customer['netpay_id'] ?>" disabled="disabled" />
                                 <input type="hidden" class="form-control" name="netpay_id" value="<?= $customer['netpay_id'] ?>" />
+                                <input type="hidden" class="form-control" name="netpay_key" value="<?= $customer['netpay_key'] ?>" />
                             </div>
                             <!-- Group IKR -->
                             <div class="form-group">
