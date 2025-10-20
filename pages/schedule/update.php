@@ -32,16 +32,17 @@ if ($id && $job_type) {
         if (isset($requestTables[$job_type])) {
             $table = $requestTables[$job_type]['table'];
             $idCol = $requestTables[$job_type]['id'];
+            $id_schedule = !empty($issue_id) ? "schedule_id" : "schedule_key";
 
             $sql = "SELECT s.*, s.catatan as deskripsi, s.status as status_schedule, q.*, r.*, c.* 
             FROM schedules s
             JOIN queue_scheduling q ON s.queue_key = q.queue_key
             JOIN $table r ON q.request_id = r.$idCol
             JOIN customers c ON r.netpay_key = c.netpay_key
-            WHERE s.schedule_key = :schedule_key";
+            WHERE s.$id_schedule = :id";
 
             $stmt = $pdo->prepare($sql);
-            $stmt->bindParam(':schedule_key', $id, PDO::PARAM_STR);
+            $stmt->bindParam(':id', $id, PDO::PARAM_STR);
             $stmt->execute();
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             checkRowExist($row, "pages/schedule/");

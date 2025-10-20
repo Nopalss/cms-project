@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
 require_once __DIR__ . '/../../helper/redirect.php';
-$_SESSION['menu'] = 'ikr';
+$_SESSION['menu'] = 'service';
 
 $id = $_GET['id'] ?? null;
 if (!$id) {

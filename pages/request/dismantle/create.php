@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../../../includes/config.php';
 require_once __DIR__ . '/../../../helper/checkRowExist.php';
+require_once __DIR__ . '/../../../helper/sanitize.php';
 $_SESSION['menu'] = 'request dismantle';
 $id = isset($_POST['id']) ? sanitize($_POST['id']) : null;
 $rd_id = "";
