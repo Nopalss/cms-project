@@ -19,9 +19,10 @@ if (isset($_POST['login'])) {
             'icon' => 'warning',
             'title' => 'Username atau password harus diisi',
             'text' => 'Silakan coba lagi',
+            'button' => "Coba Lagi",
             'style' => 'danger'
         ];
-        redirect("");
+        redirect("index.php");
     }
     try {
         // ambil data username
@@ -60,6 +61,7 @@ if (isset($_POST['login'])) {
                 'icon' => 'success',
                 'title' => 'Login Berhasil',
                 'text' => 'Selamat datang kembali!',
+                'button' => "Oke",
                 'style' => 'success'
             ];
 
@@ -69,14 +71,17 @@ if (isset($_POST['login'])) {
                 'icon' => 'error',
                 'title' => 'Login Gagal',
                 'text' => 'Username atau password salah!',
+                'button' => "Coba Lagi",
                 'style' => 'danger'
             ];
+            redirect("");
         }
     } catch (PDOException $e) {
         $_SESSION['alert'] = [
             'icon' => 'error',
             'title' => 'Terjadi Kesalahan',
             'text' => 'Silakan coba lagi nanti.',
+            'button' => "Coba Lagi",
             'style' => 'danger'
         ];
         redirect("");
