@@ -64,7 +64,6 @@ if (isset($_POST['login'])) {
                 'button' => "Oke",
                 'style' => 'success'
             ];
-
             redirect($redirect_path);
         } else {
             $_SESSION['alert'] = [

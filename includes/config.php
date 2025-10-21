@@ -7,8 +7,8 @@ $user = "root";
 $pass = "";
 $db = "cms_database";
 
-define('BASE_URL', 'http://cms-project.test/');
-// define('BASE_URL', 'http://localhost/cms-project/');
+// define('BASE_URL', 'http://cms-project.test/');
+define('BASE_URL', 'http://localhost/cms-project/');
 $users = [
     "report" => "232323",
     "jon" => "654321",
