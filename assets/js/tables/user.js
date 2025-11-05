@@ -86,7 +86,7 @@ var KTDatatableLocalSortDemo = function () {
                                         </a>\
                                     </li>\
                                     <li class="navi-item cursor-pointer">\
-                                        <a onclick="confirmDeleteTemplate('${row.username}', 'controllers/user/delete.php')"class="navi-link">\
+                                        <a onclick="confirmDeleteTemplate('${row.username}', 'controllers/user/delete.php')" class="navi-link">\
                                             <span class="navi-icon "><i class="la la-trash text-danger"></i></span>\
                                             <span class="navi-text">Hapus</span>\
                                         </a>\
