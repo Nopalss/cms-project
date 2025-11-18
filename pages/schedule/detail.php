@@ -160,43 +160,46 @@ require __DIR__ . '/../../includes/navbar.php';
             </div>
 
             <!-- Action Buttons -->
-            <?php if (($row['status'] ?? '') === 'Pending' || ($row['status'] ?? '') === 'Rescheduled'): ?>
-                <div class="text-right mt-3">
-                    <?php if (empty($row['has_issue'])): ?>
-                        <a class="btn mr-5 btn-light-warning" href="<?= BASE_URL ?>pages/schedule/issue_report.php?id=<?= htmlspecialchars($row['schedule_id']) ?>">
-                            <span class="navi-icon"><i class="flaticon2-warning"></i></span>
-                            <span class="navi-text">Task Issue Report</span>
-                        </a>
 
-                        <div class="btn">
-                            <button onclick="confirmActiveTask('<?= $row['schedule_key'] ?>', 'controllers/schedules/actived.php')" class=" btn btn-success">
-                                <span class="navi-icon"><i class="fas fa-hourglass-start"></i></span>
-                                <span class="navi-text">Mulai Kerja</span>
-                            </button>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            <?php endif; ?>
-            <?php if (($row['status'] ?? '') === 'Actived'): ?>
-                <div class="text-right mt-3">
-                    <?php if (empty($row['has_issue'])): ?>
-                        <a class="btn mr-5 btn-light-warning" href="<?= BASE_URL ?>pages/schedule/issue_report.php?id=<?= htmlspecialchars($row['schedule_id']) ?>">
-                            <span class="navi-icon"><i class="flaticon2-warning"></i></span>
-                            <span class="navi-text">Task Issue Report</span>
-                        </a>
-                        <div class="btn">
-                            <?php $jobKey = $row['job_type'] ?? $job_type; ?>
-                            <?php if (!empty($actionDone[$jobKey])): ?>
-                                <form action="<?= BASE_URL ?>pages/<?= htmlspecialchars($actionDone[$jobKey]) ?>/create.php" method="post">
-                                    <button class=" btn btn-success" name="id" value="<?= htmlspecialchars($row['schedule_key']) ?>">
-                                        <span class="navi-icon"><i class="flaticon2-check-mark"></i></span>
-                                        <span class="navi-text">Mark as Done</span>
-                                    </button>
-                                </form>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
+            <?php if ($_SESSION['role'] != 'admin'): ?>
+                <?php if (($row['status'] ?? '') === 'Pending' || ($row['status'] ?? '') === 'Rescheduled'): ?>
+                    <div class="text-right mt-3">
+                        <?php if (empty($row['has_issue'])): ?>
+                            <a class="btn mr-5 btn-light-warning" href="<?= BASE_URL ?>pages/schedule/issue_report.php?id=<?= htmlspecialchars($row['schedule_id']) ?>">
+                                <span class="navi-icon"><i class="flaticon2-warning"></i></span>
+                                <span class="navi-text">Task Issue Report</span>
+                            </a>
+
+                            <div class="btn">
+                                <button onclick="confirmActiveTask('<?= $row['schedule_key'] ?>', 'controllers/schedules/actived.php')" class=" btn btn-success">
+                                    <span class="navi-icon"><i class="fas fa-hourglass-start"></i></span>
+                                    <span class="navi-text">Mulai Kerja</span>
+                                </button>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+                <?php if (($row['status'] ?? '') === 'Actived'): ?>
+                    <div class="text-right mt-3">
+                        <?php if (empty($row['has_issue'])): ?>
+                            <a class="btn mr-5 btn-light-warning" href="<?= BASE_URL ?>pages/schedule/issue_report.php?id=<?= htmlspecialchars($row['schedule_id']) ?>">
+                                <span class="navi-icon"><i class="flaticon2-warning"></i></span>
+                                <span class="navi-text">Task Issue Report</span>
+                            </a>
+                            <div class="btn">
+                                <?php $jobKey = $row['job_type'] ?? $job_type; ?>
+                                <?php if (!empty($actionDone[$jobKey])): ?>
+                                    <form action="<?= BASE_URL ?>pages/<?= htmlspecialchars($actionDone[$jobKey]) ?>/create.php" method="post">
+                                        <button class=" btn btn-success" name="id" value="<?= htmlspecialchars($row['schedule_key']) ?>">
+                                            <span class="navi-icon"><i class="flaticon2-check-mark"></i></span>
+                                            <span class="navi-text">Mark as Done</span>
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
 
 

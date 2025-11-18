@@ -88,7 +88,7 @@ require_once __DIR__ . '/config.php';
     var HOST_URL = "<?= BASE_URL ?>";
 </script>
 <?php if (isset($_SESSION['alert'])): ?>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="<?= BASE_URL ?>assets/js/pages/features/miscellaneous/sweetalert2.js"></script>
     <script>
         Swal.fire({
             icon: "<?= $_SESSION['alert']['icon'] ?>",
@@ -264,7 +264,7 @@ require_once __DIR__ . '/config.php';
 
 <?php if ($_SESSION['menu'] == "schedule"): ?>
     <script src="<?= BASE_URL ?>assets/js/tables/schedules.js"></script>
-    <script src="assets/js/pages/features/cards/tools.js"></script>
+    <script src="<?= BASE_URL ?>assets/js/pages/features/cards/tools.js"></script>
     <script>
         function issueCount() {
             $.ajax({
@@ -310,16 +310,20 @@ require_once __DIR__ . '/config.php';
 <?php endif; ?>
 
 <?php if ($_SESSION['menu'] == "issue report"): ?>
-    <script src="<?= BASE_URL ?>assets/js/pages/crud/ktdatatable/base/issues-report.js"></script>
+    <script src="<?= BASE_URL ?>assets/js/tables/issues-report.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] == "dashboard"): ?>
+    <script src="<?= BASE_URL ?>assets/js/tables/teknisi.js"></script>
+    <script src="<?= BASE_URL ?>assets/js/pages/features/charts/apexcharts.js"></script>
 <?php endif; ?>
 
-
-
-<script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-timepicker.js"></script>
-<!--end::Page Scripts-->
-<!--begin::Page Scripts(used by this page)-->
-<script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-datepicker.js"></script>
-<script src="<?= BASE_URL ?>assets/js/pages/features/charts/apexcharts.js"></script>
+<?php if ($_SESSION['menu'] != "dashboard"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/crud/forms/widgets/bootstrap-datepicker.js"></script>
+<?php endif; ?>
+<?php if ($_SESSION['menu'] != "profile"): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/widgets.js"></script>
+    <script src="<?= BASE_URL ?>assets/js/pages/custom/profile/profile.js"></script>
+<?php endif; ?>
 
 <script>
     function logoutConfirm() {

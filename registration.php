@@ -123,7 +123,7 @@ $jamKerja = [
             </div>
             <!-- sweetalert -->
             <?php if (isset($_SESSION['alert'])): ?>
-                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+                <script src="<?= BASE_URL ?>assets/js/pages/features/miscellaneous/sweetalert2.js"></script>
                 <script>
                     Swal.fire({
                         icon: "<?= $_SESSION['alert']['icon'] ?>",

@@ -64,13 +64,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         // Insert ke tabel users
-        $sql = "INSERT INTO users (username,password,role)
-                VALUES (:username,:password,:role)";
+        $sql = "INSERT INTO users (username,password,role, avatar)
+                VALUES (:username,:password,:role, :avatar)";
         $stmt = $pdo->prepare($sql);
         $user_success = $stmt->execute([
             ':username' => $username,
             ':password' => $password,
-            ':role'     => $role
+            ':role'     => $role,
+            ':avatar' => "blank.png"
         ]);
 
         if ($user_success) {

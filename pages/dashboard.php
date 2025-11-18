@@ -5,23 +5,20 @@ require __DIR__ . '/../includes/header.php';
 require __DIR__ . '/../includes/aside.php';
 require __DIR__ . '/../includes/navbar.php';
 
-$schedules = [
-    [
-        "jam" => "09:00",
-        "task" => "	New Installation",
-        "technician" => "Budi",
-    ],
-    [
-        "jam" => "10:00",
-        "task" => "Maintenance Fiber",
-        "technician" => "Asep",
-    ],
-    [
-        "jam" => "10:00",
-        "task" => "	Upgrade Speed",
-        "technician" => "Agus",
-    ]
-];
+$fmt = new IntlDateFormatter(
+    'id_ID', // locale bahasa Indonesia
+    IntlDateFormatter::FULL,
+    IntlDateFormatter::NONE,
+    'Asia/Jakarta',
+    IntlDateFormatter::GREGORIAN,
+    'EEEE, d MMMM yyyy'
+);
+
+$tanggal = $fmt->format(new DateTime());
+
+$sql = "SELECT * FROM technician";
+$stmt = $pdo->query($sql);
+$technicians = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $queue_count = $pdo->query("SELECT COUNT(*) AS total FROM queue_scheduling WHERE status = 'Pending'")->fetch(PDO::FETCH_ASSOC);
 $ikr_count = $pdo->query("
@@ -38,6 +35,7 @@ $service_count = $pdo->query("
       AND status NOT IN ('Cancelled','Done')
       AND DATE(`date`) = CURDATE()
 ")->fetch(PDO::FETCH_ASSOC);
+
 $dismantle_count = $pdo->query("
     SELECT COUNT(*) AS total
     FROM schedules
@@ -157,10 +155,55 @@ $dismantle_count = $pdo->query("
                 <!-- end: card schedule -->
                 <!-- begin:: card report -->
             </div>
+            <div class="card mb-5 mt-10">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center flex-wrap">
+                        <h3 class="card-title">Monitoring Pekerjaan Teknisi</h3>
+                        <p><?= ucfirst($tanggal) ?></p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-7">
+                        <div class="row align-items-center">
+                            <div class="col-lg-12 col-xl-12">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3 my-2 my-md-0">
+                                        <div class="input-icon">
+                                            <input type="text" class="form-control" placeholder="Search..." id="kt_datatable_search_query" />
+                                            <span><i class="flaticon2-search-1 text-muted"></i></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 my-2 my-md-0">
+                                        <div class="d-flex align-items-center">
+                                            <label class="mr-3 mb-0 d-none d-md-block">Teknisi:</label>
+                                            <select class="form-control" id="kt_datatable_search_tech">
+                                                <option value="">All</option>
+                                                <?php foreach ($technicians as $t): ?>
+                                                    <option value="<?= $t['tech_id'] ?>"><?= $t['name'] ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end::Search Form-->
+                    <!--end: Search Form-->
+
+                    <!--begin: Datatable-->
+                    <div class="table-responsive">
+                        <div class="datatable datatable-bordered datatable-head-custom" id="kt_datatable"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <!--end::Container-->
     </div>
-    <!--end::Entry-->
+
+</div>
+<!--end::Container-->
+</div>
+<!--end::Entry-->
 </div>
 
 
