@@ -55,7 +55,9 @@ if (isset($_POST['login'])) {
             $_SESSION['id_karyawan'] = $karyawan[$id_col];
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
+            $_SESSION['img'] = $user['avatar'];
             $_SESSION['name'] = $karyawan['name'];
+
 
             $_SESSION['alert'] = [
                 'icon' => 'success',

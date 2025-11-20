@@ -47,11 +47,11 @@ require_once __DIR__ . '/config.php';
         <!--begin::Header-->
         <div class="d-flex align-items-center mt-5">
             <div class="symbol symbol-100 mr-5">
-                <div class="symbol-label" style="background-image:url('<?= BASE_URL ?>assets/media/users/blank.png')"></div>
+                <div class="symbol-label" style="background-image:url('<?= BASE_URL ?>assets/media/users/<?= $_SESSION['img'] ?>')"></div>
                 <i class="symbol-badge bg-success"></i>
             </div>
             <div class="d-flex flex-column">
-                <a href="#" class="font-weight-bold font-size-h5 text-dark-75 text-hover-primary">
+                <a href="<?= BASE_URL ?>pages/user/profile.php" class="font-weight-bold font-size-h5 text-dark-75 text-hover-primary">
                     <?= $_SESSION['name'] ?>
                 </a>
                 <div class="text-muted mt-1">
@@ -908,6 +908,35 @@ require_once __DIR__ . '/config.php';
         // });
         $("#detailModalIssue").modal("show");
     });
+
+
+    // Fungsi untuk menampilkan Preview saat pilih foto
+    function previewFile(input) {
+        var file = input.files[0];
+
+        if (file) {
+            var reader = new FileReader();
+
+            reader.onload = function() {
+                var previewBox = document.getElementById("previewBox");
+                previewBox.style.backgroundImage = "url(" + reader.result + ")";
+            }
+
+            reader.readAsDataURL(file);
+        }
+    }
+
+    // Fungsi untuk tombol silang (Reset ke default)
+    function resetFile() {
+        var previewBox = document.getElementById("previewBox");
+        var inputGambar = document.getElementById("inputGambar");
+
+        // Ganti url gambar di bawah ini sesuai lokasi file blank.png kamu
+        previewBox.style.backgroundImage = "url('assets/media/users/blank.png')";
+
+        // Kosongkan input file agar tidak ikut terkirim
+        inputGambar.value = "";
+    }
 </script>
 <!--end::Page Scripts-->
 </body>

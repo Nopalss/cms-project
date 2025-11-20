@@ -14,7 +14,7 @@ if (!$id) {
     header("location:" . BASE_URL);
 }
 try {
-    $sql = "SELECT * FROM technician WHERE tech_id = :id LIMIT 1";
+    $sql = "SELECT t.*, u.avatar FROM technician t  JOIN users u ON t.username = u.username WHERE t.tech_id = :id LIMIT 1";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([':id' => $id]);
     $technician = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -102,7 +102,9 @@ require __DIR__ . '/../../includes/navbar.php';
                     <div class="card shadow-sm">
                         <div class="card-header relative">
                             <div style="width:100px; height:100px; background-color:white; padding:5px; position:absolute; top:-10px; left:50%;  transform: translate(-50%, -50%); border-radius:10px">
-                                <img src="<?= BASE_URL ?>assets/media/users/blank.png" style="width:100%; border-radius:10px" alt="">
+                                <img src="<?= BASE_URL ?>assets/media/users/<?= $technician['avatar'] ?>" class="shadow-sm"
+                                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 10px; object-position: center;"
+                                    alt="Foto Teknisi">
 
                             </div>
                         </div>
