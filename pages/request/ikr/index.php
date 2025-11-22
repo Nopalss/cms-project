@@ -101,7 +101,7 @@ $register = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <a href="<?= BASE_URL ?>pages/request/ikr/export_excel.php" class="btn btn-light-success mr-5 font-weight-bolder">
                             <span class="svg-icon svg-icon-md text-center"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
                                 <i class="far fa-file-excel"></i>
-                            </span>Import Excel
+                            </span>Export Excel
                         </a>
 
                         <!--begin::Button-->

@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/../../../includes/config.php';
 require_once __DIR__ . '/../../../helper/checkRowExist.php';
+require_once __DIR__ . '/../../../helper/generateId.php';
 $_SESSION['menu'] = 'request ikr';
 
 $jamKerja = [
@@ -43,7 +44,7 @@ try {
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     $ids = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $rikr_id = "RIKR" . date("YmdHis");
+    $rikr_id = generateId('RIKR');
 
     $sql = "SELECT RIGHT(netpay_id, 5) FROM customers ORDER BY CAST(RIGHT(netpay_id, 5) AS UNSIGNED) DESC LIMIT 1";
     $stmt = $pdo->prepare($sql);

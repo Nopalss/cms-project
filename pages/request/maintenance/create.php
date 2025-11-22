@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '/../../../includes/config.php';
 require_once __DIR__ . '/../../../helper/checkRowExist.php';
+require_once __DIR__ . '/../../../helper/generateId.php';
+
 $_SESSION['menu'] = 'request maintenance';
 
 $id = isset($_POST['id']) ? trim($_POST['id']) : null;
@@ -14,7 +16,7 @@ try {
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         checkRowExist($row, "pages/request/maintenance/create.php");
 
-        $rm_id = "RM" . date("YmdHis");
+        $rm_id = generateId('RM');
     } else {
         $row = [
             "netpay_id" => '',

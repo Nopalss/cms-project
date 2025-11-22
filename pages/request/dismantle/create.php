@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../../../includes/config.php';
 require_once __DIR__ . '/../../../helper/checkRowExist.php';
 require_once __DIR__ . '/../../../helper/sanitize.php';
+require_once __DIR__ . '/../../../helper/generateId.php';
 $_SESSION['menu'] = 'request dismantle';
 $id = isset($_POST['id']) ? sanitize($_POST['id']) : null;
 $rd_id = "";
@@ -13,7 +14,7 @@ try {
         $stmt->execute([':id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         checkRowExist($row, "pages/request/dismantle/create.php");
-        $rd_id = "RD" . date("YmdHis");
+        $rd_id = generateId("RD");
     } else {
         $row = [
             "netpay_key" => '',

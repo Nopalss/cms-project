@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../../../includes/config.php';
 
-$sql = "SELECT r.*, c.name FROM request_maintenance r JOIN customers c ON r.netpay_key = c.netpay_key";
+$sql = "SELECT r.*, c.name, c.netpay_id FROM request_maintenance r JOIN customers c ON r.netpay_key = c.netpay_key";
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
@@ -46,7 +46,7 @@ header("Content-Disposition: attachment; filename=Request_Maintenance_Summary_" 
                 <tr style="background: <?= $i % 2 == 0 ? '#f9f9f9' : '#ffffff'; ?>;">
                     <td><?= $no++; ?></td>
                     <td><?= $d['rm_id']; ?></td>
-                    <td style="mso-number-format:'\@';">'<?= $d['netpay_id']; ?></td> <!-- fix scientific -->
+                    <td style="mso-number-format:'\@';"><?= $d['netpay_id']; ?></td> <!-- fix scientific -->
                     <td><?= $d['name']; ?></td>
                     <td><?= $d['type_issue']; ?></td>
                     <td><?= $d['deskripsi_issue']; ?></td>

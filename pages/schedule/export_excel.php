@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
-$sql = "SELECT * FROM schedules";
+$sql = "SELECT s.*, c.netpay_id FROM schedules s JOIN customers c ON s.netpay_key = c.netpay_key";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $row = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -38,7 +38,6 @@ header("Content-Disposition: attachment; filename=Schedules_Summary_" . date("d 
                 <th>Job Type</th>
                 <th>Status</th>
                 <th>Catatan</th>
-                <th>Queue ID</th>
             </tr>
         </thead>
         <tbody>
@@ -46,13 +45,12 @@ header("Content-Disposition: attachment; filename=Schedules_Summary_" . date("d 
                 <tr style="background: <?= $i % 2 == 0 ? '#f9f9f9' : '#ffffff'; ?>;">
                     <td><?= $no++; ?></td>
                     <td><?= $d['schedule_id']; ?></td>
-                    <td style="mso-number-format:'\@';">'<?= $d['netpay_id']; ?></td> <!-- fix scientific -->
+                    <td style="mso-number-format:'\@';"><?= $d['netpay_id']; ?></td> <!-- fix scientific -->
                     <td><?= $d['date']; ?></td>
                     <td><?= $d['time']; ?></td>
                     <td><?= $d['job_type']; ?></td>
                     <td><?= $d['status']; ?> Mbps</td>
                     <td><?= $d['catatan']; ?></td>
-                    <td><?= $d['queue_id']; ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

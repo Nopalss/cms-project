@@ -87,23 +87,8 @@ require_once __DIR__ . '/config.php';
 <script>
     var HOST_URL = "<?= BASE_URL ?>";
 </script>
-<?php if (isset($_SESSION['alert'])): ?>
-    <script src="<?= BASE_URL ?>assets/js/pages/features/miscellaneous/sweetalert2.js"></script>
-    <script>
-        Swal.fire({
-            icon: "<?= $_SESSION['alert']['icon'] ?>",
-            title: "<?= $_SESSION['alert']['title'] ?>",
-            text: "<?= $_SESSION['alert']['text'] ?>",
-            confirmButtonText: "<?= $_SESSION['alert']['button'] ?> ",
-            heightAuto: false,
-            customClass: {
-                confirmButton: "btn font-weight-bold btn-<?= $_SESSION['alert']['style'] ?>",
-                icon: "m-auto"
-            }
-        });
-    </script>
-    <?php unset($_SESSION['alert']); ?>
-<?php endif; ?>
+
+
 
 <!--begin::Global Config(global config for global JS scripts)-->
 <script>
@@ -181,7 +166,23 @@ require_once __DIR__ . '/config.php';
     <script src="<?= BASE_URL ?>assets/js/tables/request_ikr.js"></script>
     <script src="<?= BASE_URL ?>assets/js/request/ikr.js"></script>
 <?php endif; ?>
-
+<?php if (isset($_SESSION['alert'])): ?>
+    <script src="<?= BASE_URL ?>assets/js/pages/features/miscellaneous/sweetalert2.js"></script>
+    <script>
+        Swal.fire({
+            icon: "<?= $_SESSION['alert']['icon'] ?>",
+            title: "<?= $_SESSION['alert']['title'] ?>",
+            text: "<?= $_SESSION['alert']['text'] ?>",
+            confirmButtonText: "<?= $_SESSION['alert']['button'] ?>",
+            heightAuto: false,
+            customClass: {
+                confirmButton: "btn font-weight-bold btn-<?= $_SESSION['alert']['style'] ?>",
+                icon: "m-auto"
+            }
+        });
+    </script>
+    <?php unset($_SESSION['alert']); ?>
+<?php endif; ?>
 <?php if ($_SESSION['menu'] == "queue"): ?>
     <script src="<?= BASE_URL ?>assets/js/tables/queue.js"></script>
     <script>
@@ -491,24 +492,6 @@ require_once __DIR__ . '/config.php';
         $("#detail_netpayId").text($(this).data("netpay-id"));
         $("#detail_type").text($(this).data("type"));
         $("#detail_status").text($(this).data("status")).addClass(`font-weight-bold text-${$(this).data("state")}`);
-        // const datetime = $(this).data("jadwal");
-        // const date = new Date(datetime.replace(" ", "T"));
-        // // Tanggal → format Indonesia
-        // const tanggal = date.toLocaleDateString("id-ID", {
-        //     weekday: "long",
-        //     day: "numeric",
-        //     month: "long",
-        //     year: "numeric"
-        // });
-
-        // // Jam → format 24 jam dengan pemisah :
-        // const waktu = date.toLocaleTimeString("en-GB", {
-        //     hour: "2-digit",
-        //     minute: "2-digit",
-        // });
-
-        // $("#detail_jadwal").text(tanggal);
-        // $("#detail_jam").text(`${waktu} WIB`);
         $("#detail_catatan").text($(this).data("deskripsi"));
         $("#detail_requestBy").text($(this).data("request-by"));
         console.log($(this).data());
@@ -521,24 +504,6 @@ require_once __DIR__ . '/config.php';
         $("#detail_netpayId").text($(this).data("netpay-id"));
         $("#detail_type").text($(this).data("type"));
         $("#detail_status").text($(this).data("status")).addClass(`font-weight-bold text-${$(this).data("state")}`);
-        // const datetime = $(this).data("jadwal");
-        // const date = new Date(datetime.replace(" ", "T"));
-        // // Tanggal → format Indonesia
-        // const tanggal = date.toLocaleDateString("id-ID", {
-        //     weekday: "long",
-        //     day: "numeric",
-        //     month: "long",
-        //     year: "numeric"
-        // });
-
-        // // Jam → format 24 jam dengan pemisah :
-        // const waktu = date.toLocaleTimeString("en-GB", {
-        //     hour: "2-digit",
-        //     minute: "2-digit",
-        // });
-
-        // $("#detail_jadwal").text(tanggal);
-        // $("#detail_jam").text(`${waktu} WIB`);
         $("#detail_catatan").text($(this).data("deskripsi"));
         $("#detail_requestBy").text($(this).data("request-by"));
         console.log($(this).data());
@@ -890,22 +855,7 @@ require_once __DIR__ . '/config.php';
         $("#detail_job_type").text($(this).data("job-type"));
         $("#detail_schedule_status").text($(this).data("schedule-status"));
         $("#detail_location").text($(this).data("location"));
-        // const datetime = $(this).data("date");
-        // const date = new Date(datetime.replace(" ", "T"));
 
-        // // Bagian tanggal → pakai locale Indonesia
-        // const tanggal = date.toLocaleDateString("id-ID", {
-        //     weekday: "long",
-        //     day: "numeric",
-        //     month: "long",
-        //     year: "numeric"
-        // });
-
-        // // Bagian jam → pakai locale Inggris (pemisah :)
-        // const waktu = date.toLocaleTimeString("en-GB", {
-        //     hour: "2-digit",
-        //     minute: "2-digit",
-        // });
         $("#detailModalIssue").modal("show");
     });
 

@@ -89,7 +89,7 @@ header("Expires: 0");
                         <?= $d['is_verified']; ?>
                     </td>
 
-                    <td><?= $d['request_schedule']; ?></td>
+                    <td><?= $d['date']; ?> - <?= $d['time']; ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>

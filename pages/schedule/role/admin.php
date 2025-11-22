@@ -29,7 +29,7 @@ $issues_report = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <a href="<?= BASE_URL ?>pages/schedule/export_excel.php" class="btn btn-light-success mr-5 font-weight-bolder">
                     <span class="svg-icon svg-icon-md text-center"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
                         <i class="far fa-file-excel"></i>
-                    </span>Import Excel
+                    </span>Export Excel
                 </a>
                 <button type="button" class="btn btn-light-warning font-weight-bolder" id="btn-issues" data-toggle="modal" data-target="#exampleModalScrollable">
                     <i class="flaticon2-warning"></i>Issues Report

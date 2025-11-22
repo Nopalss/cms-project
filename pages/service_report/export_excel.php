@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
-$sql = "SELECT s.*, c.name, c.location 
+$sql = "SELECT s.*, c.name, c.location, c.netpay_id 
         FROM service_reports s  
         JOIN customers c ON s.netpay_key = c.netpay_key";
 $stmt = $pdo->prepare($sql);

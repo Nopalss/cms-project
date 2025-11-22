@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../../includes/config.php';
 
 
-$sql = "SELECT * FROM ikr";
+$sql = "SELECT i.*, c.netpay_id FROM ikr i JOIN customers c ON c.netpay_key = i.netpay_key";
 $stmt = $pdo->prepare($sql);
 $stmt->execute();
 $ikr = $stmt->fetchAll(PDO::FETCH_ASSOC);

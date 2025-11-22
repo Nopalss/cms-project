@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
-$sql = "SELECT s.*, c.name, c.location 
+$sql = "SELECT s.*, c.name, c.location, c.netpay_id 
         FROM dismantle_reports s  
         JOIN customers c ON s.netpay_key = c.netpay_key";
 $stmt = $pdo->prepare($sql);
@@ -35,7 +35,6 @@ header("Content-Disposition: attachment; filename=Dismantle_Summary_" . date("d 
                 <th>No.</th>
                 <th>Dismantle ID</th>
                 <th>Netpay ID</th>
-                <th>Schedule ID</th>
                 <th>Tanggal</th>
                 <th>Jam</th>
                 <th>Nama</th>
@@ -54,7 +53,6 @@ header("Content-Disposition: attachment; filename=Dismantle_Summary_" . date("d 
                     <td><?= $no++; ?></td>
                     <td><?= $d['dismantle_id']; ?></td>
                     <td style="mso-number-format:'\@';">'<?= $d['netpay_id']; ?></td> <!-- fix scientific -->
-                    <td><?= $d['schedule_id']; ?></td>
                     <td><?= $d['tanggal']; ?></td>
                     <td><?= $d['jam']; ?></td>
                     <td><?= $d['name']; ?></td>

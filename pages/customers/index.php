@@ -51,7 +51,7 @@ $paketInternet = [
                         <a href="<?= BASE_URL ?>pages/customers/export_excel.php" class="btn btn-light-success mr-5 font-weight-bolder">
                             <span class="svg-icon svg-icon-md text-center"><!--begin::Svg Icon | path:assets/media/svg/icons/Design/Flatten.svg-->
                                 <i class="far fa-file-excel"></i>
-                            </span>Import Excel
+                            </span>Export Excel
                         </a>
                         <div class="dropdown dropdown-inline mr-2">
 
