@@ -10,6 +10,33 @@ if (isset($_POST['submit'])) {
     $type_issue   = isset($_POST['type_issue']) ? sanitize($_POST['type_issue']) : null;
     $deskripsi_issue   = isset($_POST['deskripsi_issue']) ? sanitize($_POST['deskripsi_issue']) : null;
     $request_by   = $_SESSION['username'];
+    $netpay_id   = isset($_POST['netpay_id']) ? sanitize($_POST['netpay_id']) : null;
+    $name   = isset($_POST['name']) ? sanitize($_POST['name']) : null;
+    $phone   = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
+    $is_active   = isset($_POST['is_active']) ? sanitize($_POST['is_active']) : null;
+    $perumahan   = isset($_POST['perumahan']) ? sanitize($_POST['perumahan']) : null;
+    $location   = isset($_POST['location']) ? sanitize($_POST['location']) : null;
+    $paket_internet   = isset($_POST['paket_internet']) ? sanitize($_POST['paket_internet']) : null;
+
+    $check = $pdo->prepare("SELECT COUNT(*) FROM customers WHERE netpay_id = :netpay_id");
+    $check->execute([':netpay_id' => $netpay_id]);
+    $exists = $check->fetchColumn();
+
+    if (!$exists) {
+        // Belum ada, insert baru
+        $sql = "INSERT INTO customers (netpay_key, netpay_id, name, phone, paket_internet, location, perumahan)
+            VALUES (:netpay_key, :netpay_id, :name, :phone, :paket_internet, :location, :perumahan)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ":netpay_key" => $netpay_key,
+            ':netpay_id' => $netpay_id,
+            ':name' => $name,
+            ':phone' => $phone,
+            ':paket_internet' => $paket_internet,
+            ':location' => $location,
+            ':perumahan' => $perumahan
+        ]);
+    }
 
     if (!$rm_id ||  !$netpay_key || !$type_issue || !$deskripsi_issue) {
         $_SESSION['alert'] = [
@@ -22,18 +49,19 @@ if (isset($_POST['submit'])) {
         redirect("pages/request/maintenance/");
     }
 
-    $check = $pdo->prepare("SELECT 1 FROM customers WHERE netpay_key = :id AND is_active = 'Active'");
-    $check->execute([':id' => $netpay_key]);
-    if (!$check->fetch()) {
-        $_SESSION['alert'] = [
-            'icon' => 'error',
-            'title' => 'Oops!',
-            'text' => 'Customer tidak ditemukan atau tidak aktif.',
-            'button' => "Coba Lagi",
-            'style' => "danger"
-        ];
-        redirect("pages/request/maintenance/");
-    }
+
+    // $check = $pdo->prepare("SELECT 1 FROM customers WHERE netpay_key = :id AND is_active = 'Active'");
+    // $check->execute([':id' => $netpay_key]);
+    // if (!$check->fetch()) {
+    //     $_SESSION['alert'] = [
+    //         'icon' => 'error',
+    //         'title' => 'Oops!',
+    //         'text' => 'Customer tidak ditemukan atau tidak aktif.',
+    //         'button' => "Coba Lagi",
+    //         'style' => "danger"
+    //     ];
+    //     redirect("pages/request/maintenance/");
+    // }
     try {
         $pdo->beginTransaction();
 

@@ -9,13 +9,95 @@ $id = isset($_POST['id']) ? sanitize($_POST['id']) : null;
 $rd_id = "";
 try {
     if ($id) {
-        $sql = "SELECT * FROM customers WHERE is_active ='Active' AND netpay_id =:id";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([':id' => $id]);
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        checkRowExist($row, "pages/request/dismantle/create.php");
-        $rd_id = generateId("RD");
+        // === Ambil data customer dari API Netpay ===
+        $apiBase = "https://netpay.jabbar23.net/1_api/netpaydt.php";
+        $token = NETPAY_API_TOKEN ?? ''; // definisikan di includes/config.php
+        $query = http_build_query([
+            'path' => 'usernet',
+            'netpay_id' => $id
+        ]);
+        $url = $apiBase . '?' . $query;
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            "Authorization: Bearer {$token}",
+            "Accept: application/json"
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlErr = curl_error($ch);
+        curl_close($ch);
+
+        if ($response === false) {
+            $_SESSION['alert'] = [
+                'icon' => 'error',
+                'title' => 'Gagal konek ke server Netpay',
+                'text' => 'Error cURL: ' . $curlErr,
+                'button' => 'Kembali',
+                'style' => 'danger'
+            ];
+            redirect("pages/request/dismantle/create.php");
+            exit;
+        }
+
+        if ($httpCode >= 200 && $httpCode < 300) {
+            $data = json_decode($response, true);
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $_SESSION['alert'] = [
+                    'icon' => 'error',
+                    'title' => 'Response Tidak Valid',
+                    'text' => 'Data dari API Netpay bukan JSON valid.',
+                    'button' => 'Kembali',
+                    'style' => 'danger'
+                ];
+                redirect("pages/request/dismantle/create.php");
+                exit;
+            }
+
+            if (empty($data)) {
+                $_SESSION['alert'] = [
+                    'icon' => 'warning',
+                    'title' => 'Data Tidak Ditemukan',
+                    'text' => "Netpay ID {$id} tidak ditemukan atau tidak aktif.",
+                    'button' => 'Kembali',
+                    'style' => 'warning'
+                ];
+                redirect("pages/request/dismantle/create.php");
+                exit;
+            }
+
+            // Map field dari API ke struktur tabel customer di view
+            $row = [
+                'netpay_id'     => $data['netpay_id'] ?? $id,
+                'netpay_key'    => $data['iduser'] ?? '',
+                'name'          => $data['nama'] ?? '',
+                'phone'         => $data['telepon'] ?? '',
+                'paket_internet' => $data['paket'] ?? '',
+                'is_active'     => $data['status'] ?? '',
+                'perumahan'     => $data['alamat'] ?? '',
+                'location'      => $data['jalan'] ?? '',
+            ];
+
+            // Kalau kamu masih pakai helper checkRowExist:
+            checkRowExist($row, "pages/request/dismantle/create.php");
+
+            // Generate ID Request Dismantle
+            $rd_id = generateId("RD");
+        } else {
+            $_SESSION['alert'] = [
+                'icon' => 'error',
+                'title' => "Request Gagal ({$httpCode})",
+                'text' => "Server Netpay memberikan respons error: " . substr($response, 0, 200),
+                'button' => 'Kembali',
+                'style' => 'danger'
+            ];
+            redirect("pages/request/dismantle/create.php");
+            exit;
+        }
     } else {
+        // Jika belum ada ID di-submit, tampilkan field kosong
         $row = [
             "netpay_key" => '',
             "netpay_id" => '',
@@ -27,7 +109,7 @@ try {
             "location" => '',
         ];
     }
-} catch (PDOException $e) {
+} catch (Exception $e) {
     $_SESSION['alert'] = [
         'icon' => 'error',
         'title' => 'Oops! Ada yang Salah',
@@ -75,6 +157,13 @@ require __DIR__ . '/../../../includes/navbar.php';
                                         <input type="hidden" class="form-control" name="rd_id" value="<?= $rd_id ?>" />
                                         <input type="hidden" class="form-control" name="netpay_id" required value="<?= $row['netpay_id'] ?>">
                                         <input type="hidden" class="form-control" name="netpay_key" required value="<?= $row['netpay_key'] ?>">
+                                        <input type="hidden" class="form-control" name="name" required value="<?= $row['name'] ?>">
+                                        <input type="hidden" class="form-control" name="phone" required value="<?= $row['phone'] ?>">
+                                        <input type="hidden" class="form-control" name="is_active" required value="<?= $row['is_active'] ?>">
+                                        <input type="hidden" class="form-control" name="perumahan" required value="<?= $row['perumahan'] ?>">
+                                        <input type="hidden" class="form-control" name="location" required value="<?= $row['location'] ?>">
+                                        <input type="hidden" class="form-control" name="paket_internet" required value="<?= $row['paket_internet'] ?>">
+
                                     </div>
                                 </div>
                                 <div class="form-group">

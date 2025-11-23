@@ -10,6 +10,33 @@ if (isset($_POST['submit'])) {
     $type_dismantle   = isset($_POST['type_dismantle']) ? sanitize($_POST['type_dismantle']) : null;
     $deskripsi_dismantle   = isset($_POST['deskripsi_dismantle']) ? sanitize($_POST['deskripsi_dismantle']) : null;
     $request_by   = $_SESSION['username'];
+    $netpay_id   = isset($_POST['netpay_id']) ? sanitize($_POST['netpay_id']) : null;
+    $name   = isset($_POST['name']) ? sanitize($_POST['name']) : null;
+    $phone   = isset($_POST['phone']) ? sanitize($_POST['phone']) : null;
+    $is_active   = isset($_POST['is_active']) ? sanitize($_POST['is_active']) : null;
+    $perumahan   = isset($_POST['perumahan']) ? sanitize($_POST['perumahan']) : null;
+    $location   = isset($_POST['location']) ? sanitize($_POST['location']) : null;
+    $paket_internet   = isset($_POST['paket_internet']) ? sanitize($_POST['paket_internet']) : null;
+
+    $check = $pdo->prepare("SELECT COUNT(*) FROM customers WHERE netpay_id = :netpay_id");
+    $check->execute([':netpay_id' => $netpay_id]);
+    $exists = $check->fetchColumn();
+
+    if (!$exists) {
+        // Belum ada, insert baru
+        $sql = "INSERT INTO customers (netpay_key, netpay_id, name, phone, paket_internet, location, perumahan)
+            VALUES (:netpay_key, :netpay_id, :name, :phone, :paket_internet, :location, :perumahan)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([
+            ":netpay_key" => $netpay_key,
+            ':netpay_id' => $netpay_id,
+            ':name' => $name,
+            ':phone' => $phone,
+            ':paket_internet' => $paket_internet,
+            ':location' => $location,
+            ':perumahan' => $perumahan
+        ]);
+    }
 
     if (!$rd_id  || !$netpay_key || !$type_dismantle || !$deskripsi_dismantle) {
         $_SESSION['alert'] = [

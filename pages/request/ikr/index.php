@@ -1,9 +1,7 @@
 <?php
 require_once __DIR__ . '/../../../includes/config.php';
+require_once __DIR__ . '/../../../helper/redirect.php';
 $_SESSION['menu'] = 'request ikr';
-require __DIR__ . '/../../../includes/header.php';
-require __DIR__ . '/../../../includes/aside.php';
-require __DIR__ . '/../../../includes/navbar.php';
 
 $sql = "
         SELECT *
@@ -15,6 +13,19 @@ $stmt->execute();
 
 $register = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+$_SESSION['alert'] = [
+    'icon' => 'error',
+    'title' => 'Menu ini terkunci',
+    'text' => 'Silakan coba lagi nanti',
+    'button' => "Oke",
+    'style' => "danger"
+];
+redirect("pages/dashboard.php");
+
+
+require __DIR__ . '/../../../includes/header.php';
+require __DIR__ . '/../../../includes/aside.php';
+require __DIR__ . '/../../../includes/navbar.php';
 ?>
 
 
