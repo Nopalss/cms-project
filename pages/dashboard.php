@@ -4,17 +4,10 @@ $_SESSION['menu'] = 'dashboard';
 require __DIR__ . '/../includes/header.php';
 require __DIR__ . '/../includes/aside.php';
 require __DIR__ . '/../includes/navbar.php';
+$date = new DateTime();
 
-$fmt = new IntlDateFormatter(
-    'id_ID', // locale bahasa Indonesia
-    IntlDateFormatter::FULL,
-    IntlDateFormatter::NONE,
-    'Asia/Jakarta',
-    IntlDateFormatter::GREGORIAN,
-    'EEEE, d MMMM yyyy'
-);
-
-$tanggal = $fmt->format(new DateTime());
+// Format tanggal gaya bahasa Inggris (contoh: Monday, 25 November 2025)
+$tanggal = $date->format('l, d F Y');
 
 $sql = "SELECT * FROM technician";
 $stmt = $pdo->query($sql);

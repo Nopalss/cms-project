@@ -7,6 +7,7 @@ try {
 
 
     $sql = "SELECT 
+                u.id
                 u.username,
                 u.role,
                 COALESCE(t.name, a.name) AS name,

@@ -1,5 +1,14 @@
 <?php
 require_once __DIR__ . '/../../includes/config.php';
+$_SESSION['alert'] = [
+    'icon' => 'error',
+    'title' => 'Menu ini terkunci',
+    'text' => 'Silakan coba lagi nanti',
+    'button' => "Oke",
+    'style' => "danger"
+];
+redirect("pages/dashboard.php");
+
 $_SESSION['menu'] = 'registrasi';
 require __DIR__ . '/../../includes/header.php';
 require __DIR__ . '/../../includes/aside.php';

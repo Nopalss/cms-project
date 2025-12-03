@@ -11,11 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         return htmlspecialchars(strip_tags(trim($data)), ENT_QUOTES, 'UTF-8');
     }
 
-    // Username wajib
-    $username = isset($_POST['id']) ? sanitize($_POST['id']) : null;
+    $id = isset($_POST['id']) ? sanitize($_POST['id']) : null;
+    $username = $_SESSION['username'] ?? null;
     $password = trim($_POST['password'] ?? '');
 
-    if (!$username || !$password) {
+    // Validasi input dasar
+    if (!$username || !$id || !$password) {
         $_SESSION['alert'] = [
             'icon' => 'warning',
             'title' => 'Oops!',
@@ -27,8 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $user = checkLogin($pdo, $username, $password);
-    if (!$user) {
+    // Verifikasi password user login
+    $userLogin = checkLogin($pdo, $username, $password);
+    if (!$userLogin) {
         $_SESSION['alert'] = [
             'icon' => 'danger',
             'title' => 'Oops!',
@@ -40,30 +42,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-
-    if (empty($username)) {
-        $_SESSION['alert'] = [
-            'icon'   => 'danger',
-            'title'  => 'Oops!',
-            'text'   => 'Username tidak boleh kosong.',
-            'button' => 'Coba Lagi',
-            'style'  => 'danger'
-        ];
-        header("Location: " . BASE_URL . "pages/user/");
-        exit;
-    }
-
     try {
-        // Ambil role user dulu (agar tahu tabel mana yang akan dihapus)
-        $stmt = $pdo->prepare("SELECT role FROM users WHERE username = :username");
-        $stmt->execute([':username' => $username]);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        // Ambil role dan username user target
+        $stmt = $pdo->prepare("SELECT role, username FROM users WHERE id = :id");
+        $stmt->execute([':id' => $id]);
+        $targetUser = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if (!$user) {
+        if (!$targetUser) {
             throw new Exception("User tidak ditemukan.");
         }
 
-        $role = $user['role'];
+        $role = $targetUser['role'];
 
         // Mapping role -> tabel spesifik
         $roles = [
@@ -77,12 +66,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (isset($roles[$role])) {
             $table = $roles[$role];
             $stmt = $pdo->prepare("DELETE FROM $table WHERE username = :username");
-            $stmt->execute([':username' => $username]);
+            $stmt->execute([':username' => $targetUser['username']]);
         }
 
         // Hapus dari tabel users
-        $stmt = $pdo->prepare("DELETE FROM users WHERE username = :username");
-        $stmt->execute([':username' => $username]);
+        $stmt = $pdo->prepare("DELETE FROM users WHERE id = :id");
+        $stmt->execute([':id' => $id]);
 
         $pdo->commit();
 

@@ -71,16 +71,10 @@ try {
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
-$fmt = new IntlDateFormatter(
-    'id_ID', // locale bahasa Indonesia
-    IntlDateFormatter::FULL,
-    IntlDateFormatter::NONE,
-    'Asia/Jakarta',
-    IntlDateFormatter::GREGORIAN,
-    'EEEE, d MMMM yyyy'
-);
+$date = new DateTime();
 
-$tanggal = $fmt->format(new DateTime());
+// Format tanggal gaya bahasa Inggris (contoh: Monday, 25 November 2025)
+$tanggal = $date->format('l, d F Y');
 require __DIR__ . '/../../includes/header.php';
 require __DIR__ . '/../../includes/aside.php';
 require __DIR__ . '/../../includes/navbar.php';
